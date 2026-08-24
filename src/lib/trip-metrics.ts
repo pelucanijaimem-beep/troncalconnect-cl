@@ -58,7 +58,7 @@ export function metricasViaje(carga: Carga, viaje: Viaje | null): MetricasViaje 
     gpsReal,
     eta,
     etaTexto: eta
-      ? eta.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })
+      ? eta.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false })
       : "—",
     tiempoEnRuta: viaje?.inicio ? tiempo((viaje.fin ?? Date.now()) - viaje.inicio) : "—",
   };
