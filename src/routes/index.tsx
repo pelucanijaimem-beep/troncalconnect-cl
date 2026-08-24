@@ -154,6 +154,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background">
+      <TopSupportBar />
       <Header
         rol={rol}
         pais={pais}
@@ -163,34 +164,48 @@ function Index() {
       />
       <LaunchBanner onDonar={() => setDonarOpen(true)} />
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <Hero
+        onRegistro={() => abrirAuth("registro")}
+        onPublicarCamion={() => setCamionOpen(true)}
+        onPublicarFlete={() => setFleteOpen(true)}
+      />
+
+      <PricingPlans onRegistro={() => abrirAuth("registro")} onDonar={() => setDonarOpen(true)} />
+
+      <ComparisonTable />
+
+      <main id="cargas" className="mx-auto max-w-6xl px-4 py-6">
         <section className="mb-6">
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+          <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
-          </h1>
+          </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {esCamionero
               ? `Fletes publicados por empresas verificadas en ${paisActual.nombre}. Tarifas en ${paisActual.moneda}.`
               : `Camioneros con disponibilidad confirmada en ${paisActual.nombre}.`}
           </p>
 
-          <div className="mt-4 space-y-3 md:hidden">
+          <div id="paises" className="mt-4 space-y-3 md:hidden">
             <CountrySelector pais={pais} onChange={setPais} className="w-full" />
           </div>
           <div className="mt-4 lg:hidden">
+            <RoleSwitcher rol={rol} onChange={setRol} />
+          </div>
+          <div className="mt-4 hidden lg:block">
             <RoleSwitcher rol={rol} onChange={setRol} />
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {esCamionero ? (
               <>
-                <Button onClick={() => setCamionOpen(true)}>
+                <Button id="publicar-camion" onClick={() => setCamionOpen(true)}>
                   <Truck className="h-4 w-4" /> Publicar mi Camión
                 </Button>
                 <Button variant="outline" onClick={() => setFiltros(FILTROS_VACIOS)}>
                   <Search className="h-4 w-4" /> Ver todas las cargas
                 </Button>
               </>
+
             ) : (
               <>
                 <Button onClick={() => setFleteOpen(true)}>
