@@ -22,6 +22,7 @@ export function LoadCard({
   onIniciar,
   onFinalizar,
   onRastrear,
+  onVerViaje,
 }: {
   carga: Carga;
   rol: Rol;
@@ -31,6 +32,7 @@ export function LoadCard({
   onIniciar: (c: Carga) => void;
   onFinalizar: (c: Carga) => void;
   onRastrear: (c: Carga) => void;
+  onVerViaje: (c: Carga) => void;
 }) {
   const total = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
@@ -113,9 +115,18 @@ export function LoadCard({
                 </Button>
               )}
               {enRuta && (
-                <Button className="flex-1 sm:flex-none" onClick={() => onFinalizar(carga)}>
-                  <CheckCircle2 className="h-4 w-4" /> Finalizar / Carga Entregada
-                </Button>
+                <>
+                  <Button className="flex-1 sm:flex-none" onClick={() => onVerViaje(carga)}>
+                    <Satellite className="h-4 w-4" /> Ver Viaje Activo
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 sm:flex-none"
+                    onClick={() => onFinalizar(carga)}
+                  >
+                    <CheckCircle2 className="h-4 w-4" /> Carga Entregada
+                  </Button>
+                </>
               )}
             </>
           ) : (
