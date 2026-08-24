@@ -23,6 +23,7 @@ import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
 import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
+import { TermsSection } from "@/components/troncal/TermsSection";
 import {
   CAMIONES,
   CARGAS,
@@ -298,6 +299,8 @@ function Index() {
           </div>
         </section>
       </main>
+
+      <TermsSection />
 
       <footer id="soporte" className="mt-10 border-t border-border bg-surface">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center">
