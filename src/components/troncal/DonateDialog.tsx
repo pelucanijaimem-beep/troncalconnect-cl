@@ -31,10 +31,11 @@ export function DonateDialog({
 
         <div className="space-y-2 rounded-lg border border-border bg-surface p-4 text-sm text-foreground">
           <p className="font-semibold">Transferencia bancaria (CLP / USD)</p>
-          <p>Banco: BancoEstado — Cuenta Vista</p>
-          <p>N° de cuenta: 00 123 456789</p>
-          <p>RUT: 76.543.210-K</p>
-          <p>Correo: aportes@troncaltrack.cl</p>
+          <p>Titular: Jaime Merino</p>
+          <p>Banco: Mercado Pago — Cuenta Vista</p>
+          <p>N° de cuenta: 1044495483</p>
+          <p>RUT: 12.457.880-9</p>
+          <p>Correo: aporte@troncaltrack.cl</p>
         </div>
 
         <div className="space-y-2 rounded-lg border border-border bg-surface p-4 text-sm text-foreground">
