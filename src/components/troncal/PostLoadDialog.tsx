@@ -81,7 +81,7 @@ export function PostLoadDialog({
               <Input id="l-ton" type="number" min={1} placeholder="28" required />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="l-valor">Valor por Kilómetro (CLP)</Label>
+              <Label htmlFor="l-valor">Valor por Kilómetro ({moneda})</Label>
               <Input id="l-valor" type="number" min={1} placeholder="1200" required />
             </div>
             <div className="space-y-1.5">
