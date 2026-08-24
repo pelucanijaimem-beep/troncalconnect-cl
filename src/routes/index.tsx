@@ -22,6 +22,7 @@ import { PostLoadDialog } from "@/components/troncal/PostLoadDialog";
 import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
 import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
+import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsSection } from "@/components/troncal/TermsSection";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
@@ -75,6 +76,7 @@ function Index() {
   const [detalle, setDetalle] = useState<Carga | null>(null);
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
+  const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
 
   const sesion = useSesion();
   const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
@@ -144,6 +146,7 @@ function Index() {
 
   const iniciar = (c: Carga) => {
     iniciarViaje(c.id);
+    setViajeActivo(c);
     toast.success("Viaje iniciado — GPS activo", {
       description: `Estás en ruta de ${c.origen} a ${c.destino}. El cargador puede seguir tu posición.`,
     });
@@ -151,6 +154,7 @@ function Index() {
 
   const finalizar = (c: Carga) => {
     finalizarViaje(c.id);
+    setViajeActivo(null);
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
@@ -167,6 +171,7 @@ function Index() {
   };
 
   const viajeRastreo = rastreo ? getViaje(rastreo.id) : null;
+  const viajeChofer = viajeActivo ? getViaje(viajeActivo.id) : null;
   const enRutaCount = cargas.filter((c) => getViaje(c.id).estado === "en_ruta").length;
 
   return (
@@ -292,6 +297,7 @@ function Index() {
                     onIniciar={iniciar}
                     onFinalizar={finalizar}
                     onRastrear={rastrear}
+                    onVerViaje={setViajeActivo}
                   />
                 ))
               : camiones.map((t) => (
@@ -315,6 +321,7 @@ function Index() {
                       onIniciar={iniciar}
                       onFinalizar={finalizar}
                       onRastrear={rastrear}
+                      onVerViaje={setViajeActivo}
                     />
                   ))}
                 </div>
@@ -373,6 +380,12 @@ function Index() {
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
       <LoadDetailsDialog carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
       <ContactDialog contacto={contacto} onOpenChange={(o) => !o && setContacto(null)} />
+      <DriverTripDialog
+        carga={viajeActivo}
+        viaje={viajeChofer}
+        onFinalizar={finalizar}
+        onOpenChange={(o) => !o && setViajeActivo(null)}
+      />
       <TrackingDialog
         carga={rastreo}
         viaje={viajeRastreo}

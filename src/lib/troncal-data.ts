@@ -460,3 +460,43 @@ export const CAMIONES: Camion[] = [
     detalle: "Cama baja habilitada para cruce internacional, documentación vigente.",
   },
 ];
+
+/** Coordenadas aproximadas de las ciudades soportadas (lat, lng). */
+export const COORDENADAS: Record<string, [number, number]> = {
+  "Los Ángeles": [-37.4697, -72.3536],
+  Angol: [-37.7959, -72.7169],
+  Concepción: [-36.8201, -73.0444],
+  Chillán: [-36.6066, -72.1034],
+  Temuco: [-38.7359, -72.5904],
+  Santiago: [-33.4489, -70.6693],
+  Valparaíso: [-33.0472, -71.6127],
+  "Puerto Montt": [-41.4693, -72.9424],
+  Antofagasta: [-23.6509, -70.3975],
+  "Buenos Aires": [-34.6037, -58.3816],
+  Rosario: [-32.9442, -60.6505],
+  Córdoba: [-31.4201, -64.1888],
+  Mendoza: [-32.8895, -68.8458],
+  Neuquén: [-38.9516, -68.0591],
+  "Bahía Blanca": [-38.7183, -62.2661],
+  Tucumán: [-26.8083, -65.2176],
+  Salta: [-24.7821, -65.4232],
+  Lima: [-12.0464, -77.0428],
+  Callao: [-12.0508, -77.1256],
+  Arequipa: [-16.409, -71.5375],
+  Trujillo: [-8.109, -79.0215],
+  Chiclayo: [-6.7714, -79.8409],
+  Cusco: [-13.5319, -71.9675],
+  Piura: [-5.1945, -80.6328],
+  Tacna: [-18.0146, -70.2536],
+  "La Paz": [-16.4897, -68.1193],
+  "Santa Cruz": [-17.7833, -63.1821],
+  Cochabamba: [-17.3895, -66.1568],
+  Oruro: [-17.9833, -67.15],
+  Sucre: [-19.0333, -65.2627],
+  Potosí: [-19.5836, -65.7531],
+  Tarija: [-21.5355, -64.7296],
+};
+
+export function coordDe(ciudad: string, fallback: [number, number] = [-33.4489, -70.6693]) {
+  return COORDENADAS[ciudad] ?? fallback;
+}

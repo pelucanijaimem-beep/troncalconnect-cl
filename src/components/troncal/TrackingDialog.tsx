@@ -1,18 +1,20 @@
-import { MapPin, Navigation, Satellite, Truck } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { lazy, Suspense } from "react";
+import { ClientOnly } from "@tanstack/react-router";
+import { MessageCircle, Phone, Route, Satellite, ShieldCheck, Timer } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import type { Carga } from "@/lib/troncal-data";
 import type { Viaje } from "@/lib/use-trip-tracking";
+import { metricasViaje } from "@/lib/trip-metrics";
 
-function tiempo(ms: number) {
-  const min = Math.floor(ms / 60000);
-  const h = Math.floor(min / 60);
-  return h > 0 ? `${h} h ${min % 60} min` : `${min} min`;
+const LiveMap = lazy(() => import("./LiveMap"));
+
+function MapaSkeleton() {
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-surface text-sm text-muted-foreground">
+      Cargando mapa en vivo…
+    </div>
+  );
 }
 
 export function TrackingDialog({
@@ -24,109 +26,109 @@ export function TrackingDialog({
   viaje: Viaje | null;
   onOpenChange: (o: boolean) => void;
 }) {
-  const avance = viaje?.avance ?? 0;
-  const x = 40 + avance * 460;
-  const y = 150 - Math.sin(avance * Math.PI) * 55;
+  if (!carga) return null;
+  const m = metricasViaje(carga, viaje);
   const enRuta = viaje?.estado === "en_ruta";
+  const tel = carga.telefono.replace(/[^\d+]/g, "");
 
   return (
     <Dialog open={!!carga} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        {carga && (
-          <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Satellite className="h-5 w-5 text-primary" /> Rastreo en vivo del viaje
-              </DialogTitle>
-              <DialogDescription>
-                {carga.origen} → {carga.destino} · {carga.km} km · {carga.empresa}
-              </DialogDescription>
-            </DialogHeader>
+      <DialogContent
+        className="grid h-[100dvh] w-screen max-w-none grid-rows-[auto_1fr] gap-0 overflow-hidden rounded-none border-0 p-0 sm:max-w-none sm:rounded-none"
+      >
+        <DialogHeader className="border-b border-border bg-card px-4 py-3">
+          <DialogTitle className="flex items-center gap-2 text-base">
+            <Satellite className="h-5 w-5 text-primary" /> Rastreo en vivo — {carga.origen} →{" "}
+            {carga.destino}
+          </DialogTitle>
+          <DialogDescription>
+            {enRuta
+              ? "El camión transmite su posición GPS en tiempo real."
+              : "El rastreo se activa cuando el chofer inicia el viaje."}
+          </DialogDescription>
+        </DialogHeader>
 
-            <div className="overflow-hidden rounded-xl border border-border bg-surface">
-              <svg viewBox="0 0 540 220" className="h-56 w-full" role="img" aria-label="Mapa de la ruta">
-                <defs>
-                  <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
-                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-border" />
-                  </pattern>
-                </defs>
-                <rect width="540" height="220" fill="url(#grid)" />
-                <path
-                  d="M 40 150 Q 270 40 500 150"
-                  fill="none"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  className="stroke-border"
-                />
-                <path
-                  d="M 40 150 Q 270 40 500 150"
-                  fill="none"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeDasharray="600"
-                  strokeDashoffset={600 - avance * 600}
-                  className="stroke-primary"
-                />
-                <circle cx="40" cy="150" r="7" className="fill-foreground" />
-                <circle cx="500" cy="150" r="7" className="fill-primary" />
-                <text x="40" y="180" textAnchor="middle" className="fill-current text-[11px] text-muted-foreground">
-                  {carga.origen}
-                </text>
-                <text x="500" y="180" textAnchor="middle" className="fill-current text-[11px] text-muted-foreground">
-                  {carga.destino}
-                </text>
-                <g transform={`translate(${x - 12}, ${y - 26})`}>
-                  <circle cx="12" cy="12" r="16" className="fill-primary/20" />
-                  <circle cx="12" cy="12" r="11" className="fill-primary" />
-                </g>
-              </svg>
-            </div>
+        <div className="relative h-full w-full">
+          <ClientOnly fallback={<MapaSkeleton />}>
+            <Suspense fallback={<MapaSkeleton />}>
+              <LiveMap
+                origen={m.origen}
+                destino={m.destino}
+                actual={m.actual}
+                etiquetaOrigen={carga.origen}
+                etiquetaDestino={carga.destino}
+                activo={!!enRuta}
+              />
+            </Suspense>
+          </ClientOnly>
 
-            <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              <div className="rounded-lg border border-border bg-card p-3">
-                <dt className="text-muted-foreground">Estado</dt>
-                <dd className="font-bold text-foreground">
-                  {enRuta ? "En Ruta - GPS Activo" : viaje?.estado === "entregada" ? "Entregada" : "Sin iniciar"}
-                </dd>
-              </div>
-              <div className="rounded-lg border border-border bg-card p-3">
-                <dt className="text-muted-foreground">Avance</dt>
-                <dd className="font-bold text-primary">{Math.round(avance * 100)}%</dd>
-              </div>
-              <div className="rounded-lg border border-border bg-card p-3">
-                <dt className="text-muted-foreground">Kilómetros recorridos</dt>
-                <dd className="font-bold text-foreground">{Math.round(carga.km * avance)} km</dd>
-              </div>
-              <div className="rounded-lg border border-border bg-card p-3">
-                <dt className="text-muted-foreground">Tiempo en ruta</dt>
-                <dd className="font-bold text-foreground">
-                  {viaje?.inicio ? tiempo((viaje.fin ?? Date.now()) - viaje.inicio) : "—"}
-                </dd>
-              </div>
-            </dl>
-
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              {viaje?.posicion ? (
-                <>
-                  <MapPin className="h-4 w-4 text-primary" />
-                  Posición {viaje.posicion.simulada ? "estimada por ruta" : "GPS del conductor"}:{" "}
-                  {viaje.posicion.lat.toFixed(5)}, {viaje.posicion.lng.toFixed(5)}
-                </>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1000] p-3 sm:inset-x-auto sm:bottom-4 sm:left-4 sm:w-96 sm:p-0">
+            <div className="pointer-events-auto rounded-2xl border border-border bg-card p-4 shadow-lg">
+              {enRuta ? (
+                <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-primary">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                  </span>
+                  En ruta · GPS activo
+                </p>
               ) : (
-                <>
-                  <Navigation className="h-4 w-4" />
-                  Esperando la primera señal GPS del conductor…
-                </>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  {viaje?.estado === "entregada" ? "Viaje finalizado · GPS apagado" : "Viaje no iniciado"}
+                </p>
               )}
-            </p>
 
-            <p className="flex items-center gap-2 rounded-lg bg-surface p-3 text-sm text-foreground">
-              <Truck className="h-4 w-4 text-primary" />
-              El conductor comparte su ubicación mientras el viaje esté activo. El rastreo se
-              detiene automáticamente al marcar la carga como entregada.
-            </p>
-          </>
-        )}
+              <p className="mt-2 flex items-center gap-2 text-lg font-extrabold text-foreground">
+                <Timer className="h-5 w-5 text-primary" />
+                Llegada estimada a {carga.destino}: {m.etaTexto} hrs
+              </p>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                <div className="rounded-lg bg-surface p-2">
+                  <p className="text-muted-foreground">Recorrido</p>
+                  <p className="font-bold text-foreground">{m.kmRecorridos} km</p>
+                </div>
+                <div className="rounded-lg bg-surface p-2">
+                  <p className="text-muted-foreground">Restante</p>
+                  <p className="font-bold text-foreground">{m.kmRestantes} km</p>
+                </div>
+                <div className="rounded-lg bg-surface p-2">
+                  <p className="text-muted-foreground">Velocidad</p>
+                  <p className="font-bold text-foreground">{Math.round(m.velocidad)} km/h</p>
+                </div>
+                <div className="rounded-lg bg-surface p-2">
+                  <p className="flex items-center gap-1 text-muted-foreground">
+                    <Route className="h-3.5 w-3.5" /> Tiempo en ruta
+                  </p>
+                  <p className="font-bold text-foreground">{m.tiempoEnRuta}</p>
+                </div>
+              </div>
+
+              <div className="mt-3 flex gap-2">
+                <Button asChild className="flex-1">
+                  <a href={`tel:${tel}`}>
+                    <Phone className="h-4 w-4" /> Llamar al Chofer
+                  </a>
+                </Button>
+                <Button asChild variant="outline" className="flex-1">
+                  <a
+                    href={`https://wa.me/${tel.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <MessageCircle className="h-4 w-4" /> WhatsApp
+                  </a>
+                </Button>
+              </div>
+
+              <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                Por privacidad, la ubicación solo se comparte durante el viaje y se elimina al
+                marcar la carga como entregada.
+              </p>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -15,6 +15,7 @@ export type Viaje = {
   inicio: number | null;
   fin: number | null;
   avance: number; // 0 a 1
+  velocidad: number; // km/h
   posicion: Posicion | null;
 };
 
@@ -23,12 +24,13 @@ const VIAJE_INICIAL: Viaje = {
   inicio: null,
   fin: null,
   avance: 0,
+  velocidad: 0,
   posicion: null,
 };
 
 /**
- * Seguimiento GPS de viajes: activa la geolocalización del dispositivo al
- * iniciar un viaje y la detiene al marcar la carga como entregada.
+ * Seguimiento GPS de viajes en vivo: activa la geolocalización del dispositivo
+ * del chofer al iniciar el viaje y la destruye al marcar la carga entregada.
  */
 export function useTripTracking() {
   const [viajes, setViajes] = useState<Record<string, Viaje>>({});
@@ -61,12 +63,22 @@ export function useTripTracking() {
       [id]: { ...VIAJE_INICIAL, estado: "en_ruta", inicio: Date.now() },
     }));
 
-    // Avance simulado de la ruta para la vista de rastreo del cargador.
+    // Avance de la ruta y velocidad estimada para la vista del cargador.
     timers.current[id] = setInterval(() => {
       setViajes((prev) => {
         const v = prev[id];
         if (!v || v.estado !== "en_ruta") return prev;
-        return { ...prev, [id]: { ...v, avance: Math.min(0.98, v.avance + 0.012) } };
+        return {
+          ...prev,
+          [id]: {
+            ...v,
+            avance: Math.min(0.99, v.avance + 0.008),
+            velocidad:
+              v.posicion && !v.posicion.simulada && v.velocidad > 0
+                ? v.velocidad
+                : Math.round(72 + Math.sin(Date.now() / 9000) * 14),
+          },
+        };
       });
     }, 1500);
 
@@ -80,6 +92,10 @@ export function useTripTracking() {
               ...prev,
               [id]: {
                 ...v,
+                velocidad:
+                  pos.coords.speed != null && pos.coords.speed >= 0
+                    ? Math.round(pos.coords.speed * 3.6)
+                    : v.velocidad,
                 posicion: {
                   lat: pos.coords.latitude,
                   lng: pos.coords.longitude,
@@ -121,7 +137,11 @@ export function useTripTracking() {
       detener(id);
       setViajes((prev) => {
         const v = prev[id] ?? VIAJE_INICIAL;
-        return { ...prev, [id]: { ...v, estado: "entregada", fin: Date.now(), avance: 1 } };
+        return {
+          ...prev,
+          // Privacidad: se destruye la última posición GPS al finalizar el viaje.
+          [id]: { ...v, estado: "entregada", fin: Date.now(), avance: 1, velocidad: 0, posicion: null },
+        };
       });
     },
     [detener],
