@@ -232,7 +232,7 @@ function Index() {
           <div className="mt-4 flex flex-wrap gap-2">
             {esCamionero ? (
               <>
-                <Button id="publicar-camion" onClick={() => setCamionOpen(true)}>
+                <Button id="publicar-camion" onClick={() => requiereSesion(() => setCamionOpen(true))}>
                   <Truck className="h-4 w-4" /> Publicar mi Camión
                 </Button>
                 <Button variant="outline" onClick={() => setFiltros(FILTROS_VACIOS)}>
@@ -242,7 +242,7 @@ function Index() {
 
             ) : (
               <>
-                <Button onClick={() => setFleteOpen(true)}>
+                <Button onClick={() => requiereSesion(() => setFleteOpen(true))}>
                   <PackagePlus className="h-4 w-4" /> Publicar Flete
                 </Button>
                 <Button variant="outline" onClick={() => setFiltros(FILTROS_VACIOS)}>
@@ -323,15 +323,36 @@ function Index() {
 
             {(esCamionero ? cargas.length : camiones.length) === 0 && (
               <div className="rounded-xl border border-dashed border-border bg-surface p-8 text-center">
-                <p className="font-semibold text-foreground">No hay resultados con esos filtros</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Prueba con otra ruta, carrocería, fecha o país.
+                <p className="font-semibold text-foreground">
+                  No hay cargas publicadas para esta ruta en este momento.
                 </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {esCamionero
+                    ? "Publica tu camión para recibir ofertas directas de empresas cargadoras."
+                    : "Publica tu flete para que los camioneros disponibles te contacten al instante."}
+                </p>
+                <Button
+                  className="mt-4"
+                  onClick={() =>
+                    esCamionero ? setCamionOpen(true) : setFleteOpen(true)
+                  }
+                >
+                  {esCamionero ? (
+                    <>
+                      <Truck className="h-4 w-4" /> Publicar mi Camión
+                    </>
+                  ) : (
+                    <>
+                      <PackagePlus className="h-4 w-4" /> Publicar Flete
+                    </>
+                  )}
+                </Button>
               </div>
             )}
           </div>
         </section>
       </main>
+      )}
 
       <TermsSection />
 
