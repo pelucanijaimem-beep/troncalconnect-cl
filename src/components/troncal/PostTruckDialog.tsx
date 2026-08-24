@@ -19,19 +19,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS } from "@/lib/troncal-data";
+import { CARROCERIAS, type Camion, type Carroceria, type PaisCodigo } from "@/lib/troncal-data";
+import { nuevoId, publicarCamion } from "@/lib/use-publicaciones";
+import { useSesion } from "@/lib/use-session";
 
 export function PostTruckDialog({
   open,
   onOpenChange,
+  pais = "CL",
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
+  pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const sesion = useSesion();
 
-  const enviar = (e: FormEvent) => {
+  const enviar = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const d = new FormData(e.currentTarget);
+    const camion: Camion = {
+      id: nuevoId("camion"),
+      pais,
+      conductor: sesion?.nombre ?? "Camionero independiente",
+      origen: String(d.get("origen") ?? ""),
+      destino: String(d.get("destino") ?? ""),
+      carroceria: (carroceria || "Rampla Plana") as Carroceria,
+      toneladas: Number(d.get("toneladas") ?? 0),
+      fecha: String(d.get("fecha") ?? ""),
+      verificado: Boolean(sesion),
+      telefono: String(d.get("telefono") ?? ""),
+      detalle: String(d.get("detalle") ?? "") || "Disponibilidad confirmada.",
+    };
+    publicarCamion(camion);
+    setCarroceria("");
     onOpenChange(false);
     toast.success("¡Camión publicado!", {
       description: "Tu disponibilidad ya es visible para las empresas cargadoras.",
@@ -53,11 +74,11 @@ export function PostTruckDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="t-origen">Origen</Label>
-              <Input id="t-origen" placeholder="Los Ángeles" required />
+              <Input id="t-origen" name="origen" placeholder="Los Ángeles" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="t-destino">Destino</Label>
-              <Input id="t-destino" placeholder="Santiago" required />
+              <Input id="t-destino" name="destino" placeholder="Santiago" required />
             </div>
             <div className="space-y-1.5">
               <Label>Tipo de Carrocería</Label>
@@ -76,20 +97,24 @@ export function PostTruckDialog({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="t-ton">Capacidad (Toneladas)</Label>
-              <Input id="t-ton" type="number" min={1} placeholder="10" required />
+              <Input id="t-ton" name="toneladas" type="number" min={1} placeholder="10" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="t-fecha">Fecha disponible</Label>
-              <Input id="t-fecha" type="date" required />
+              <Input id="t-fecha" name="fecha" type="date" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="t-tel">Teléfono de contacto</Label>
-              <Input id="t-tel" type="tel" placeholder="+56 9 1234 5678" required />
+              <Input id="t-tel" name="telefono" type="tel" placeholder="+56 9 1234 5678" required />
             </div>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="t-detalle">Comentarios</Label>
-            <Textarea id="t-detalle" placeholder="Detalles del camión, retornos, restricciones…" />
+            <Textarea
+              id="t-detalle"
+              name="detalle"
+              placeholder="Detalles del camión, retornos, restricciones…"
+            />
           </div>
           <DialogFooter>
             <Button type="submit" className="w-full sm:w-auto">

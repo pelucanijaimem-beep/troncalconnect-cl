@@ -10,8 +10,11 @@ import {
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
 import { CountrySelector } from "./CountrySelector";
 import type { PaisCodigo } from "@/lib/troncal-data";
+import type { Sesion } from "@/lib/use-session";
 
 type Props = {
+  sesion: Sesion | null;
+  onSalir: () => void;
   rol: Rol;
   pais: PaisCodigo;
   onPaisChange: (p: PaisCodigo) => void;
@@ -27,7 +30,7 @@ const NAV = [
   { label: "Soporte", href: "#soporte" },
 ];
 
-export function Header({ rol, pais, onPaisChange, onRolChange, onAuth }: Props) {
+export function Header({ sesion, onSalir, rol, pais, onPaisChange, onRolChange, onAuth }: Props) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
@@ -55,10 +58,23 @@ export function Header({ rol, pais, onPaisChange, onRolChange, onAuth }: Props) 
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
           <CountrySelector pais={pais} onChange={onPaisChange} className="w-48" />
-          <Button variant="outline" onClick={() => onAuth("login")}>
-            Iniciar Sesión
-          </Button>
-          <Button onClick={() => onAuth("registro")}>Regístrate Gratis</Button>
+          {sesion ? (
+            <>
+              <span className="max-w-40 truncate text-sm font-semibold text-foreground">
+                {sesion.nombre}
+              </span>
+              <Button variant="outline" onClick={onSalir}>
+                Cerrar Sesión
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => onAuth("login")}>
+                Iniciar Sesión
+              </Button>
+              <Button onClick={() => onAuth("registro")}>Regístrate Gratis</Button>
+            </>
+          )}
         </div>
 
         <Sheet>
@@ -85,12 +101,20 @@ export function Header({ rol, pais, onPaisChange, onRolChange, onAuth }: Props) 
               </nav>
               <CountrySelector pais={pais} onChange={onPaisChange} className="w-full" />
               <RoleSwitcher rol={rol} onChange={onRolChange} />
-              <Button variant="outline" className="w-full" onClick={() => onAuth("login")}>
-                Iniciar Sesión
-              </Button>
-              <Button className="w-full" onClick={() => onAuth("registro")}>
-                Regístrate Gratis
-              </Button>
+              {sesion ? (
+                <Button variant="outline" className="w-full" onClick={onSalir}>
+                  Cerrar Sesión ({sesion.nombre})
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="w-full" onClick={() => onAuth("login")}>
+                    Iniciar Sesión
+                  </Button>
+                  <Button className="w-full" onClick={() => onAuth("registro")}>
+                    Regístrate Gratis
+                  </Button>
+                </>
+              )}
             </div>
           </SheetContent>
         </Sheet>

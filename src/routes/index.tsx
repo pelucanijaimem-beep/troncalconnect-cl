@@ -24,9 +24,10 @@ import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsSection } from "@/components/troncal/TermsSection";
+import { LockedBoard } from "@/components/troncal/LockedBoard";
+import { usePublicaciones } from "@/lib/use-publicaciones";
+import { cerrarSesion, useSesion } from "@/lib/use-session";
 import {
-  CAMIONES,
-  CARGAS,
   getPais,
   type Camion,
   type Carga,
@@ -75,6 +76,8 @@ function Index() {
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
 
+  const sesion = useSesion();
+  const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const paisActual = getPais(pais);
 
@@ -88,7 +91,7 @@ function Index() {
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
           (!filtros.fecha || c.fecha === filtros.fecha),
       ),
-    [filtros, pais],
+    [filtros, pais, CARGAS],
   );
 
   const camiones = useMemo(
@@ -101,7 +104,7 @@ function Index() {
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
           (!filtros.fecha || t.fecha === filtros.fecha),
       ),
-    [filtros, pais],
+    [filtros, pais, CAMIONES],
   );
 
   const esCamionero = rol === "camionero";
@@ -110,13 +113,26 @@ function Index() {
     setAuthOpen(true);
   };
 
+  const requiereSesion = (accion: () => void) => {
+    if (!sesion) {
+      abrirAuth("registro");
+      toast.info("Crea tu cuenta gratuita", {
+        description: "Necesitas iniciar sesión para ver y publicar cargas en vivo.",
+      });
+      return;
+    }
+    accion();
+  };
+
   const contactarCarga = (c: Carga) =>
-    setContacto({
+    requiereSesion(() =>
+      setContacto({
       titulo: "Contactar al cargador",
       nombre: c.empresa,
       telefono: c.telefono,
-      resumen: `${c.origen} → ${c.destino} · ${c.carroceria} · ${c.toneladas} Ton`,
-    });
+        resumen: `${c.origen} → ${c.destino} · ${c.carroceria} · ${c.toneladas} Ton`,
+      }),
+    );
 
   const contactarCamion = (t: Camion) =>
     setContacto({
@@ -157,6 +173,11 @@ function Index() {
     <div className="min-h-screen bg-background">
       <TopSupportBar />
       <Header
+        sesion={sesion}
+        onSalir={() => {
+          cerrarSesion();
+          toast.success("Sesión cerrada.");
+        }}
         rol={rol}
         pais={pais}
         onPaisChange={setPais}
@@ -167,15 +188,27 @@ function Index() {
 
       <Hero
         onRegistro={() => abrirAuth("registro")}
-        onPublicarCamion={() => setCamionOpen(true)}
-        onPublicarFlete={() => setFleteOpen(true)}
+        onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
+        onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
       />
 
       <PricingPlans onRegistro={() => abrirAuth("registro")} onDonar={() => setDonarOpen(true)} />
 
       <ComparisonTable />
 
+      {!sesion && (
+        <LockedBoard
+          onIngresar={() => abrirAuth("login")}
+          onRegistro={() => abrirAuth("registro")}
+        />
+      )}
+
+      {sesion && (
       <main id="cargas" className="mx-auto max-w-6xl px-4 py-6">
+        <p className="mb-2 text-sm font-semibold text-primary">
+          Panel privado de {sesion.nombre}
+        </p>
+
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
@@ -199,7 +232,7 @@ function Index() {
           <div className="mt-4 flex flex-wrap gap-2">
             {esCamionero ? (
               <>
-                <Button id="publicar-camion" onClick={() => setCamionOpen(true)}>
+                <Button id="publicar-camion" onClick={() => requiereSesion(() => setCamionOpen(true))}>
                   <Truck className="h-4 w-4" /> Publicar mi Camión
                 </Button>
                 <Button variant="outline" onClick={() => setFiltros(FILTROS_VACIOS)}>
@@ -209,7 +242,7 @@ function Index() {
 
             ) : (
               <>
-                <Button onClick={() => setFleteOpen(true)}>
+                <Button onClick={() => requiereSesion(() => setFleteOpen(true))}>
                   <PackagePlus className="h-4 w-4" /> Publicar Flete
                 </Button>
                 <Button variant="outline" onClick={() => setFiltros(FILTROS_VACIOS)}>
@@ -254,7 +287,7 @@ function Index() {
                     carga={c}
                     rol={rol}
                     viaje={getViaje(c.id)}
-                    onDetalles={setDetalle}
+                    onDetalles={(c) => requiereSesion(() => setDetalle(c))}
                     onContactar={contactarCarga}
                     onIniciar={iniciar}
                     onFinalizar={finalizar}
@@ -277,7 +310,7 @@ function Index() {
                       carga={c}
                       rol={rol}
                       viaje={getViaje(c.id)}
-                      onDetalles={setDetalle}
+                      onDetalles={(c) => requiereSesion(() => setDetalle(c))}
                       onContactar={contactarCarga}
                       onIniciar={iniciar}
                       onFinalizar={finalizar}
@@ -290,15 +323,36 @@ function Index() {
 
             {(esCamionero ? cargas.length : camiones.length) === 0 && (
               <div className="rounded-xl border border-dashed border-border bg-surface p-8 text-center">
-                <p className="font-semibold text-foreground">No hay resultados con esos filtros</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Prueba con otra ruta, carrocería, fecha o país.
+                <p className="font-semibold text-foreground">
+                  No hay cargas publicadas para esta ruta en este momento.
                 </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {esCamionero
+                    ? "Publica tu camión para recibir ofertas directas de empresas cargadoras."
+                    : "Publica tu flete para que los camioneros disponibles te contacten al instante."}
+                </p>
+                <Button
+                  className="mt-4"
+                  onClick={() =>
+                    esCamionero ? setCamionOpen(true) : setFleteOpen(true)
+                  }
+                >
+                  {esCamionero ? (
+                    <>
+                      <Truck className="h-4 w-4" /> Publicar mi Camión
+                    </>
+                  ) : (
+                    <>
+                      <PackagePlus className="h-4 w-4" /> Publicar Flete
+                    </>
+                  )}
+                </Button>
               </div>
             )}
           </div>
         </section>
       </main>
+      )}
 
       <TermsSection />
 
@@ -315,7 +369,7 @@ function Index() {
       </footer>
 
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
-      <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} />
+      <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
       <LoadDetailsDialog carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
       <ContactDialog contacto={contacto} onOpenChange={(o) => !o && setContacto(null)} />

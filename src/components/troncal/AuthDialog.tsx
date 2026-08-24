@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
+import { iniciarSesion } from "@/lib/use-session";
 
 type Vista = "login" | "registro" | "recuperar";
 
@@ -40,6 +41,25 @@ export function AuthDialog({
     e.preventDefault();
     onOpenChange(false);
     toast.success(mensaje);
+  };
+
+  const autenticar = (e: FormEvent<HTMLFormElement>, tipo: "login" | "registro") => {
+    e.preventDefault();
+    const datos = new FormData(e.currentTarget);
+    const email = String(datos.get("email") ?? "");
+    const nombre = String(datos.get("nombre") ?? "") || email.split("@")[0] || "Usuario";
+    const telefono = String(datos.get("telefono") ?? "");
+    iniciarSesion({
+      nombre,
+      email,
+      rol: tipo === "registro" ? rolCuenta : rol,
+      ...(telefono ? { telefono } : {}),
+    });
+    onOpenChange(false);
+    toast.success(
+      tipo === "registro" ? "¡Cuenta creada! Ya puedes ver las cargas en vivo." : "Sesión iniciada.",
+      { description: "Tu tablero privado está activo." },
+    );
   };
 
   return (
@@ -90,10 +110,10 @@ export function AuthDialog({
               </TabsList>
 
               <TabsContent value="login" className="mt-4">
-                <form className="space-y-4" onSubmit={(e) => enviar(e, "Sesión iniciada.")}>
+                <form className="space-y-4" onSubmit={(e) => autenticar(e, "login")}>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-email">Correo electrónico</Label>
-                    <Input id="l-email" type="email" placeholder="tucorreo@ejemplo.cl" required />
+                    <Input id="l-email" name="email" type="email" placeholder="tucorreo@ejemplo.cl" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-pass">Contraseña</Label>
@@ -113,7 +133,7 @@ export function AuthDialog({
               </TabsContent>
 
               <TabsContent value="registro" className="mt-4">
-                <form className="space-y-4" onSubmit={(e) => enviar(e, "Cuenta creada con éxito.")}>
+                <form className="space-y-4" onSubmit={(e) => autenticar(e, "registro")}>
                   <div className="space-y-1.5">
                     <Label>Tipo de cuenta</Label>
                     <RoleSwitcher rol={rolCuenta} onChange={setRolCuenta} />
@@ -124,6 +144,7 @@ export function AuthDialog({
                     </Label>
                     <Input
                       id="s-nombre"
+                      name="nombre"
                       placeholder={rolCuenta === "camionero" ? "Juan Pérez" : "Forestal Biobío SpA"}
                       required
                     />
@@ -134,11 +155,11 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-email">Correo electrónico</Label>
-                    <Input id="s-email" type="email" placeholder="tucorreo@ejemplo.cl" required />
+                    <Input id="s-email" name="email" type="email" placeholder="tucorreo@ejemplo.cl" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-tel">Teléfono</Label>
-                    <Input id="s-tel" type="tel" placeholder="+56 9 1234 5678" required />
+                    <Input id="s-tel" name="telefono" type="tel" placeholder="+56 9 1234 5678" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-pass">Contraseña</Label>
