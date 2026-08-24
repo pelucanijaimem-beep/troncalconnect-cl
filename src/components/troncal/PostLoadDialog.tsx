@@ -19,16 +19,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS } from "@/lib/troncal-data";
+import { CARROCERIAS, getPais, type PaisCodigo } from "@/lib/troncal-data";
 
 export function PostLoadDialog({
   open,
   onOpenChange,
+  pais = "CL",
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
+  pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const moneda = getPais(pais).moneda;
 
   const enviar = (e: FormEvent) => {
     e.preventDefault();
@@ -78,7 +81,7 @@ export function PostLoadDialog({
               <Input id="l-ton" type="number" min={1} placeholder="28" required />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="l-valor">Valor por Kilómetro (CLP)</Label>
+              <Label htmlFor="l-valor">Valor por Kilómetro ({moneda})</Label>
               <Input id="l-valor" type="number" min={1} placeholder="1200" required />
             </div>
             <div className="space-y-1.5">

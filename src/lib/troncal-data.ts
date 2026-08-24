@@ -15,8 +15,117 @@ export const CARROCERIAS: Carroceria[] = [
   "Cama Baja",
 ];
 
+export type PaisCodigo = "CL" | "AR" | "PE" | "BO" | "INT";
+
+export type Pais = {
+  codigo: PaisCodigo;
+  nombre: string;
+  bandera: string;
+  moneda: string;
+  simbolo: string;
+  locale: string;
+  ciudades: string[];
+};
+
+export const PAISES: Pais[] = [
+  {
+    codigo: "CL",
+    nombre: "Chile",
+    bandera: "🇨🇱",
+    moneda: "CLP",
+    simbolo: "$",
+    locale: "es-CL",
+    ciudades: [
+      "Los Ángeles",
+      "Angol",
+      "Concepción",
+      "Chillán",
+      "Temuco",
+      "Santiago",
+      "Valparaíso",
+      "Puerto Montt",
+      "Antofagasta",
+    ],
+  },
+  {
+    codigo: "AR",
+    nombre: "Argentina",
+    bandera: "🇦🇷",
+    moneda: "ARS",
+    simbolo: "$",
+    locale: "es-AR",
+    ciudades: [
+      "Buenos Aires",
+      "Rosario",
+      "Córdoba",
+      "Mendoza",
+      "Neuquén",
+      "Bahía Blanca",
+      "Tucumán",
+      "Salta",
+    ],
+  },
+  {
+    codigo: "PE",
+    nombre: "Perú",
+    bandera: "🇵🇪",
+    moneda: "PEN",
+    simbolo: "S/",
+    locale: "es-PE",
+    ciudades: ["Lima", "Callao", "Arequipa", "Trujillo", "Chiclayo", "Cusco", "Piura", "Tacna"],
+  },
+  {
+    codigo: "BO",
+    nombre: "Bolivia",
+    bandera: "🇧🇴",
+    moneda: "BOB",
+    simbolo: "Bs",
+    locale: "es-BO",
+    ciudades: ["La Paz", "Santa Cruz", "Cochabamba", "Oruro", "Sucre", "Potosí", "Tarija"],
+  },
+  {
+    codigo: "INT",
+    nombre: "Internacional / Transfronterizo",
+    bandera: "🌎",
+    moneda: "USD",
+    simbolo: "US$",
+    locale: "es-419",
+    ciudades: [
+      "Santiago",
+      "Mendoza",
+      "Buenos Aires",
+      "Arica",
+      "Tacna",
+      "La Paz",
+      "Iquique",
+      "Santa Cruz",
+    ],
+  },
+];
+
+export const getPais = (codigo: PaisCodigo): Pais =>
+  PAISES.find((p) => p.codigo === codigo) ?? PAISES[0]!;
+
+/** Formatea un monto en la moneda del país seleccionado. */
+export const money = (valor: number, codigo: PaisCodigo = "CL") => {
+  const p = getPais(codigo);
+  const decimales = p.moneda === "CLP" ? 0 : 2;
+  return (
+    p.simbolo +
+    " " +
+    Number(valor).toLocaleString(p.locale, {
+      minimumFractionDigits: decimales,
+      maximumFractionDigits: decimales,
+    })
+  );
+};
+
+/** Compatibilidad: formato pesos chilenos. */
+export const clp = (valor: number) => money(valor, "CL");
+
 export type Carga = {
   id: string;
+  pais: PaisCodigo;
   origen: string;
   destino: string;
   km: number;
@@ -32,6 +141,7 @@ export type Carga = {
 
 export type Camion = {
   id: string;
+  pais: PaisCodigo;
   conductor: string;
   origen: string;
   destino: string;
@@ -43,12 +153,10 @@ export type Camion = {
   detalle: string;
 };
 
-export const clp = (valor: number) =>
-  "$" + Math.round(valor).toLocaleString("es-CL", { maximumFractionDigits: 0 });
-
 export const CARGAS: Carga[] = [
   {
     id: "c1",
+    pais: "CL",
     origen: "Los Ángeles",
     destino: "Santiago",
     km: 510,
@@ -63,6 +171,7 @@ export const CARGAS: Carga[] = [
   },
   {
     id: "c2",
+    pais: "CL",
     origen: "Angol",
     destino: "Concepción",
     km: 152,
@@ -72,11 +181,12 @@ export const CARGAS: Carga[] = [
     empresa: "Áridos del Sur Ltda.",
     verificada: true,
     fecha: "2026-08-24",
-    detalle: "Traslado de áridos a obra vial. Se requiere carnet de conducir A5 vigente.",
+    detalle: "Traslado de áridos a obra vial. Se requiere licencia de conducir A5 vigente.",
     telefono: "+56 9 7411 2298",
   },
   {
     id: "c3",
+    pais: "CL",
     origen: "Temuco",
     destino: "Puerto Montt",
     km: 340,
@@ -91,6 +201,7 @@ export const CARGAS: Carga[] = [
   },
   {
     id: "c4",
+    pais: "CL",
     origen: "Santiago",
     destino: "Los Ángeles",
     km: 510,
@@ -105,6 +216,7 @@ export const CARGAS: Carga[] = [
   },
   {
     id: "c5",
+    pais: "CL",
     origen: "Chillán",
     destino: "Valparaíso",
     km: 520,
@@ -119,6 +231,7 @@ export const CARGAS: Carga[] = [
   },
   {
     id: "c6",
+    pais: "CL",
     origen: "Los Ángeles",
     destino: "Angol",
     km: 62,
@@ -131,11 +244,133 @@ export const CARGAS: Carga[] = [
     detalle: "Traslado de retroexcavadora entre faenas. Escolta incluida por la empresa.",
     telefono: "+56 9 9087 3312",
   },
+  {
+    id: "a1",
+    pais: "AR",
+    origen: "Buenos Aires",
+    destino: "Rosario",
+    km: 300,
+    valorKm: 950,
+    carroceria: "Sider",
+    toneladas: 26,
+    empresa: "Logística Pampa SRL",
+    verificada: true,
+    fecha: "2026-08-25",
+    detalle: "Mercadería paletizada para centro de distribución. Descarga con autoelevador.",
+    telefono: "+54 9 11 5566 7788",
+  },
+  {
+    id: "a2",
+    pais: "AR",
+    origen: "Mendoza",
+    destino: "Córdoba",
+    km: 620,
+    valorKm: 870,
+    carroceria: "Thermo / Frigo",
+    toneladas: 18,
+    empresa: "Frigorífico Cuyo SA",
+    verificada: true,
+    fecha: "2026-08-26",
+    detalle: "Cadena de frío a 2°C. Precintos y registro de temperatura obligatorios.",
+    telefono: "+54 9 261 445 3321",
+  },
+  {
+    id: "p1",
+    pais: "PE",
+    origen: "Lima",
+    destino: "Trujillo",
+    km: 560,
+    valorKm: 5.8,
+    carroceria: "Furgón",
+    toneladas: 16,
+    empresa: "Andina Distribución EIRL",
+    verificada: true,
+    fecha: "2026-08-25",
+    detalle: "Carga seca para tiendas. Descarga manual en almacén central.",
+    telefono: "+51 987 654 321",
+  },
+  {
+    id: "p2",
+    pais: "PE",
+    origen: "Arequipa",
+    destino: "Tacna",
+    km: 370,
+    valorKm: 6.4,
+    carroceria: "Tolva",
+    toneladas: 30,
+    empresa: "Minera del Sur SAC",
+    verificada: true,
+    fecha: "2026-08-27",
+    detalle: "Traslado de mineral. Requiere licencia A-IIIB y equipo de protección.",
+    telefono: "+51 954 220 118",
+  },
+  {
+    id: "b1",
+    pais: "BO",
+    origen: "Santa Cruz",
+    destino: "Cochabamba",
+    km: 470,
+    valorKm: 11.5,
+    carroceria: "Rampla Plana",
+    toneladas: 27,
+    empresa: "Transportes Oriente Ltda.",
+    verificada: false,
+    fecha: "2026-08-26",
+    detalle: "Carga de estructuras metálicas. Amarre y carpas por cuenta del transportista.",
+    telefono: "+591 7 123 4567",
+  },
+  {
+    id: "b2",
+    pais: "BO",
+    origen: "La Paz",
+    destino: "Oruro",
+    km: 230,
+    valorKm: 13.2,
+    carroceria: "Furgón",
+    toneladas: 12,
+    empresa: "Comercial Altiplano",
+    verificada: true,
+    fecha: "2026-08-24",
+    detalle: "Mercadería general paletizada. Entrega en horario de mañana.",
+    telefono: "+591 6 998 2231",
+  },
+  {
+    id: "i1",
+    pais: "INT",
+    origen: "Santiago",
+    destino: "Mendoza",
+    km: 360,
+    valorKm: 2.1,
+    carroceria: "Sider",
+    toneladas: 24,
+    empresa: "Andes Cross Border Cargo",
+    verificada: true,
+    fecha: "2026-08-28",
+    detalle:
+      "Cruce Paso Los Libertadores. Documentación MIC/DTA y seguro internacional al día.",
+    telefono: "+56 9 4455 1177",
+  },
+  {
+    id: "i2",
+    pais: "INT",
+    origen: "Arica",
+    destino: "La Paz",
+    km: 505,
+    valorKm: 2.4,
+    carroceria: "Rampla Plana",
+    toneladas: 28,
+    empresa: "Pacífico Andino Freight",
+    verificada: true,
+    fecha: "2026-08-29",
+    detalle: "Carga de proyecto vía Tambo Quemado. Aduana coordinada por el cargador.",
+    telefono: "+591 7 445 9900",
+  },
 ];
 
 export const CAMIONES: Camion[] = [
   {
     id: "t1",
+    pais: "CL",
     conductor: "Juan Pérez",
     origen: "Los Ángeles",
     destino: "Santiago",
@@ -148,6 +383,7 @@ export const CAMIONES: Camion[] = [
   },
   {
     id: "t2",
+    pais: "CL",
     conductor: "Transportes Cordillera",
     origen: "Concepción",
     destino: "Temuco",
@@ -160,6 +396,7 @@ export const CAMIONES: Camion[] = [
   },
   {
     id: "t3",
+    pais: "CL",
     conductor: "Marcela Soto",
     origen: "Angol",
     destino: "Valparaíso",
@@ -169,5 +406,57 @@ export const CAMIONES: Camion[] = [
     verificado: false,
     telefono: "+56 9 6633 8890",
     detalle: "Furgón cerrado, ideal para carga seca y paletizada.",
+  },
+  {
+    id: "t4",
+    pais: "AR",
+    conductor: "Transportes del Litoral",
+    origen: "Rosario",
+    destino: "Buenos Aires",
+    carroceria: "Sider",
+    toneladas: 26,
+    fecha: "2026-08-25",
+    verificado: true,
+    telefono: "+54 9 341 220 7788",
+    detalle: "Semirremolque sider con lonas nuevas y seguimiento satelital.",
+  },
+  {
+    id: "t5",
+    pais: "PE",
+    conductor: "Carlos Quispe",
+    origen: "Lima",
+    destino: "Arequipa",
+    carroceria: "Furgón",
+    toneladas: 15,
+    fecha: "2026-08-26",
+    verificado: true,
+    telefono: "+51 921 334 556",
+    detalle: "Furgón cerrado con GPS, disponible para carga seca.",
+  },
+  {
+    id: "t6",
+    pais: "BO",
+    conductor: "Transportes Illimani",
+    origen: "La Paz",
+    destino: "Santa Cruz",
+    carroceria: "Tolva",
+    toneladas: 30,
+    fecha: "2026-08-27",
+    verificado: false,
+    telefono: "+591 7 660 1122",
+    detalle: "Tolva de 30 toneladas disponible para rutas nacionales.",
+  },
+  {
+    id: "t7",
+    pais: "INT",
+    conductor: "Andes Cross Transport",
+    origen: "Mendoza",
+    destino: "Santiago",
+    carroceria: "Cama Baja",
+    toneladas: 35,
+    fecha: "2026-08-28",
+    verificado: true,
+    telefono: "+54 9 261 778 9900",
+    detalle: "Cama baja habilitada para cruce internacional, documentación vigente.",
   },
 ];

@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { clp, type Carga } from "@/lib/troncal-data";
+import { money, type Carga } from "@/lib/troncal-data";
 
 export function LoadDetailsDialog({
   carga,
@@ -32,12 +32,12 @@ export function LoadDetailsDialog({
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg border border-border bg-surface p-3">
                 <dt className="text-muted-foreground">Valor por kilómetro</dt>
-                <dd className="text-lg font-extrabold text-primary">{clp(carga.valorKm)} / km</dd>
+                <dd className="text-lg font-extrabold text-primary">{money(carga.valorKm, carga.pais)} / km</dd>
               </div>
               <div className="rounded-lg border border-border bg-surface p-3">
                 <dt className="text-muted-foreground">Total del flete</dt>
                 <dd className="text-lg font-bold text-foreground">
-                  {clp(carga.km * carga.valorKm)} CLP
+                  {money(carga.km * carga.valorKm, carga.pais)}
                 </dd>
               </div>
               <div className="rounded-lg border border-border bg-surface p-3">

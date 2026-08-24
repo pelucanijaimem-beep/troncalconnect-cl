@@ -20,10 +20,12 @@ export type Filtros = {
 
 export function SearchFilters({
   filtros,
+  ciudades,
   onChange,
   onLimpiar,
 }: {
   filtros: Filtros;
+  ciudades: string[];
   onChange: (f: Filtros) => void;
   onLimpiar: () => void;
 }) {
@@ -31,12 +33,18 @@ export function SearchFilters({
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <datalist id="ciudades-sugeridas">
+        {ciudades.map((c) => (
+          <option key={c} value={c} />
+        ))}
+      </datalist>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-1.5">
           <Label htmlFor="origen">Origen</Label>
           <Input
             id="origen"
-            placeholder="Ej: Los Ángeles"
+            list="ciudades-sugeridas"
+            placeholder={`Ej: ${ciudades[0] ?? "Ciudad de origen"}`}
             value={filtros.origen}
             onChange={(e) => set("origen", e.target.value)}
           />
@@ -45,7 +53,8 @@ export function SearchFilters({
           <Label htmlFor="destino">Destino</Label>
           <Input
             id="destino"
-            placeholder="Ej: Angol"
+            list="ciudades-sugeridas"
+            placeholder={`Ej: ${ciudades[1] ?? "Ciudad de destino"}`}
             value={filtros.destino}
             onChange={(e) => set("destino", e.target.value)}
           />
