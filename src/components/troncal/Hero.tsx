@@ -25,7 +25,7 @@ export function Hero({
             Lanzamiento regional · 100% gratis
           </span>
           <h1 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            TroncalTrack Go™: La plataforma de cargas líder para camioneros y empresas en
+            TroncalTrack™: La plataforma de cargas líder para camioneros y empresas en
             Sudamérica
           </h1>
           <p className="mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
