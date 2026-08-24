@@ -48,11 +48,12 @@ export function AuthDialog({
     const datos = new FormData(e.currentTarget);
     const email = String(datos.get("email") ?? "");
     const nombre = String(datos.get("nombre") ?? "") || email.split("@")[0] || "Usuario";
+    const telefono = String(datos.get("telefono") ?? "");
     iniciarSesion({
       nombre,
       email,
       rol: tipo === "registro" ? rolCuenta : rol,
-      telefono: String(datos.get("telefono") ?? "") || undefined,
+      ...(telefono ? { telefono } : {}),
     });
     onOpenChange(false);
     toast.success(
