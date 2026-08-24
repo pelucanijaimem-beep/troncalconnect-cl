@@ -19,26 +19,43 @@ type Props = {
   onAuth: (modo: "login" | "registro") => void;
 };
 
+const NAV = [
+  { label: "Cargas", href: "#cargas" },
+  { label: "Publicar Camión", href: "#publicar-camion" },
+  { label: "Países", href: "#paises" },
+  { label: "Recursos", href: "#planes" },
+  { label: "Soporte", href: "#soporte" },
+];
+
 export function Header({ rol, pais, onPaisChange, onRolChange, onAuth }: Props) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
-        <a href="/" className="flex items-center gap-2">
+        <a href="/" className="flex shrink-0 items-center gap-2">
           <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Truck className="h-5 w-5" />
           </span>
           <span className="text-lg font-extrabold tracking-tight text-foreground">
             Troncal<span className="text-primary">Track</span>
+            <span className="align-super text-[10px] text-muted-foreground">™</span>
           </span>
         </a>
 
-        <div className="ml-auto hidden lg:block">
-          <RoleSwitcher rol={rol} onChange={onRolChange} />
-        </div>
+        <nav className="hidden items-center gap-5 lg:flex">
+          {NAV.map((n) => (
+            <a
+              key={n.label}
+              href={n.href}
+              className="text-sm font-semibold text-foreground transition-colors hover:text-primary"
+            >
+              {n.label}
+            </a>
+          ))}
+        </nav>
 
-        <div className="ml-auto hidden items-center gap-2 md:ml-0 md:flex">
-          <CountrySelector pais={pais} onChange={onPaisChange} className="w-56" />
-          <Button variant="ghost" onClick={() => onAuth("login")}>
+        <div className="ml-auto hidden items-center gap-2 md:flex">
+          <CountrySelector pais={pais} onChange={onPaisChange} className="w-48" />
+          <Button variant="outline" onClick={() => onAuth("login")}>
             Iniciar Sesión
           </Button>
           <Button onClick={() => onAuth("registro")}>Regístrate Gratis</Button>
@@ -55,6 +72,17 @@ export function Header({ rol, pais, onPaisChange, onRolChange, onAuth }: Props) 
               <SheetTitle>Menú</SheetTitle>
             </SheetHeader>
             <div className="mt-6 space-y-4">
+              <nav className="grid gap-1">
+                {NAV.map((n) => (
+                  <a
+                    key={n.label}
+                    href={n.href}
+                    className="rounded-md px-2 py-2 text-sm font-semibold text-foreground hover:bg-surface"
+                  >
+                    {n.label}
+                  </a>
+                ))}
+              </nav>
               <CountrySelector pais={pais} onChange={onPaisChange} className="w-full" />
               <RoleSwitcher rol={rol} onChange={onRolChange} />
               <Button variant="outline" className="w-full" onClick={() => onAuth("login")}>
