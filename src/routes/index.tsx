@@ -299,6 +299,8 @@ function Index() {
         </section>
       </main>
 
+      <TermsSection />
+
       <footer id="soporte" className="mt-10 border-t border-border bg-surface">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} TroncalTrack — Los Ángeles, Región del Biobío, Chile.</p>
