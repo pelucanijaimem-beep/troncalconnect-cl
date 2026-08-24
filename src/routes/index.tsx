@@ -196,7 +196,19 @@ function Index() {
 
       <ComparisonTable />
 
+      {!sesion && (
+        <LockedBoard
+          onIngresar={() => abrirAuth("login")}
+          onRegistro={() => abrirAuth("registro")}
+        />
+      )}
+
+      {sesion && (
       <main id="cargas" className="mx-auto max-w-6xl px-4 py-6">
+        <p className="mb-2 text-sm font-semibold text-primary">
+          Panel privado de {sesion.nombre}
+        </p>
+
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
