@@ -2,7 +2,13 @@ import { ArrowRight, BadgeCheck, CalendarDays, Phone, Truck } from "lucide-react
 import { Button } from "@/components/ui/button";
 import type { Camion } from "@/lib/troncal-data";
 
-export function TruckCard({ camion }: { camion: Camion }) {
+export function TruckCard({
+  camion,
+  onContactar,
+}: {
+  camion: Camion;
+  onContactar: (c: Camion) => void;
+}) {
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-md">
       <div className="flex flex-wrap items-start gap-3">
@@ -33,10 +39,8 @@ export function TruckCard({ camion }: { camion: Camion }) {
             <BadgeCheck className="h-3.5 w-3.5" /> Camionero Verificado
           </span>
         )}
-        <Button asChild className="ml-auto w-full sm:w-auto">
-          <a href={`tel:${camion.telefono.replace(/\s/g, "")}`}>
-            <Phone className="h-4 w-4" /> Contactar / Llamar
-          </a>
+        <Button className="ml-auto w-full sm:w-auto" onClick={() => onContactar(camion)}>
+          <Phone className="h-4 w-4" /> Contactar / Llamar
         </Button>
       </div>
     </article>
