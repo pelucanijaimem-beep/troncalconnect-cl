@@ -188,6 +188,8 @@ function Index() {
         onPaisChange={setPais}
         onRolChange={setRol}
         onAuth={abrirAuth}
+        onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
+        onPublicarCarga={() => requiereSesion(() => setFleteOpen(true))}
       />
       <LaunchBanner onDonar={() => setDonarOpen(true)} />
 

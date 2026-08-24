@@ -11,14 +11,23 @@ export function CountrySelector({
   pais,
   onChange,
   className,
+  open,
+  onOpenChange,
 }: {
   pais: PaisCodigo;
   onChange: (p: PaisCodigo) => void;
   className?: string;
+  open?: boolean;
+  onOpenChange?: (o: boolean) => void;
 }) {
   const actual = getPais(pais);
   return (
-    <Select value={pais} onValueChange={(v) => onChange(v as PaisCodigo)}>
+    <Select
+      value={pais}
+      onValueChange={(v) => onChange(v as PaisCodigo)}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <SelectTrigger className={className} aria-label="Seleccionar país y moneda">
         <SelectValue>
           <span className="flex items-center gap-2">
