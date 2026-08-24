@@ -24,9 +24,10 @@ import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsSection } from "@/components/troncal/TermsSection";
+import { LockedBoard } from "@/components/troncal/LockedBoard";
+import { usePublicaciones } from "@/lib/use-publicaciones";
+import { cerrarSesion, useSesion } from "@/lib/use-session";
 import {
-  CAMIONES,
-  CARGAS,
   getPais,
   type Camion,
   type Carga,
@@ -75,6 +76,8 @@ function Index() {
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
 
+  const sesion = useSesion();
+  const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const paisActual = getPais(pais);
 
@@ -88,7 +91,7 @@ function Index() {
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
           (!filtros.fecha || c.fecha === filtros.fecha),
       ),
-    [filtros, pais],
+    [filtros, pais, CARGAS],
   );
 
   const camiones = useMemo(
@@ -101,7 +104,7 @@ function Index() {
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
           (!filtros.fecha || t.fecha === filtros.fecha),
       ),
-    [filtros, pais],
+    [filtros, pais, CAMIONES],
   );
 
   const esCamionero = rol === "camionero";
@@ -110,13 +113,26 @@ function Index() {
     setAuthOpen(true);
   };
 
+  const requiereSesion = (accion: () => void) => {
+    if (!sesion) {
+      abrirAuth("registro");
+      toast.info("Crea tu cuenta gratuita", {
+        description: "Necesitas iniciar sesión para ver y publicar cargas en vivo.",
+      });
+      return;
+    }
+    accion();
+  };
+
   const contactarCarga = (c: Carga) =>
-    setContacto({
+    requiereSesion(() =>
+      setContacto({
       titulo: "Contactar al cargador",
       nombre: c.empresa,
       telefono: c.telefono,
-      resumen: `${c.origen} → ${c.destino} · ${c.carroceria} · ${c.toneladas} Ton`,
-    });
+        resumen: `${c.origen} → ${c.destino} · ${c.carroceria} · ${c.toneladas} Ton`,
+      }),
+    );
 
   const contactarCamion = (t: Camion) =>
     setContacto({
@@ -157,6 +173,11 @@ function Index() {
     <div className="min-h-screen bg-background">
       <TopSupportBar />
       <Header
+        sesion={sesion}
+        onSalir={() => {
+          cerrarSesion();
+          toast.success("Sesión cerrada.");
+        }}
         rol={rol}
         pais={pais}
         onPaisChange={setPais}
@@ -167,8 +188,8 @@ function Index() {
 
       <Hero
         onRegistro={() => abrirAuth("registro")}
-        onPublicarCamion={() => setCamionOpen(true)}
-        onPublicarFlete={() => setFleteOpen(true)}
+        onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
+        onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
       />
 
       <PricingPlans onRegistro={() => abrirAuth("registro")} onDonar={() => setDonarOpen(true)} />
@@ -254,7 +275,7 @@ function Index() {
                     carga={c}
                     rol={rol}
                     viaje={getViaje(c.id)}
-                    onDetalles={setDetalle}
+                    onDetalles={(c) => requiereSesion(() => setDetalle(c))}
                     onContactar={contactarCarga}
                     onIniciar={iniciar}
                     onFinalizar={finalizar}
@@ -277,7 +298,7 @@ function Index() {
                       carga={c}
                       rol={rol}
                       viaje={getViaje(c.id)}
-                      onDetalles={setDetalle}
+                      onDetalles={(c) => requiereSesion(() => setDetalle(c))}
                       onContactar={contactarCarga}
                       onIniciar={iniciar}
                       onFinalizar={finalizar}
@@ -315,7 +336,7 @@ function Index() {
       </footer>
 
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
-      <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} />
+      <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
       <LoadDetailsDialog carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
       <ContactDialog contacto={contacto} onOpenChange={(o) => !o && setContacto(null)} />
