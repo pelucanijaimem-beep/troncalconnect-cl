@@ -23,6 +23,7 @@ import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
 import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
+import { TermsSection } from "@/components/troncal/TermsSection";
 import {
   CAMIONES,
   CARGAS,
