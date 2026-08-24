@@ -19,16 +19,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS } from "@/lib/troncal-data";
+import { CARROCERIAS, getPais, type PaisCodigo } from "@/lib/troncal-data";
 
 export function PostLoadDialog({
   open,
   onOpenChange,
+  pais = "CL",
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
+  pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const moneda = getPais(pais).moneda;
 
   const enviar = (e: FormEvent) => {
     e.preventDefault();
