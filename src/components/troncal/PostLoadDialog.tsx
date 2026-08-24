@@ -19,7 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS, getPais, type PaisCodigo } from "@/lib/troncal-data";
+import { CARROCERIAS, getPais, type Carga, type Carroceria, type PaisCodigo } from "@/lib/troncal-data";
+import { nuevoId, publicarCarga } from "@/lib/use-publicaciones";
+import { useSesion } from "@/lib/use-session";
 
 export function PostLoadDialog({
   open,
@@ -32,12 +34,31 @@ export function PostLoadDialog({
 }) {
   const [carroceria, setCarroceria] = useState("");
   const moneda = getPais(pais).moneda;
+  const sesion = useSesion();
 
-  const enviar = (e: FormEvent) => {
+  const enviar = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const d = new FormData(e.currentTarget);
+    const carga: Carga = {
+      id: nuevoId("carga"),
+      pais,
+      origen: String(d.get("origen") ?? ""),
+      destino: String(d.get("destino") ?? ""),
+      km: Number(d.get("km") ?? 0),
+      valorKm: Number(d.get("valorKm") ?? 0),
+      carroceria: (carroceria || "Rampla Plana") as Carroceria,
+      toneladas: Number(d.get("toneladas") ?? 0),
+      empresa: sesion?.nombre ?? "Mi empresa",
+      verificada: Boolean(sesion),
+      fecha: String(d.get("fecha") ?? ""),
+      detalle: String(d.get("detalle") ?? "") || "Sin comentarios adicionales.",
+      telefono: String(d.get("telefono") ?? "") || sesion?.telefono || "+56 9 0000 0000",
+    };
+    publicarCarga(carga);
+    setCarroceria("");
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
-      description: "Los camioneros de la zona ya pueden ver tu carga.",
+      description: "Ya aparece en tu tablero y los camioneros de la zona pueden verlo.",
     });
   };
 
@@ -55,11 +76,11 @@ export function PostLoadDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="l-origen">Origen</Label>
-              <Input id="l-origen" placeholder="Los Ángeles" required />
+              <Input id="l-origen" name="origen" placeholder="Los Ángeles" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-destino">Destino</Label>
-              <Input id="l-destino" placeholder="Santiago" required />
+              <Input id="l-destino" name="destino" placeholder="Santiago" required />
             </div>
             <div className="space-y-1.5">
               <Label>Tipo de Carrocería requerida</Label>
@@ -78,20 +99,32 @@ export function PostLoadDialog({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-ton">Peso (Toneladas)</Label>
-              <Input id="l-ton" type="number" min={1} placeholder="28" required />
+              <Input id="l-ton" name="toneladas" type="number" min={1} placeholder="28" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="l-km">Distancia de la ruta (km)</Label>
+              <Input id="l-km" name="km" type="number" min={1} placeholder="510" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-valor">Valor por Kilómetro ({moneda})</Label>
-              <Input id="l-valor" type="number" min={1} placeholder="1200" required />
+              <Input id="l-valor" name="valorKm" type="number" min={1} placeholder="1200" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-fecha">Fecha de carga</Label>
-              <Input id="l-fecha" type="date" required />
+              <Input id="l-fecha" name="fecha" type="date" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="l-tel">Teléfono de contacto</Label>
+              <Input id="l-tel" name="telefono" type="tel" placeholder="+56 9 1234 5678" required />
             </div>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="l-detalle">Descripción de la carga</Label>
-            <Textarea id="l-detalle" placeholder="Tipo de producto, horarios, requisitos…" />
+            <Textarea
+              id="l-detalle"
+              name="detalle"
+              placeholder="Tipo de producto, horarios, requisitos…"
+            />
           </div>
           <DialogFooter>
             <Button type="submit" className="w-full sm:w-auto">
