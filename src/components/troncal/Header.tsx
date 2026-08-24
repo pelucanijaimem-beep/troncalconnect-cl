@@ -8,14 +8,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
+import { CountrySelector } from "./CountrySelector";
+import type { PaisCodigo } from "@/lib/troncal-data";
 
 type Props = {
   rol: Rol;
+  pais: PaisCodigo;
+  onPaisChange: (p: PaisCodigo) => void;
   onRolChange: (r: Rol) => void;
   onAuth: (modo: "login" | "registro") => void;
 };
 
-export function Header({ rol, onRolChange, onAuth }: Props) {
+export function Header({ rol, pais, onPaisChange, onRolChange, onAuth }: Props) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
@@ -28,11 +32,12 @@ export function Header({ rol, onRolChange, onAuth }: Props) {
           </span>
         </a>
 
-        <div className="ml-auto hidden md:block">
+        <div className="ml-auto hidden lg:block">
           <RoleSwitcher rol={rol} onChange={onRolChange} />
         </div>
 
         <div className="ml-auto hidden items-center gap-2 md:ml-0 md:flex">
+          <CountrySelector pais={pais} onChange={onPaisChange} className="w-56" />
           <Button variant="ghost" onClick={() => onAuth("login")}>
             Iniciar Sesión
           </Button>
@@ -50,6 +55,7 @@ export function Header({ rol, onRolChange, onAuth }: Props) {
               <SheetTitle>Menú</SheetTitle>
             </SheetHeader>
             <div className="mt-6 space-y-4">
+              <CountrySelector pais={pais} onChange={onPaisChange} className="w-full" />
               <RoleSwitcher rol={rol} onChange={onRolChange} />
               <Button variant="outline" className="w-full" onClick={() => onAuth("login")}>
                 Iniciar Sesión
