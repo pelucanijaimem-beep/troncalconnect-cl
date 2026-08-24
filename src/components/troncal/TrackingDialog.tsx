@@ -34,8 +34,7 @@ export function TrackingDialog({
   return (
     <Dialog open={!!carga} onOpenChange={onOpenChange}>
       <DialogContent
-        showCloseButton
-        className="h-[100dvh] w-screen max-w-none gap-0 overflow-hidden rounded-none border-0 p-0 sm:max-w-none"
+        className="grid h-[100dvh] w-screen max-w-none grid-rows-[auto_1fr] gap-0 overflow-hidden rounded-none border-0 p-0 sm:max-w-none sm:rounded-none"
       >
         <DialogHeader className="border-b border-border bg-card px-4 py-3">
           <DialogTitle className="flex items-center gap-2 text-base">
