@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Truck, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,17 +21,45 @@ type Props = {
   onPaisChange: (p: PaisCodigo) => void;
   onRolChange: (r: Rol) => void;
   onAuth: (modo: "login" | "registro") => void;
+  onPublicarCamion: () => void;
+  onPublicarCarga: () => void;
 };
 
-const NAV = [
-  { label: "Cargas", href: "#cargas" },
-  { label: "Publicar Camión", href: "#publicar-camion" },
-  { label: "Países", href: "#paises" },
-  { label: "Recursos", href: "#planes" },
-  { label: "Soporte", href: "#soporte" },
-];
+function scrollA(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
-export function Header({ sesion, onSalir, rol, pais, onPaisChange, onRolChange, onAuth }: Props) {
+export function Header({
+  sesion,
+  onSalir,
+  rol,
+  pais,
+  onPaisChange,
+  onRolChange,
+  onAuth,
+  onPublicarCamion,
+  onPublicarCarga,
+}: Props) {
+  const [paisOpen, setPaisOpen] = useState(false);
+  const [paisOpenMovil, setPaisOpenMovil] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
+  const items = (cerrarMenu: boolean, abrirPaises: () => void) => [
+    { label: "Cargas", onClick: () => scrollA("cargas") },
+    { label: "Publicar Camión", onClick: onPublicarCamion },
+    { label: "Publicar Cargas", onClick: onPublicarCarga },
+    { label: "Países", onClick: abrirPaises },
+    { label: "Recursos", onClick: () => scrollA("planes") },
+    { label: "Soporte", onClick: () => scrollA("soporte") },
+  ].map((n) => ({
+    ...n,
+    onClick: () => {
+      if (cerrarMenu) setMenuAbierto(false);
+      n.onClick();
+    },
+  }));
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4">
@@ -45,19 +74,26 @@ export function Header({ sesion, onSalir, rol, pais, onPaisChange, onRolChange, 
         </a>
 
         <nav className="hidden items-center gap-5 lg:flex">
-          {NAV.map((n) => (
-            <a
+          {items(false, () => setPaisOpen(true)).map((n) => (
+            <button
               key={n.label}
-              href={n.href}
-              className="text-sm font-semibold text-foreground transition-colors hover:text-primary"
+              type="button"
+              onClick={n.onClick}
+              className="cursor-pointer text-sm font-semibold text-foreground transition-colors hover:text-primary"
             >
               {n.label}
-            </a>
+            </button>
           ))}
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <CountrySelector pais={pais} onChange={onPaisChange} className="w-48" />
+          <CountrySelector
+            pais={pais}
+            onChange={onPaisChange}
+            className="w-48"
+            open={paisOpen}
+            onOpenChange={setPaisOpen}
+          />
           {sesion ? (
             <>
               <span className="max-w-40 truncate text-sm font-semibold text-foreground">
@@ -77,7 +113,7 @@ export function Header({ sesion, onSalir, rol, pais, onPaisChange, onRolChange, 
           )}
         </div>
 
-        <Sheet>
+        <Sheet open={menuAbierto} onOpenChange={setMenuAbierto}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="ml-auto md:hidden" aria-label="Abrir menú">
               <Menu />
@@ -89,17 +125,28 @@ export function Header({ sesion, onSalir, rol, pais, onPaisChange, onRolChange, 
             </SheetHeader>
             <div className="mt-6 space-y-4">
               <nav className="grid gap-1">
-                {NAV.map((n) => (
-                  <a
+                {items(true, () => setPaisOpenMovil(true)).map((n) => (
+                  <button
                     key={n.label}
-                    href={n.href}
-                    className="rounded-md px-2 py-2 text-sm font-semibold text-foreground hover:bg-surface"
+                    type="button"
+                    onClick={
+                      n.label === "Países"
+                        ? () => setPaisOpenMovil(true)
+                        : n.onClick
+                    }
+                    className="cursor-pointer rounded-md px-2 py-2 text-left text-sm font-semibold text-foreground hover:bg-surface"
                   >
                     {n.label}
-                  </a>
+                  </button>
                 ))}
               </nav>
-              <CountrySelector pais={pais} onChange={onPaisChange} className="w-full" />
+              <CountrySelector
+                pais={pais}
+                onChange={onPaisChange}
+                className="w-full"
+                open={paisOpenMovil}
+                onOpenChange={setPaisOpenMovil}
+              />
               <RoleSwitcher rol={rol} onChange={onRolChange} />
               {sesion ? (
                 <Button variant="outline" className="w-full" onClick={onSalir}>
