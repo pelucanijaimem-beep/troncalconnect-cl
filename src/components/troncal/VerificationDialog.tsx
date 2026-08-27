@@ -13,12 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
-import {
-  aprobarVerificacion,
-  enviarDocumentos,
-  useVerificacion,
-  type Documentos,
-} from "@/lib/use-verificacion";
+import { enviarDocumentos, useVerificacion, type Documentos } from "@/lib/use-verificacion";
 
 const CAMPOS: { name: keyof Documentos; label: string; ayuda: string; requerido: boolean }[] = [
   {
@@ -51,41 +46,47 @@ export function VerificationDialog({
   open,
   onOpenChange,
   usuario,
+  userId,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   usuario: string;
+  userId?: string | undefined;
 }) {
   const verificacion = useVerificacion(usuario);
   const [enviando, setEnviando] = useState(false);
 
-  const enviar = (e: FormEvent<HTMLFormElement>) => {
+  const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!userId) {
+      toast.error("Debes iniciar sesión para enviar tus documentos.");
+      return;
+    }
     const form = e.currentTarget;
-    const docs: Documentos = {};
+    const archivos: Partial<Record<keyof Documentos, File>> = {};
     for (const campo of CAMPOS) {
       const input = form.elements.namedItem(campo.name) as HTMLInputElement | null;
       const archivo = input?.files?.[0];
-      if (archivo) docs[campo.name] = archivo.name;
+      if (archivo) archivos[campo.name] = archivo;
     }
-    if (!docs.identidad || !docs.licencia || !docs.padron) {
+    if (!archivos.identidad || !archivos.licencia || !archivos.padron) {
       toast.error("Faltan documentos obligatorios", {
         description: "Adjunta identidad, licencia y padrón para iniciar la validación.",
       });
       return;
     }
     setEnviando(true);
-    enviarDocumentos(usuario, docs);
-    toast.info("Documentos recibidos", {
-      description: "Nuestro equipo TroncalCheck está validando tu documentación.",
+    const error = await enviarDocumentos({ userId, nombre: usuario, archivos });
+    setEnviando(false);
+    if (error) {
+      toast.error("No pudimos recibir tus documentos", { description: error });
+      return;
+    }
+    toast.success("Documentos recibidos", {
+      description:
+        "Tus documentos han sido recibidos. Nuestro equipo validará la información en un plazo máximo de 24 horas hábiles.",
     });
-    window.setTimeout(() => {
-      aprobarVerificacion(usuario);
-      setEnviando(false);
-      toast.success("¡Perfil Verificado — TroncalCheck!", {
-        description: "Tu sello de confianza ya aparece junto a tu nombre en el tablero.",
-      });
-    }, 2500);
+    onOpenChange(false);
   };
 
   return (
@@ -104,10 +105,18 @@ export function VerificationDialog({
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Estado actual
           </p>
-          <VerificationBadge
-            estado={verificacion.estado}
-            asegurado={verificacion.asegurado}
-          />
+          <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} />
+          {verificacion.estado === "en_revision" && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Tus documentos han sido recibidos. Nuestro equipo validará la información en un plazo
+              máximo de 24 horas hábiles.
+            </p>
+          )}
+          {verificacion.estado === "rechazado" && verificacion.nota && (
+            <p className="mt-2 text-xs font-medium text-destructive">
+              Motivo: {verificacion.nota}
+            </p>
+          )}
         </div>
 
         <form onSubmit={enviar} className="space-y-4">
@@ -124,8 +133,7 @@ export function VerificationDialog({
               <p className="text-xs text-muted-foreground">{c.ayuda}</p>
               {verificacion.documentos[c.name] && (
                 <p className="inline-flex items-center gap-1 text-xs font-medium text-success">
-                  <FileCheck2 className="h-3.5 w-3.5" /> Adjunto:{" "}
-                  {verificacion.documentos[c.name]}
+                  <FileCheck2 className="h-3.5 w-3.5" /> Documento adjuntado
                 </p>
               )}
             </div>
@@ -138,7 +146,7 @@ export function VerificationDialog({
               Cerrar
             </Button>
             <Button type="submit" disabled={enviando}>
-              {enviando ? "Validando documentos…" : "Enviar a Verificación"}
+              {enviando ? "Enviando documentos…" : "Enviar a Verificación"}
             </Button>
           </DialogFooter>
         </form>
