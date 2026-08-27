@@ -27,6 +27,7 @@ type Fila = {
   fecha: string | null;
   detalle: string;
   solo_verificados: boolean;
+  dias_pago: string | null;
 };
 
 const aCarga = (f: Fila): CargaDB => ({
@@ -47,6 +48,7 @@ const aCarga = (f: Fila): CargaDB => ({
   detalle: f.detalle,
   telefono: f.empresa_telefono,
   soloVerificados: f.solo_verificados,
+  diasPago: f.dias_pago ?? "Pago a 30 días",
 });
 
 /** Cargas guardadas en la base de datos, con actualización en tiempo real. */
@@ -107,6 +109,7 @@ export async function publicarCargaDB(entrada: {
   fecha: string;
   detalle: string;
   soloVerificados: boolean;
+  diasPago?: string;
 }) {
   const { error } = await supabase.from("cargas").insert({
     user_id: entrada.userId,
@@ -125,6 +128,7 @@ export async function publicarCargaDB(entrada: {
     fecha: entrada.fecha || null,
     detalle: entrada.detalle,
     solo_verificados: entrada.soloVerificados,
+    dias_pago: entrada.diasPago ?? "Pago a 30 días",
   });
   return error?.message ?? null;
 }

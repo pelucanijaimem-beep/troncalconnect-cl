@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS } from "@/lib/troncal-data";
+import { CARROCERIAS, ESTADOS_CAMION } from "@/lib/troncal-data";
 
 export type Filtros = {
   origen: string;
@@ -18,16 +18,26 @@ export type Filtros = {
   carroceria: string;
   fecha: string;
   soloVerificados: boolean;
+  /** Rango de valor por kilómetro. */
+  precioMin: string;
+  precioMax: string;
+  /** Estado del camión: "todos" | "buscando" | "en_ruta". */
+  estado: string;
 };
 
 export function SearchFilters({
   filtros,
   ciudades,
+  moneda = "CLP",
+  mostrarEstado = false,
   onChange,
   onLimpiar,
 }: {
   filtros: Filtros;
   ciudades: string[];
+  moneda?: string;
+  /** Muestra el filtro de estado del camión (vista de empresas). */
+  mostrarEstado?: boolean;
   onChange: (f: Filtros) => void;
   onLimpiar: () => void;
 }) {
@@ -78,7 +88,7 @@ export function SearchFilters({
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="fecha">Fecha</Label>
+          <Label htmlFor="fecha">Fecha de salida</Label>
           <Input
             id="fecha"
             type="date"
@@ -86,6 +96,46 @@ export function SearchFilters({
             onChange={(e) => set("fecha", e.target.value)}
           />
         </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="precio-min">Valor mínimo por km ({moneda})</Label>
+          <Input
+            id="precio-min"
+            type="number"
+            min={0}
+            placeholder="Ej: 900"
+            value={filtros.precioMin}
+            onChange={(e) => set("precioMin", e.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="precio-max">Valor máximo por km ({moneda})</Label>
+          <Input
+            id="precio-max"
+            type="number"
+            min={0}
+            placeholder="Ej: 2000"
+            value={filtros.precioMax}
+            onChange={(e) => set("precioMax", e.target.value)}
+          />
+        </div>
+        {mostrarEstado && (
+          <div className="space-y-1.5">
+            <Label>Estado del camión</Label>
+            <Select value={filtros.estado} onValueChange={(v) => set("estado", v)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                {ESTADOS_CAMION.map((e) => (
+                  <SelectItem key={e.valor} value={e.valor}>
+                    {e.etiqueta}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2">

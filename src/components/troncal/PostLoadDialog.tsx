@@ -20,7 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS, getPais, type Carroceria, type PaisCodigo } from "@/lib/troncal-data";
+import {
+  CARROCERIAS,
+  DIAS_PAGO,
+  getPais,
+  type Carroceria,
+  type PaisCodigo,
+} from "@/lib/troncal-data";
 import { publicarCargaDB } from "@/lib/use-cargas";
 import { useSesion } from "@/lib/use-session";
 
@@ -34,6 +40,7 @@ export function PostLoadDialog({
   pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const [diasPago, setDiasPago] = useState<string>("Pago a 30 días");
   const [enviando, setEnviando] = useState(false);
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
@@ -69,6 +76,7 @@ export function PostLoadDialog({
       fecha: String(d.get("fecha") ?? ""),
       detalle: String(d.get("detalle") ?? "") || "Sin comentarios adicionales.",
       soloVerificados: d.get("soloVerificados") === "on",
+      diasPago,
     });
     setEnviando(false);
 
@@ -78,6 +86,7 @@ export function PostLoadDialog({
     }
 
     setCarroceria("");
+    setDiasPago("Pago a 30 días");
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
       description: "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real.",
@@ -135,6 +144,21 @@ export function PostLoadDialog({
             <div className="space-y-1.5">
               <Label htmlFor="l-fecha">Fecha de carga</Label>
               <Input id="l-fecha" name="fecha" type="date" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Días para Pago</Label>
+              <Select value={diasPago} onValueChange={setDiasPago}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIAS_PAGO.map((d2) => (
+                    <SelectItem key={d2} value={d2}>
+                      {d2}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-tel">Teléfono de contacto</Label>

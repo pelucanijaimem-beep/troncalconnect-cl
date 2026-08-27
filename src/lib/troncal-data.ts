@@ -139,6 +139,8 @@ export type Carga = {
   telefono: string;
   /** Solo transportistas con sello TroncalCheck pueden tomar esta carga. */
   soloVerificados?: boolean;
+  /** Condición de pago informada por el generador de carga. */
+  diasPago?: string;
 };
 
 export type Camion = {
@@ -153,6 +155,8 @@ export type Camion = {
   verificado: boolean;
   telefono: string;
   detalle: string;
+  /** "buscando" (buscando carga) o "en_ruta". */
+  estado?: "buscando" | "en_ruta";
 };
 
 export const CARGAS: Carga[] = [
@@ -502,3 +506,41 @@ export const COORDENADAS: Record<string, [number, number]> = {
 export function coordDe(ciudad: string, fallback: [number, number] = [-33.4489, -70.6693]) {
   return COORDENADAS[ciudad] ?? fallback;
 }
+
+/* ─── Transparencia financiera ─────────────────────────────────────────── */
+
+export const DIAS_PAGO = [
+  "Pago inmediato",
+  "Contra entrega",
+  "Pago a 15 días",
+  "Pago a 30 días",
+  "Pago a 60 días",
+] as const;
+
+export type DiasPago = (typeof DIAS_PAGO)[number];
+
+/** Precio referencial del litro de diésel en la moneda local de cada país. */
+export const PRECIO_DIESEL: Record<PaisCodigo, number> = {
+  CL: 1050,
+  AR: 1250,
+  PE: 16.5,
+  BO: 3.72,
+  INT: 1.2,
+};
+
+/** Rendimiento promedio de un camión cargado (km por litro). */
+export const RENDIMIENTO_KM_L = 2.5;
+
+export function costoCombustible(km: number, pais: PaisCodigo, rendimiento = RENDIMIENTO_KM_L) {
+  const precioLitro = PRECIO_DIESEL[pais] ?? PRECIO_DIESEL.CL;
+  const litros = rendimiento > 0 ? km / rendimiento : 0;
+  return { litros, precioLitro, costo: litros * precioLitro };
+}
+
+/** Estado de disponibilidad publicado por el transportista. */
+export type EstadoCamion = "buscando" | "en_ruta";
+
+export const ESTADOS_CAMION: { valor: EstadoCamion; etiqueta: string }[] = [
+  { valor: "buscando", etiqueta: "Buscando carga" },
+  { valor: "en_ruta", etiqueta: "En ruta" },
+];

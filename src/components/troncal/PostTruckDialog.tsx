@@ -19,7 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS, type Camion, type Carroceria, type PaisCodigo } from "@/lib/troncal-data";
+import {
+  CARROCERIAS,
+  ESTADOS_CAMION,
+  type Camion,
+  type Carroceria,
+  type EstadoCamion,
+  type PaisCodigo,
+} from "@/lib/troncal-data";
 import { nuevoId, publicarCamion } from "@/lib/use-publicaciones";
 import { useSesion } from "@/lib/use-session";
 
@@ -33,6 +40,7 @@ export function PostTruckDialog({
   pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const [estado, setEstado] = useState<EstadoCamion>("buscando");
   const sesion = useSesion();
 
   const enviar = (e: FormEvent<HTMLFormElement>) => {
@@ -50,9 +58,11 @@ export function PostTruckDialog({
       verificado: Boolean(sesion),
       telefono: String(d.get("telefono") ?? ""),
       detalle: String(d.get("detalle") ?? "") || "Disponibilidad confirmada.",
+      estado,
     };
     publicarCamion(camion);
     setCarroceria("");
+    setEstado("buscando");
     onOpenChange(false);
     toast.success("¡Camión publicado!", {
       description: "Tu disponibilidad ya es visible para las empresas cargadoras.",
@@ -102,6 +112,21 @@ export function PostTruckDialog({
             <div className="space-y-1.5">
               <Label htmlFor="t-fecha">Fecha disponible</Label>
               <Input id="t-fecha" name="fecha" type="date" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Estado actual</Label>
+              <Select value={estado} onValueChange={(v) => setEstado(v as EstadoCamion)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ESTADOS_CAMION.map((e) => (
+                    <SelectItem key={e.valor} value={e.valor}>
+                      {e.etiqueta}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="t-tel">Teléfono de contacto</Label>
