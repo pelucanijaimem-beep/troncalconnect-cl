@@ -101,6 +101,7 @@ function Index() {
   const { camiones: CAMIONES } = usePublicaciones();
   const { cargas: CARGAS } = useCargas(Boolean(sesion));
   const { ids: postuladas, agregar: agregarPostulacion } = useMisPostulaciones(sesion?.id);
+  const accesoContacto = Boolean(sesion?.planActivo);
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const paisActual = getPais(pais);
@@ -157,14 +158,21 @@ function Index() {
   };
 
   const contactarCarga = (c: Carga) =>
-    requiereSesion(() =>
+    requiereSesion(() => {
+      if (!accesoContacto) {
+        toast.error("Datos de contacto bloqueados", {
+          description: "Necesitas un Plan Pro activo para ver el teléfono y WhatsApp del cargador.",
+        });
+        void navigate({ to: "/planes" });
+        return;
+      }
       setContacto({
       titulo: "Contactar al cargador",
       nombre: c.empresa,
       telefono: c.telefono,
         resumen: `${c.origen} → ${c.destino} · ${c.carroceria} · ${c.toneladas} Ton`,
-      }),
-    );
+      });
+    });
 
   const contactarCamion = (t: Camion) =>
     setContacto({
@@ -403,6 +411,7 @@ function Index() {
                     onVerViaje={setViajeActivo}
                     onPostular={(carga) => void postular(carga)}
                     yaPostulada={postuladas.includes(c.id)}
+                    accesoContacto={accesoContacto}
                   />
                 ))
               : camiones.map((t) => (
@@ -427,6 +436,7 @@ function Index() {
                       onFinalizar={finalizar}
                       onRastrear={rastrear}
                       onVerViaje={setViajeActivo}
+                      accesoContacto
                     />
                   ))}
                 </div>
@@ -501,7 +511,7 @@ function Index() {
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
-      <LoadDetailsDialog carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
+      <LoadDetailsDialog accesoContacto={accesoContacto} carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
       <ContactDialog contacto={contacto} onOpenChange={(o) => !o && setContacto(null)} />
       <DriverTripDialog
         carga={viajeActivo}
