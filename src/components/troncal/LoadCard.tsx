@@ -1,17 +1,21 @@
 import {
   ArrowRight,
-  BadgeCheck,
   CalendarDays,
   CheckCircle2,
   Package,
   Phone,
   PlayCircle,
   Satellite,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { money, type Carga } from "@/lib/troncal-data";
 import type { Viaje } from "@/lib/use-trip-tracking";
 import type { Rol } from "./RoleSwitcher";
+import { VerificationBadge } from "./VerificationBadge";
+import { RatingSummary } from "./StarRating";
+import { useVerificacion } from "@/lib/use-verificacion";
+import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
 
 export function LoadCard({
   carga,
@@ -34,9 +38,13 @@ export function LoadCard({
   onRastrear: (c: Carga) => void;
   onVerViaje: (c: Carga) => void;
 }) {
-  const total = carga.km * carga.valorKm;
+  const verificacion = useVerificacion(carga.empresa);
+  const calificaciones = useCalificaciones();
+  const { promedio, total } = resumen(calificaciones, carga.empresa);
+  const total_ = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
+
 
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-md">
