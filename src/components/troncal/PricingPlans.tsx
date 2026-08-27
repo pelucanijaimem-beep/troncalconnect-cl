@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { BadgeCheck, Building2, Check, Search, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,7 @@ const PLANES = [
     descripcion: "Para partir explorando el mercado de cargas.",
     icono: Search,
     cta: "Comenzar Gratis",
+    href: "/registro",
     features: [
       "Ver el tablero de cargas con actualización diferida",
       "Perfil básico sin verificar",
@@ -26,6 +27,8 @@ const PLANES = [
     descripcion: "El más elegido por choferes y dueños de camión.",
     icono: Truck,
     cta: "Suscribirme como Transportista",
+    href: "https://mpago.la/25CXadN",
+    externo: true,
     features: [
       "Sello azul de verificación «TroncalCheck» (tras validar RUT y documentos)",
       "Acceso instantáneo a datos de contacto directo (Teléfono / WhatsApp de la carga)",
@@ -41,6 +44,8 @@ const PLANES = [
     descripcion: "Para generadores de carga y empresas logísticas.",
     icono: Building2,
     cta: "Suscribirme como Empresa",
+    href: "https://mpago.la/2AuV6gH",
+    externo: true,
     features: [
       "Publicación ilimitada de fletes y cargas",
       "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
@@ -51,6 +56,17 @@ const PLANES = [
 ];
 
 export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
+  const navigate = useNavigate();
+
+  const handleClick = (p: (typeof PLANES)[number]) => {
+    if (p.externo) {
+      window.open(p.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+    navigate({ to: p.href });
+    onRegistro();
+  };
+
   return (
     <section id="planes" className="border-b border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12">
@@ -106,9 +122,9 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
               </ul>
 
               <Button
-                className="mt-6 w-full"
+                className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                 variant={p.destacado ? "default" : "outline"}
-                onClick={onRegistro}
+                onClick={() => handleClick(p)}
               >
                 {p.cta}
               </Button>
