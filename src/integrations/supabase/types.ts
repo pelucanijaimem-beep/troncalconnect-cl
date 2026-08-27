@@ -14,16 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cargas: {
+        Row: {
+          created_at: string
+          destino: string
+          detalle: string
+          empresa: string
+          empresa_telefono: string
+          empresa_verificada: boolean
+          estado: Database["public"]["Enums"]["estado_carga"]
+          fecha: string | null
+          id: string
+          km: number
+          origen: string
+          pais: string
+          precio: number
+          solo_verificados: boolean
+          tipo_camion: string
+          titulo: string
+          toneladas: number
+          user_id: string
+          valor_km: number
+        }
+        Insert: {
+          created_at?: string
+          destino: string
+          detalle?: string
+          empresa: string
+          empresa_telefono?: string
+          empresa_verificada?: boolean
+          estado?: Database["public"]["Enums"]["estado_carga"]
+          fecha?: string | null
+          id?: string
+          km?: number
+          origen: string
+          pais?: string
+          precio?: number
+          solo_verificados?: boolean
+          tipo_camion: string
+          titulo: string
+          toneladas?: number
+          user_id: string
+          valor_km?: number
+        }
+        Update: {
+          created_at?: string
+          destino?: string
+          detalle?: string
+          empresa?: string
+          empresa_telefono?: string
+          empresa_verificada?: boolean
+          estado?: Database["public"]["Enums"]["estado_carga"]
+          fecha?: string | null
+          id?: string
+          km?: number
+          origen?: string
+          pais?: string
+          precio?: number
+          solo_verificados?: boolean
+          tipo_camion?: string
+          titulo?: string
+          toneladas?: number
+          user_id?: string
+          valor_km?: number
+        }
+        Relationships: []
+      }
+      perfiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nombre: string
+          plan_activo: boolean
+          rol: Database["public"]["Enums"]["rol_usuario"]
+          rut: string | null
+          telefono: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          id: string
+          nombre?: string
+          plan_activo?: boolean
+          rol?: Database["public"]["Enums"]["rol_usuario"]
+          rut?: string | null
+          telefono?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nombre?: string
+          plan_activo?: boolean
+          rol?: Database["public"]["Enums"]["rol_usuario"]
+          rut?: string | null
+          telefono?: string | null
+        }
+        Relationships: []
+      }
+      postulaciones: {
+        Row: {
+          carga_id: string
+          created_at: string
+          id: string
+          mensaje: string
+          user_id: string
+        }
+        Insert: {
+          carga_id: string
+          created_at?: string
+          id?: string
+          mensaje?: string
+          user_id: string
+        }
+        Update: {
+          carga_id?: string
+          created_at?: string
+          id?: string
+          mensaje?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postulaciones_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      tiene_plan_activo: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      estado_carga: "activa" | "completada"
+      rol_usuario: "camionero" | "empresa"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +281,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      estado_carga: ["activa", "completada"],
+      rol_usuario: ["camionero", "empresa"],
+    },
   },
 } as const
