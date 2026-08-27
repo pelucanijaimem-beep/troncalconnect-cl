@@ -38,6 +38,12 @@ function RegistroPage() {
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!aceptaTerminos) {
+      toast.error("Debes aceptar los términos y condiciones", {
+        description: "Marca la casilla para continuar.",
+      });
+      return;
+    }
     const datos = new FormData(e.currentTarget);
     const nombre = String(datos.get("nombre") ?? "");
     const email = String(datos.get("email") ?? "");
