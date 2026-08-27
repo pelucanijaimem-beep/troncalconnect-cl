@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/troncal/Header";
 import { TopSupportBar } from "@/components/troncal/TopSupportBar";
 import { Hero } from "@/components/troncal/Hero";
+import { LiveStatsBanner } from "@/components/troncal/LiveStatsBanner";
+import { SolutionsSection } from "@/components/troncal/SolutionsSection";
+import { BenefitsGrid } from "@/components/troncal/BenefitsGrid";
+import { FaqSection } from "@/components/troncal/FaqSection";
 import { PricingPlans } from "@/components/troncal/PricingPlans";
 import { ComparisonTable } from "@/components/troncal/ComparisonTable";
 import { RoleSwitcher, type Rol } from "@/components/troncal/RoleSwitcher";
@@ -172,6 +176,22 @@ function Index() {
     setRastreo(c);
   };
 
+  const cargasHoy = Math.max(CARGAS.filter((c) => c.pais === pais).length, 128);
+  const tarifaPromedioKm = (() => {
+    const lista = CARGAS.filter((c) => c.pais === pais && c.km > 0);
+    if (!lista.length) return 1180;
+    return Math.round(lista.reduce((a, c) => a + c.tarifa / c.km, 0) / lista.length);
+  })();
+  const rutasActivas = new Set(
+    CARGAS.filter((c) => c.pais === pais).map((c) => `${c.origen}-${c.destino}`),
+  ).size || 24;
+
+  const solicitarDemo = () => {
+    toast.success("Solicitud de demo enviada", {
+      description: "Te contactaremos al +569 4792 6230 o escríbenos a soporte@troncaltrack.cl.",
+    });
+  };
+
   const viajeRastreo = rastreo ? getViaje(rastreo.id) : null;
   const viajeChofer = viajeActivo ? getViaje(viajeActivo.id) : null;
   const enRutaCount = cargas.filter((c) => getViaje(c.id).estado === "en_ruta").length;
@@ -195,15 +215,32 @@ function Index() {
       />
       <LaunchBanner onDonar={() => setDonarOpen(true)} />
 
-      <Hero
-        onRegistro={() => abrirAuth("registro")}
+      <Hero onRegistro={() => abrirAuth("registro")} onDemo={solicitarDemo} />
+
+      <LiveStatsBanner
+        cargasHoy={cargasHoy}
+        tarifaKm={tarifaPromedioKm}
+        rutasActivas={rutasActivas}
+        equipo={filtros.carroceria}
+        onEquipoChange={(v) => {
+          setFiltros({ ...filtros, carroceria: v });
+          document.getElementById("cargas")?.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
+
+      <SolutionsSection
         onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
         onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
+        onRegistro={() => abrirAuth("registro")}
       />
+
+      <BenefitsGrid />
 
       <PricingPlans onRegistro={() => abrirAuth("registro")} onDonar={() => setDonarOpen(true)} />
 
       <ComparisonTable />
+
+      <FaqSection onRegistro={() => abrirAuth("registro")} />
 
       {!sesion && (
         <LockedBoard
@@ -374,6 +411,24 @@ function Index() {
               className="cursor-pointer text-left font-medium text-foreground hover:text-primary hover:underline"
             >
               Términos y Condiciones
+            </button>
+            <a
+              href="#faq"
+              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Preguntas frecuentes
+            </a>
+            <a
+              href="mailto:soporte@troncaltrack.cl"
+              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Soporte
+            </a>
+            <button
+              onClick={() => abrirAuth("registro")}
+              className="cursor-pointer text-left font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Registro
             </button>
             <button
               onClick={() => setDonarOpen(true)}
