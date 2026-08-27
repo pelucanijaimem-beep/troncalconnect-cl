@@ -98,7 +98,9 @@ function Index() {
   const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
 
   const sesion = useSesion();
-  const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
+  const { camiones: CAMIONES } = usePublicaciones();
+  const { cargas: CARGAS } = useCargas(Boolean(sesion));
+  const { ids: postuladas, agregar: agregarPostulacion } = useMisPostulaciones(sesion?.id);
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const paisActual = getPais(pais);
