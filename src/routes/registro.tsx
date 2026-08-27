@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RoleSwitcher, type Rol } from "@/components/troncal/RoleSwitcher";
-import { iniciarSesion } from "@/lib/use-session";
+import { registrarUsuario } from "@/lib/use-session";
 
 export const Route = createFileRoute("/registro")({
   head: () => ({
