@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { PackagePlus, Search, Truck } from "lucide-react";
+import { PackagePlus, Search, Star, Truck, Ban } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/troncal/Header";
@@ -31,6 +31,13 @@ import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
+import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
+import { PodDialog } from "@/components/troncal/PodDialog";
+import {
+  desbloquearEmpresa,
+  estaBloqueada,
+  useTableroPrefs,
+} from "@/lib/use-tablero-prefs";
 import { VerificationDialog } from "@/components/troncal/VerificationDialog";
 import {
   RatingDialog,
@@ -76,6 +83,9 @@ const FILTROS_VACIOS: Filtros = {
   carroceria: "todas",
   fecha: "",
   soloVerificados: false,
+  precioMin: "",
+  precioMax: "",
+  estado: "todos",
 };
 
 function coincide(valor: string, filtro: string) {
@@ -97,6 +107,8 @@ function Index() {
   const [termsOpen, setTermsOpen] = useState(false);
   const [verificacionOpen, setVerificacionOpen] = useState(false);
   const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
+  const [comparaOpen, setComparaOpen] = useState(false);
+  const [podCarga, setPodCarga] = useState<Carga | null>(null);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
@@ -106,6 +118,7 @@ function Index() {
   const navigate = useNavigate();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
+  const prefs = useTableroPrefs();
   const paisActual = getPais(pais);
   const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
   const soyVerificado = miVerificacion.estado === "verificado";
@@ -120,10 +133,18 @@ function Index() {
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
           (!filtros.fecha || c.fecha === filtros.fecha) &&
           (!c.soloVerificados || rol !== "camionero" || soyVerificado) &&
+          (!filtros.precioMin || c.valorKm >= Number(filtros.precioMin)) &&
+          (!filtros.precioMax || c.valorKm <= Number(filtros.precioMax)) &&
+          (rol !== "camionero" || !estaBloqueada(prefs.bloqueadas, c.empresa)) &&
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
-    [filtros, pais, CARGAS, verificaciones, rol, soyVerificado],
+    [filtros, pais, CARGAS, verificaciones, rol, soyVerificado, prefs.bloqueadas],
+  );
+
+  const favoritas = useMemo(
+    () => CARGAS.filter((c) => prefs.favoritos.includes(c.id)),
+    [CARGAS, prefs.favoritos],
   );
 
   const camiones = useMemo(
@@ -135,6 +156,7 @@ function Index() {
           coincide(t.destino, filtros.destino) &&
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
           (!filtros.fecha || t.fecha === filtros.fecha) &&
+          (filtros.estado === "todos" || (t.estado ?? "buscando") === filtros.estado) &&
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, t.conductor).estado === "verificado"),
       ),
@@ -356,6 +378,9 @@ function Index() {
                 <Button variant="outline" onClick={() => setFiltros(FILTROS_VACIOS)}>
                   <Search className="h-4 w-4" /> Ver todas las cargas
                 </Button>
+                <Button variant="outline" onClick={() => setComparaOpen(true)}>
+                  <Star className="h-4 w-4" /> Mis cargas guardadas ({favoritas.length})
+                </Button>
               </>
 
             ) : (
@@ -374,6 +399,8 @@ function Index() {
         <SearchFilters
           filtros={filtros}
           ciudades={paisActual.ciudades}
+          moneda={paisActual.moneda}
+          mostrarEstado={!esCamionero}
           onChange={setFiltros}
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
         />
@@ -384,6 +411,24 @@ function Index() {
             onChange={(v) => setFiltros({ ...filtros, carroceria: v })}
           />
         </div>
+
+        {esCamionero && prefs.bloqueadas.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface p-3 text-sm">
+            <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+              <Ban className="h-4 w-4 text-primary" /> Empresas bloqueadas:
+            </span>
+            {prefs.bloqueadas.map((b) => (
+              <button
+                key={b}
+                onClick={() => desbloquearEmpresa(b)}
+                className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold capitalize text-muted-foreground hover:border-primary hover:text-primary"
+                title="Desbloquear empresa"
+              >
+                {b} ✕
+              </button>
+            ))}
+          </div>
+        )}
 
         <AvailabilityPanel
           esCamionero={esCamionero}
@@ -418,7 +463,7 @@ function Index() {
                     onDetalles={(c) => requiereSesion(() => setDetalle(c))}
                     onContactar={contactarCarga}
                     onIniciar={iniciar}
-                    onFinalizar={finalizar}
+                    onFinalizar={(c) => setPodCarga(c)}
                     onRastrear={rastrear}
                     onVerViaje={setViajeActivo}
                     onPostular={(carga) => void postular(carga)}
@@ -528,13 +573,30 @@ function Index() {
       <DriverTripDialog
         carga={viajeActivo}
         viaje={viajeChofer}
-        onFinalizar={finalizar}
+        onFinalizar={(c) => setPodCarga(c)}
         onOpenChange={(o) => !o && setViajeActivo(null)}
       />
       <TrackingDialog
         carga={rastreo}
         viaje={viajeRastreo}
         onOpenChange={(o) => !o && setRastreo(null)}
+      />
+      <CompareLoadsDialog
+        open={comparaOpen}
+        onOpenChange={setComparaOpen}
+        cargas={favoritas}
+        onDetalles={(c) => {
+          setComparaOpen(false);
+          setDetalle(c);
+        }}
+      />
+      <PodDialog
+        carga={podCarga}
+        onOpenChange={(o) => !o && setPodCarga(null)}
+        onConfirmado={(c) => {
+          setPodCarga(null);
+          finalizar(c);
+        }}
       />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
       <VerificationDialog
