@@ -1,5 +1,9 @@
 import {
   ArrowRight,
+  Ban,
+  Fuel,
+  Star,
+  Wallet,
   CalendarDays,
   CheckCircle2,
   Package,
@@ -14,7 +18,12 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { money, type Carga } from "@/lib/troncal-data";
+import { costoCombustible, money, type Carga } from "@/lib/troncal-data";
+import {
+  alternarFavorito,
+  bloquearEmpresa,
+  useTableroPrefs,
+} from "@/lib/use-tablero-prefs";
 import type { Viaje } from "@/lib/use-trip-tracking";
 import type { Rol } from "./RoleSwitcher";
 import { VerificationBadge } from "./VerificationBadge";
@@ -57,6 +66,9 @@ export function LoadCard({
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
   const wsp = carga.telefono.replace(/[^0-9]/g, "");
+  const prefs = useTableroPrefs();
+  const esFavorita = prefs.favoritos.includes(carga.id);
+  const diesel = costoCombustible(carga.km, carga.pais);
 
 
 
@@ -82,14 +94,35 @@ export function LoadCard({
           </p>
         </div>
 
-        <div className="text-left sm:text-right">
-          <p className="text-xl font-extrabold text-primary">
-            {money(carga.valorKm, carga.pais)} / km
-          </p>
-          <p className="text-sm font-semibold text-foreground">
-            Total: {money(montoTotal, carga.pais)}
-          </p>
+        <div className="flex items-start gap-2 text-left sm:text-right">
+          <div>
+            <p className="text-xl font-extrabold text-primary">
+              {money(carga.valorKm, carga.pais)} / km
+            </p>
+            <p className="text-sm font-semibold text-foreground">
+              Total: {money(montoTotal, carga.pais)}
+            </p>
+          </div>
+          <button
+            type="button"
+            aria-label={esFavorita ? "Quitar de favoritos" : "Guardar en favoritos"}
+            aria-pressed={esFavorita}
+            title={esFavorita ? "Quitar de favoritos" : "Guardar en favoritos"}
+            onClick={() => alternarFavorito(carga.id)}
+            className="rounded-lg border border-border p-2 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            <Star className={`h-4 w-4 ${esFavorita ? "fill-primary text-primary" : ""}`} />
+          </button>
         </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-foreground">
+          <Wallet className="h-3.5 w-3.5 text-primary" /> {carga.diasPago ?? "Pago a 30 días"}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-muted-foreground">
+          <Fuel className="h-3.5 w-3.5" /> Diésel estimado: {money(diesel.costo, carga.pais)}
+        </span>
       </div>
 
       {(enRuta || entregada) && (
@@ -170,6 +203,15 @@ export function LoadCard({
                   <Send className="h-4 w-4" /> {yaPostulada ? "Postulación enviada" : "Postular"}
                 </Button>
               )}
+
+              <Button
+                variant="ghost"
+                className="flex-1 sm:flex-none"
+                title="No volver a ver fletes de esta empresa"
+                onClick={() => bloquearEmpresa(carga.empresa)}
+              >
+                <Ban className="h-4 w-4" /> Bloquear empresa
+              </Button>
 
               {!enRuta && !entregada && (
                 <Button className="flex-1 sm:flex-none" onClick={() => onIniciar(carga)}>
