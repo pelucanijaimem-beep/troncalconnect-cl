@@ -43,8 +43,11 @@ export function VerificationBadge({
 export function VerificationDisclaimer({ className = "" }: { className?: string }) {
   return (
     <p className={`text-xs leading-relaxed text-muted-foreground ${className}`}>
-      TroncalTrack valida la autenticidad documental del usuario. Los acuerdos comerciales y de
-      flete se rigen por el contrato directo entre las partes.
+      TroncalTrack realiza un proceso de validación documental basado en los registros públicos
+      disponibles (SII, Registro Civil y MTT). La veracidad y vigencia de la información
+      proporcionada es responsabilidad exclusiva del usuario. TroncalTrack no asume responsabilidad
+      por la falsificación ideológica de documentos por parte de terceros ni garantiza los
+      acuerdos comerciales privados suscritos entre las partes.
     </p>
   );
 }
