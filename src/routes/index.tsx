@@ -77,6 +77,8 @@ function Index() {
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
+
 
   const sesion = useSesion();
   const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
