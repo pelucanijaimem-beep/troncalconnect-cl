@@ -126,6 +126,21 @@ export function PostLoadDialog({
               placeholder="Tipo de producto, horarios, requisitos…"
             />
           </div>
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-surface p-3">
+            <input
+              type="checkbox"
+              name="soloVerificados"
+              className="mt-0.5 h-4 w-4 accent-[var(--trust)]"
+            />
+            <span className="text-sm">
+              <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                <ShieldCheck className="h-4 w-4 text-trust" /> Exclusiva para Usuarios Verificados
+              </span>
+              <span className="block text-xs text-muted-foreground">
+                Solo transportistas con sello TroncalCheck podrán ver y postular a esta carga.
+              </span>
+            </span>
+          </label>
           <DialogFooter>
             <Button type="submit" className="w-full sm:w-auto">
               Publicar Flete
