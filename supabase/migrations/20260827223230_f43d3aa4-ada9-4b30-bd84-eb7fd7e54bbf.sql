@@ -1,0 +1,1 @@
+ALTER TABLE public.cargas ADD COLUMN IF NOT EXISTS dias_pago text NOT NULL DEFAULT 'Pago a 30 días';

@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           destino: string
           detalle: string
+          dias_pago: string
           empresa: string
           empresa_telefono: string
           empresa_verificada: boolean
@@ -40,6 +41,7 @@ export type Database = {
           created_at?: string
           destino: string
           detalle?: string
+          dias_pago?: string
           empresa: string
           empresa_telefono?: string
           empresa_verificada?: boolean
@@ -61,6 +63,7 @@ export type Database = {
           created_at?: string
           destino?: string
           detalle?: string
+          dias_pago?: string
           empresa?: string
           empresa_telefono?: string
           empresa_verificada?: boolean
