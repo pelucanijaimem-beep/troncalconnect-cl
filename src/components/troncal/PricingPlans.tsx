@@ -50,7 +50,7 @@ const PLANES = [
   },
 ];
 
-export function PricingPlans({ onRegistro }: { onRegistro: () => void; onDonar?: () => void }) {
+export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
   return (
     <section id="planes" className="border-b border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12">
