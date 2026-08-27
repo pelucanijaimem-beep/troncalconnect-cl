@@ -12,7 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
-import { iniciarSesion } from "@/lib/use-session";
+import {
+  iniciarSesionEmail,
+  recuperarPassword,
+  registrarUsuario,
+} from "@/lib/use-session";
 
 type Vista = "login" | "registro" | "recuperar";
 
@@ -29,6 +33,7 @@ export function AuthDialog({
 }) {
   const [vista, setVista] = useState<Vista>(modo);
   const [rolCuenta, setRolCuenta] = useState<Rol>(rol);
+  const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -37,30 +42,50 @@ export function AuthDialog({
     }
   }, [open, modo, rol]);
 
-  const enviar = (e: FormEvent, mensaje: string) => {
+  const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const email = String(new FormData(e.currentTarget).get("email") ?? "");
+    setEnviando(true);
+    const error = await recuperarPassword(email);
+    setEnviando(false);
+    if (error) {
+      toast.error("No pudimos enviar el correo", { description: error });
+      return;
+    }
     onOpenChange(false);
-    toast.success(mensaje);
+    toast.success("Te enviamos un correo para restablecer tu contraseña.");
   };
 
-  const autenticar = (e: FormEvent<HTMLFormElement>, tipo: "login" | "registro") => {
+  const autenticar = async (e: FormEvent<HTMLFormElement>, tipo: "login" | "registro") => {
     e.preventDefault();
     const datos = new FormData(e.currentTarget);
     const email = String(datos.get("email") ?? "");
+    const password = String(datos.get("password") ?? "");
     const nombre = String(datos.get("nombre") ?? "") || email.split("@")[0] || "Usuario";
     const telefono = String(datos.get("telefono") ?? "");
-    iniciarSesion({
-      nombre,
-      email,
-      rol: tipo === "registro" ? rolCuenta : rol,
-      ...(telefono ? { telefono } : {}),
-    });
+    const rut = String(datos.get("rut") ?? "");
+
+    setEnviando(true);
+    const error =
+      tipo === "registro"
+        ? await registrarUsuario({ nombre, email, password, rol: rolCuenta, telefono, rut })
+        : await iniciarSesionEmail(email, password);
+    setEnviando(false);
+
+    if (error) {
+      toast.error(tipo === "registro" ? "No pudimos crear tu cuenta" : "No pudimos iniciar sesión", {
+        description: error,
+      });
+      return;
+    }
+
     onOpenChange(false);
     toast.success(
       tipo === "registro" ? "¡Cuenta creada! Ya puedes ver las cargas en vivo." : "Sesión iniciada.",
       { description: "Tu tablero privado está activo." },
     );
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
