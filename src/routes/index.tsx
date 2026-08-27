@@ -62,7 +62,13 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const FILTROS_VACIOS: Filtros = { origen: "", destino: "", carroceria: "todas", fecha: "" };
+const FILTROS_VACIOS: Filtros = {
+  origen: "",
+  destino: "",
+  carroceria: "todas",
+  fecha: "",
+  soloVerificados: false,
+};
 
 function coincide(valor: string, filtro: string) {
   return !filtro.trim() || valor.toLowerCase().includes(filtro.trim().toLowerCase());
