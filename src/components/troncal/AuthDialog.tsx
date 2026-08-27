@@ -61,6 +61,12 @@ export function AuthDialog({
 
   const autenticar = async (e: FormEvent<HTMLFormElement>, tipo: "login" | "registro") => {
     e.preventDefault();
+    if (tipo === "registro" && !aceptaTerminos) {
+      toast.error("Debes aceptar los términos y condiciones", {
+        description: "Marca la casilla para continuar.",
+      });
+      return;
+    }
     const datos = new FormData(e.currentTarget);
     const email = String(datos.get("email") ?? "");
     const password = String(datos.get("password") ?? "");
