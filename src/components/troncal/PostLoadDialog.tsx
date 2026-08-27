@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,6 +54,7 @@ export function PostLoadDialog({
       fecha: String(d.get("fecha") ?? ""),
       detalle: String(d.get("detalle") ?? "") || "Sin comentarios adicionales.",
       telefono: String(d.get("telefono") ?? "") || sesion?.telefono || "+56 9 0000 0000",
+      soloVerificados: d.get("soloVerificados") === "on",
     };
     publicarCarga(carga);
     setCarroceria("");
