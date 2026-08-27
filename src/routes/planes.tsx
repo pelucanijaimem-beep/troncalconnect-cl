@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
   BellRing,
@@ -54,6 +54,8 @@ type Plan = {
   precioMensual: number;
   destacado?: boolean;
   cta: string;
+  href: string;
+  externo?: boolean;
   icono: typeof Truck;
   features: Feature[];
 };
@@ -65,6 +67,7 @@ const PLANES: Plan[] = [
     subtitulo: "Para partir explorando el mercado de cargas.",
     precioMensual: 0,
     cta: "Comenzar Gratis",
+    href: "/registro",
     icono: Search,
     features: [
       { texto: "Ver el tablero de cargas con actualización diferida" },
@@ -79,6 +82,8 @@ const PLANES: Plan[] = [
     precioMensual: 14990,
     destacado: true,
     cta: "Suscribirme como Transportista",
+    href: "https://mpago.la/25CXadN",
+    externo: true,
     icono: Truck,
     features: [
       {
@@ -105,6 +110,8 @@ const PLANES: Plan[] = [
     subtitulo: "Para generadores de carga y empresas logísticas.",
     precioMensual: 29990,
     cta: "Suscribirme como Empresa",
+    href: "https://mpago.la/2AuV6gH",
+    externo: true,
     icono: Building2,
     features: [
       { texto: "Publicación ilimitada de fletes y cargas", icono: "especial" },
@@ -159,6 +166,15 @@ function LogoPago({ texto, sub }: { texto: string; sub?: string }) {
 
 function PlanesPage() {
   const [anual, setAnual] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClick = (plan: Plan) => {
+    if (plan.externo) {
+      window.open(plan.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+    navigate({ to: plan.href });
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -282,9 +298,10 @@ function PlanesPage() {
                   </ul>
 
                   <Button
-                    className="mt-6 w-full"
+                    className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                     variant={plan.destacado ? "default" : "outline"}
                     size="lg"
+                    onClick={() => handleClick(plan)}
                   >
                     {plan.cta}
                   </Button>
