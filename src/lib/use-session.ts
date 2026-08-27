@@ -20,9 +20,21 @@ const emitir = () => oyentes.forEach((f) => f());
 async function cargarPerfil(userId: string, email: string) {
   const { data } = await supabase
     .from("perfiles")
-    .select("nombre, email, telefono, rol, plan_activo")
+    .select("nombre, email, telefono, rol, plan_activo, bloqueado")
     .eq("id", userId)
     .maybeSingle();
+
+  if (data?.bloqueado) {
+    sesion = null;
+    emitir();
+    await supabase.auth.signOut();
+    if (typeof window !== "undefined") {
+      window.alert(
+        "Tu cuenta está suspendida por el equipo de TroncalTrack. Escríbenos a soporte para reactivarla.",
+      );
+    }
+    return;
+  }
 
   sesion = {
     id: userId,

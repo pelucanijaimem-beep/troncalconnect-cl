@@ -1,6 +1,11 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-export type EstadoVerificacion = "sin_verificar" | "en_revision" | "verificado";
+export type EstadoVerificacion =
+  | "sin_verificar"
+  | "en_revision"
+  | "verificado"
+  | "rechazado";
 
 export type Documentos = {
   identidad?: string;
@@ -14,6 +19,7 @@ export type Verificacion = {
   asegurado: boolean;
   documentos: Documentos;
   actualizado: string;
+  nota: string;
 };
 
 export const VERIFICACION_VACIA: Verificacion = {
@@ -21,87 +27,103 @@ export const VERIFICACION_VACIA: Verificacion = {
   asegurado: false,
   documentos: {},
   actualizado: "",
+  nota: "",
 };
-
-const KEY = "troncaltrack.verificaciones";
 
 type Mapa = Record<string, Verificacion>;
 
 let mapa: Mapa = {};
-let cargado = false;
+let cargando = false;
 const oyentes = new Set<() => void>();
+const emitir = () => oyentes.forEach((f) => f());
 
-function cargar() {
-  if (cargado || typeof window === "undefined") return;
-  cargado = true;
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (raw) mapa = JSON.parse(raw) as Mapa;
-  } catch {
-    mapa = {};
-  }
+export function estadoDesdeDB(estado: string): EstadoVerificacion {
+  if (estado === "aprobado") return "verificado";
+  if (estado === "rechazado") return "rechazado";
+  return "en_revision";
 }
 
-function guardar() {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(mapa));
-  } catch {
-    /* almacenamiento no disponible */
+/** Recarga todas las verificaciones desde la base de datos. */
+export async function recargarVerificaciones() {
+  const { data } = await supabase
+    .from("verificaciones")
+    .select("nombre, estado, asegurado, documentos, nota_admin, updated_at");
+  if (!data) return;
+  const nuevo: Mapa = {};
+  for (const fila of data) {
+    nuevo[claveUsuario(fila.nombre ?? "")] = {
+      estado: estadoDesdeDB(fila.estado),
+      asegurado: Boolean(fila.asegurado),
+      documentos: (fila.documentos ?? {}) as Documentos,
+      actualizado: fila.updated_at ?? "",
+      nota: fila.nota_admin ?? "",
+    };
   }
-  oyentes.forEach((f) => f());
+  mapa = nuevo;
+  emitir();
+}
+
+function iniciar() {
+  if (cargando || typeof window === "undefined") return;
+  cargando = true;
+  void recargarVerificaciones();
 }
 
 function subscribe(f: () => void) {
-  cargar();
+  iniciar();
   oyentes.add(f);
   return () => oyentes.delete(f);
 }
 
-function getSnapshot() {
-  cargar();
-  return mapa;
-}
+const getSnapshot = () => mapa;
 
 export function claveUsuario(nombreOEmail: string) {
   return nombreOEmail.trim().toLowerCase();
 }
 
-export function getVerificacion(clave: string | undefined | null): Verificacion {
-  cargar();
-  if (!clave) return VERIFICACION_VACIA;
-  return mapa[claveUsuario(clave)] ?? VERIFICACION_VACIA;
-}
+/**
+ * Sube los documentos al almacenamiento privado y deja la solicitud
+ * en estado "Pendiente de Revisión" para el equipo TroncalCheck.
+ */
+export async function enviarDocumentos(params: {
+  userId: string;
+  nombre: string;
+  archivos: Partial<Record<keyof Documentos, File>>;
+}): Promise<string | null> {
+  const documentos: Documentos = {};
+  for (const [campo, archivo] of Object.entries(params.archivos)) {
+    if (!archivo) continue;
+    const ext = archivo.name.split(".").pop() ?? "dat";
+    const ruta = `${params.userId}/${campo}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("documentos")
+      .upload(ruta, archivo, { upsert: true });
+    if (error) return error.message;
+    documentos[campo as keyof Documentos] = ruta;
+  }
 
-/** Envía los documentos a revisión de TroncalCheck. */
-export function enviarDocumentos(clave: string, documentos: Documentos) {
-  cargar();
-  const k = claveUsuario(clave);
-  mapa = {
-    ...mapa,
-    [k]: {
-      estado: "en_revision",
+  const { error } = await supabase.from("verificaciones").upsert(
+    {
+      user_id: params.userId,
+      nombre: params.nombre,
+      estado: "pendiente",
       asegurado: Boolean(documentos.poliza),
       documentos,
-      actualizado: new Date().toISOString(),
+      nota_admin: "",
     },
-  };
-  guardar();
-}
-
-/** Aprueba la validación documental (simulación del equipo TroncalCheck). */
-export function aprobarVerificacion(clave: string) {
-  cargar();
-  const k = claveUsuario(clave);
-  const actual = mapa[k] ?? VERIFICACION_VACIA;
-  mapa = {
-    ...mapa,
-    [k]: { ...actual, estado: "verificado", actualizado: new Date().toISOString() },
-  };
-  guardar();
+    { onConflict: "user_id" },
+  );
+  if (error) return error.message;
+  await recargarVerificaciones();
+  return null;
 }
 
 export function useVerificaciones() {
-  return useSyncExternalStore(subscribe, getSnapshot, () => ({}) as Mapa);
+  const m = useSyncExternalStore(subscribe, getSnapshot, () => ({}) as Mapa);
+  useEffect(() => {
+    void recargarVerificaciones();
+  }, []);
+  return m;
 }
 
 export function useVerificacion(clave: string | undefined | null): Verificacion {

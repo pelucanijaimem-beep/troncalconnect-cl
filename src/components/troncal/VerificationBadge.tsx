@@ -22,8 +22,13 @@ export function VerificationBadge({
         </span>
       )}
       {estado === "en_revision" && (
-        <span className={`${base} bg-muted text-muted-foreground`}>
-          <Clock className="h-3.5 w-3.5" /> Verificación en revisión
+        <span className={`${base} bg-warning/15 text-warning`}>
+          <Clock className="h-3.5 w-3.5" /> Pendiente de Revisión
+        </span>
+      )}
+      {estado === "rechazado" && (
+        <span className={`${base} bg-destructive/10 text-destructive`}>
+          <ShieldAlert className="h-3.5 w-3.5" /> Verificación rechazada
         </span>
       )}
       {estado === "sin_verificar" && (

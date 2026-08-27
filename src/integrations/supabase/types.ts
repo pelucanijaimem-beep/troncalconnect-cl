@@ -85,6 +85,7 @@ export type Database = {
       }
       perfiles: {
         Row: {
+          bloqueado: boolean
           created_at: string
           email: string
           id: string
@@ -93,8 +94,10 @@ export type Database = {
           rol: Database["public"]["Enums"]["rol_usuario"]
           rut: string | null
           telefono: string | null
+          verificado: boolean
         }
         Insert: {
+          bloqueado?: boolean
           created_at?: string
           email?: string
           id: string
@@ -103,8 +106,10 @@ export type Database = {
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
           telefono?: string | null
+          verificado?: boolean
         }
         Update: {
+          bloqueado?: boolean
           created_at?: string
           email?: string
           id?: string
@@ -113,6 +118,7 @@ export type Database = {
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
           telefono?: string | null
+          verificado?: boolean
         }
         Relationships: []
       }
@@ -148,14 +154,79 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verificaciones: {
+        Row: {
+          asegurado: boolean
+          created_at: string
+          documentos: Json
+          estado: string
+          id: string
+          nombre: string
+          nota_admin: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asegurado?: boolean
+          created_at?: string
+          documentos?: Json
+          estado?: string
+          id?: string
+          nombre?: string
+          nota_admin?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asegurado?: boolean
+          created_at?: string
+          documentos?: Json
+          estado?: string
+          id?: string
+          nombre?: string
+          nota_admin?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       tiene_plan_activo: { Args: { _user_id: string }; Returns: boolean }
+      tiene_rol: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "usuario"
       estado_carga: "activa" | "completada"
       rol_usuario: "camionero" | "empresa"
     }
@@ -285,6 +356,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "usuario"],
       estado_carga: ["activa", "completada"],
       rol_usuario: ["camionero", "empresa"],
     },
