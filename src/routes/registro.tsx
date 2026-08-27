@@ -32,25 +32,30 @@ export const Route = createFileRoute("/registro")({
 function RegistroPage() {
   const navigate = useNavigate();
   const [rol, setRol] = useState<Rol>("camionero");
+  const [enviando, setEnviando] = useState(false);
 
-  const enviar = (e: FormEvent<HTMLFormElement>) => {
+  const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const datos = new FormData(e.currentTarget);
     const nombre = String(datos.get("nombre") ?? "");
     const email = String(datos.get("email") ?? "");
     const telefono = String(datos.get("telefono") ?? "");
+    const rut = String(datos.get("rut") ?? "");
+    const password = String(datos.get("password") ?? "");
 
-    if (!nombre || !email) {
+    if (!nombre || !email || !password) {
       toast.error("Completa los campos obligatorios");
       return;
     }
 
-    iniciarSesion({
-      nombre: nombre || email.split("@")[0] || "Usuario",
-      email,
-      rol,
-      ...(telefono ? { telefono } : {}),
-    });
+    setEnviando(true);
+    const error = await registrarUsuario({ nombre, email, password, rol, telefono, rut });
+    setEnviando(false);
+
+    if (error) {
+      toast.error("No pudimos crear tu cuenta", { description: error });
+      return;
+    }
 
     toast.success("¡Cuenta creada! Ya puedes ver las cargas en vivo.", {
       description: "Te redirigimos a tu tablero privado.",
@@ -58,6 +63,7 @@ function RegistroPage() {
 
     navigate({ to: "/" });
   };
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
