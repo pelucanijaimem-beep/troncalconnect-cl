@@ -16,6 +16,7 @@ export type Filtros = {
   destino: string;
   carroceria: string;
   fecha: string;
+  soloVerificados: boolean;
 };
 
 export function SearchFilters({
