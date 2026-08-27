@@ -20,8 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS, getPais, type Carga, type Carroceria, type PaisCodigo } from "@/lib/troncal-data";
-import { nuevoId, publicarCarga } from "@/lib/use-publicaciones";
+import { CARROCERIAS, getPais, type Carroceria, type PaisCodigo } from "@/lib/troncal-data";
+import { publicarCargaDB } from "@/lib/use-cargas";
 import { useSesion } from "@/lib/use-session";
 
 export function PostLoadDialog({
@@ -34,35 +34,56 @@ export function PostLoadDialog({
   pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
 
-  const enviar = (e: FormEvent<HTMLFormElement>) => {
+  const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!sesion) {
+      toast.error("Inicia sesión para publicar una carga.");
+      return;
+    }
     const d = new FormData(e.currentTarget);
-    const carga: Carga = {
-      id: nuevoId("carga"),
+    const origen = String(d.get("origen") ?? "");
+    const destino = String(d.get("destino") ?? "");
+    const km = Number(d.get("km") ?? 0);
+    const valorKm = Number(d.get("valorKm") ?? 0);
+    const tipoCamion = (carroceria || "Rampla Plana") as Carroceria;
+
+    setEnviando(true);
+    const error = await publicarCargaDB({
+      userId: sesion.id,
+      titulo: `${origen} → ${destino}`,
+      origen,
+      destino,
+      tipoCamion,
+      precio: km * valorKm,
+      empresa: sesion.nombre,
+      telefono: String(d.get("telefono") ?? "") || sesion.telefono || "",
+      verificada: true,
       pais,
-      origen: String(d.get("origen") ?? ""),
-      destino: String(d.get("destino") ?? ""),
-      km: Number(d.get("km") ?? 0),
-      valorKm: Number(d.get("valorKm") ?? 0),
-      carroceria: (carroceria || "Rampla Plana") as Carroceria,
+      km,
+      valorKm,
       toneladas: Number(d.get("toneladas") ?? 0),
-      empresa: sesion?.nombre ?? "Mi empresa",
-      verificada: Boolean(sesion),
       fecha: String(d.get("fecha") ?? ""),
       detalle: String(d.get("detalle") ?? "") || "Sin comentarios adicionales.",
-      telefono: String(d.get("telefono") ?? "") || sesion?.telefono || "+56 9 0000 0000",
       soloVerificados: d.get("soloVerificados") === "on",
-    };
-    publicarCarga(carga);
+    });
+    setEnviando(false);
+
+    if (error) {
+      toast.error("No pudimos publicar el flete", { description: error });
+      return;
+    }
+
     setCarroceria("");
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
-      description: "Ya aparece en tu tablero y los camioneros de la zona pueden verlo.",
+      description: "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real.",
     });
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
