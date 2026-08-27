@@ -124,6 +124,16 @@ export function LoadCard({
               >
                 <Phone className="h-4 w-4" /> Contactar
               </Button>
+              {onPostular && !enRuta && !entregada && (
+                <Button
+                  className="flex-1 sm:flex-none"
+                  disabled={yaPostulada}
+                  onClick={() => onPostular(carga)}
+                >
+                  <Send className="h-4 w-4" /> {yaPostulada ? "Postulación enviada" : "Postular"}
+                </Button>
+              )}
+
               {!enRuta && !entregada && (
                 <Button className="flex-1 sm:flex-none" onClick={() => onIniciar(carga)}>
                   <PlayCircle className="h-4 w-4" /> Iniciar Viaje
