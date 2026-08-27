@@ -283,6 +283,13 @@ function Index() {
           Panel privado de {sesion.nombre}
         </p>
 
+        <div className="mb-6">
+          <TrustProfileCard
+            usuario={sesion.nombre}
+            onVerificar={() => setVerificacionOpen(true)}
+          />
+        </div>
+
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
