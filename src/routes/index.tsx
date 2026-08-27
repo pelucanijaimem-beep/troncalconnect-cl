@@ -30,6 +30,13 @@ import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
+import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
+import { VerificationDialog } from "@/components/troncal/VerificationDialog";
+import {
+  RatingDialog,
+  type EvaluacionPendiente,
+} from "@/components/troncal/RatingDialog";
+import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
 import { usePublicaciones } from "@/lib/use-publicaciones";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import {
