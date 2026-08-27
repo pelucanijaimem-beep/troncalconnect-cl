@@ -30,6 +30,13 @@ import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
+import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
+import { VerificationDialog } from "@/components/troncal/VerificationDialog";
+import {
+  RatingDialog,
+  type EvaluacionPendiente,
+} from "@/components/troncal/RatingDialog";
+import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
 import { usePublicaciones } from "@/lib/use-publicaciones";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import {
@@ -62,7 +69,13 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const FILTROS_VACIOS: Filtros = { origen: "", destino: "", carroceria: "todas", fecha: "" };
+const FILTROS_VACIOS: Filtros = {
+  origen: "",
+  destino: "",
+  carroceria: "todas",
+  fecha: "",
+  soloVerificados: false,
+};
 
 function coincide(valor: string, filtro: string) {
   return !filtro.trim() || valor.toLowerCase().includes(filtro.trim().toLowerCase());
@@ -82,12 +95,16 @@ function Index() {
   const [rastreo, setRastreo] = useState<Carga | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
-
+  const [verificacionOpen, setVerificacionOpen] = useState(false);
+  const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
 
   const sesion = useSesion();
   const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
+  const verificaciones = useVerificaciones();
   const paisActual = getPais(pais);
+  const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
+  const soyVerificado = miVerificacion.estado === "verificado";
 
   const cargas = useMemo(
     () =>
@@ -97,9 +114,12 @@ function Index() {
           coincide(c.origen, filtros.origen) &&
           coincide(c.destino, filtros.destino) &&
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
-          (!filtros.fecha || c.fecha === filtros.fecha),
+          (!filtros.fecha || c.fecha === filtros.fecha) &&
+          (!c.soloVerificados || rol !== "camionero" || soyVerificado) &&
+          (!filtros.soloVerificados ||
+            getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
-    [filtros, pais, CARGAS],
+    [filtros, pais, CARGAS, verificaciones, rol, soyVerificado],
   );
 
   const camiones = useMemo(
@@ -110,10 +130,13 @@ function Index() {
           coincide(t.origen, filtros.origen) &&
           coincide(t.destino, filtros.destino) &&
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
-          (!filtros.fecha || t.fecha === filtros.fecha),
+          (!filtros.fecha || t.fecha === filtros.fecha) &&
+          (!filtros.soloVerificados ||
+            getVerificacionDe(verificaciones, t.conductor).estado === "verificado"),
       ),
-    [filtros, pais, CAMIONES],
+    [filtros, pais, CAMIONES, verificaciones],
   );
+
 
   const esCamionero = rol === "camionero";
   const abrirAuth = (modo: "login" | "registro") => {
@@ -163,6 +186,11 @@ function Index() {
     setViajeActivo(null);
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
+    });
+    setEvaluacion({
+      evaluado: c.empresa,
+      ruta: `${c.origen} → ${c.destino}`,
+      papel: "Generador de Carga",
     });
   };
 
@@ -254,6 +282,13 @@ function Index() {
         <p className="mb-2 text-sm font-semibold text-primary">
           Panel privado de {sesion.nombre}
         </p>
+
+        <div className="mb-6">
+          <TrustProfileCard
+            usuario={sesion.nombre}
+            onVerificar={() => setVerificacionOpen(true)}
+          />
+        </div>
 
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
@@ -458,6 +493,16 @@ function Index() {
       />
       <DonateDialog open={donarOpen} onOpenChange={setDonarOpen} />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
+      <VerificationDialog
+        open={verificacionOpen}
+        onOpenChange={setVerificacionOpen}
+        usuario={sesion?.nombre ?? ""}
+      />
+      <RatingDialog
+        evaluacion={evaluacion}
+        autor={sesion?.nombre ?? "Usuario TroncalTrack"}
+        onOpenChange={(o) => !o && setEvaluacion(null)}
+      />
       <Toaster />
     </div>
   );

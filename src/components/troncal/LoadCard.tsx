@@ -1,17 +1,21 @@
 import {
   ArrowRight,
-  BadgeCheck,
   CalendarDays,
   CheckCircle2,
   Package,
   Phone,
   PlayCircle,
   Satellite,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { money, type Carga } from "@/lib/troncal-data";
 import type { Viaje } from "@/lib/use-trip-tracking";
 import type { Rol } from "./RoleSwitcher";
+import { VerificationBadge } from "./VerificationBadge";
+import { RatingSummary } from "./StarRating";
+import { useVerificacion } from "@/lib/use-verificacion";
+import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
 
 export function LoadCard({
   carga,
@@ -34,9 +38,13 @@ export function LoadCard({
   onRastrear: (c: Carga) => void;
   onVerViaje: (c: Carga) => void;
 }) {
-  const total = carga.km * carga.valorKm;
+  const verificacion = useVerificacion(carga.empresa);
+  const calificaciones = useCalificaciones();
+  const { promedio, total: totalEval } = resumen(calificaciones, carga.empresa);
+  const montoTotal = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
+
 
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-md">
@@ -65,7 +73,7 @@ export function LoadCard({
             {money(carga.valorKm, carga.pais)} / km
           </p>
           <p className="text-sm font-semibold text-foreground">
-            Total: {money(total, carga.pais)}
+            Total: {money(montoTotal, carga.pais)}
           </p>
         </div>
       </div>
@@ -90,9 +98,11 @@ export function LoadCard({
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
         <span className="text-sm font-medium text-foreground">{carga.empresa}</span>
-        {carga.verificada && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
-            <BadgeCheck className="h-3.5 w-3.5" /> Empresa Verificada
+        <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
+        <RatingSummary promedio={promedio} total={totalEval} />
+        {carga.soloVerificados && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-trust-soft px-2 py-0.5 text-xs font-semibold text-trust">
+            <ShieldCheck className="h-3.5 w-3.5" /> Exclusiva para verificados
           </span>
         )}
         <div className="ml-auto flex w-full flex-wrap gap-2 sm:w-auto">

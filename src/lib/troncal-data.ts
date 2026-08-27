@@ -137,6 +137,8 @@ export type Carga = {
   fecha: string;
   detalle: string;
   telefono: string;
+  /** Solo transportistas con sello TroncalCheck pueden tomar esta carga. */
+  soloVerificados?: boolean;
 };
 
 export type Camion = {

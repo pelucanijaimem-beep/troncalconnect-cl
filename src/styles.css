@@ -24,6 +24,10 @@
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-success-soft: var(--success-soft);
+  --color-trust: var(--trust);
+  --color-trust-foreground: var(--trust-foreground);
+  --color-trust-soft: var(--trust-soft);
+  --color-warning: var(--warning);
   --shadow-card: var(--shadow-card);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -94,7 +98,12 @@
   --success: oklch(0.58 0.14 155);
   --success-foreground: oklch(1 0 0);
   --success-soft: oklch(0.955 0.038 155);
+  --trust: oklch(0.52 0.17 258);
+  --trust-foreground: oklch(1 0 0);
+  --trust-soft: oklch(0.955 0.03 258);
+  --warning: oklch(0.79 0.16 78);
   --chart-1: oklch(0.646 0.222 41.116);
+
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);

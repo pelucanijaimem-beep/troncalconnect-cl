@@ -1,4 +1,5 @@
-import { Search } from "lucide-react";
+import { Search, ShieldCheck } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ export type Filtros = {
   destino: string;
   carroceria: string;
   fecha: string;
+  soloVerificados: boolean;
 };
 
 export function SearchFilters({
@@ -85,7 +87,17 @@ export function SearchFilters({
           />
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2">
+          <Switch
+            checked={filtros.soloVerificados}
+            onCheckedChange={(v) => onChange({ ...filtros, soloVerificados: v })}
+            aria-label="Solo usuarios verificados"
+          />
+          <span className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+            <ShieldCheck className="h-4 w-4 text-trust" /> Solo Transportistas Verificados
+          </span>
+        </label>
         <Button className="flex-1 sm:flex-none">
           <Search className="h-4 w-4" /> Buscar
         </Button>
