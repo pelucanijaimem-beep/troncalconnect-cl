@@ -40,8 +40,8 @@ export function LoadCard({
 }) {
   const verificacion = useVerificacion(carga.empresa);
   const calificaciones = useCalificaciones();
-  const { promedio, total } = resumen(calificaciones, carga.empresa);
-  const total_ = carga.km * carga.valorKm;
+  const { promedio, total: totalEval } = resumen(calificaciones, carga.empresa);
+  const montoTotal = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
 
