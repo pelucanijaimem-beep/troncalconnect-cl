@@ -98,17 +98,21 @@ export function AuthDialog({
                 Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.
               </DialogDescription>
             </DialogHeader>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => enviar(e, "Te enviamos un correo para restablecer tu contraseña.")}
-            >
+            <form className="space-y-4" onSubmit={(e) => void enviar(e)}>
               <div className="space-y-1.5">
                 <Label htmlFor="r-email">Correo electrónico</Label>
-                <Input id="r-email" type="email" placeholder="tucorreo@ejemplo.cl" required />
+                <Input
+                  id="r-email"
+                  name="email"
+                  type="email"
+                  placeholder="tucorreo@ejemplo.cl"
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={enviando}>
                 Enviar enlace de recuperación
               </Button>
+
               <Button
                 type="button"
                 variant="ghost"
