@@ -142,6 +142,26 @@ function RegistroPage() {
             />
           </div>
 
+          <div className="flex items-start gap-3 rounded-xl border border-border bg-surface p-4">
+            <Checkbox
+              id="terminos"
+              checked={aceptaTerminos}
+              onCheckedChange={(v) => setAceptaTerminos(Boolean(v))}
+              className="mt-0.5"
+            />
+            <Label htmlFor="terminos" className="cursor-pointer text-sm leading-snug text-muted-foreground">
+              Acepto los{" "}
+              <Link
+                to="/terminos"
+                target="_blank"
+                className="font-semibold text-primary hover:underline"
+              >
+                Términos, Condiciones y la Póliza de Exención de Responsabilidad
+              </Link>{" "}
+              de TroncalTrack.cl
+            </Label>
+          </div>
+
           <Button
             type="submit"
             disabled={enviando}
