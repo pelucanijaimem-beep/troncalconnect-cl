@@ -88,12 +88,16 @@ function Index() {
   const [rastreo, setRastreo] = useState<Carga | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
-
+  const [verificacionOpen, setVerificacionOpen] = useState(false);
+  const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
 
   const sesion = useSesion();
   const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
+  const verificaciones = useVerificaciones();
   const paisActual = getPais(pais);
+  const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
+  const soyVerificado = miVerificacion.estado === "verificado";
 
   const cargas = useMemo(
     () =>
@@ -103,9 +107,11 @@ function Index() {
           coincide(c.origen, filtros.origen) &&
           coincide(c.destino, filtros.destino) &&
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
-          (!filtros.fecha || c.fecha === filtros.fecha),
+          (!filtros.fecha || c.fecha === filtros.fecha) &&
+          (!filtros.soloVerificados ||
+            getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
-    [filtros, pais, CARGAS],
+    [filtros, pais, CARGAS, verificaciones],
   );
 
   const camiones = useMemo(
@@ -116,10 +122,13 @@ function Index() {
           coincide(t.origen, filtros.origen) &&
           coincide(t.destino, filtros.destino) &&
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
-          (!filtros.fecha || t.fecha === filtros.fecha),
+          (!filtros.fecha || t.fecha === filtros.fecha) &&
+          (!filtros.soloVerificados ||
+            getVerificacionDe(verificaciones, t.conductor).estado === "verificado"),
       ),
-    [filtros, pais, CAMIONES],
+    [filtros, pais, CAMIONES, verificaciones],
   );
+
 
   const esCamionero = rol === "camionero";
   const abrirAuth = (modo: "login" | "registro") => {
