@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useSesion } from "@/lib/use-session";
+import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
 
@@ -235,13 +235,15 @@ function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header
+        sesion={sesion}
+        onSalir={() => void cerrarSesion()}
         rol="empresa"
         onRolChange={() => undefined}
         pais="CL"
         onPaisChange={() => undefined}
         onAuth={() => undefined}
         onPublicarCamion={() => undefined}
-        onPublicarFlete={() => undefined}
+        onPublicarCarga={() => undefined}
       />
 
       <main className="mx-auto max-w-6xl space-y-6 px-4 py-8">

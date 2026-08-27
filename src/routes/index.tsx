@@ -603,6 +603,7 @@ function Index() {
         open={verificacionOpen}
         onOpenChange={setVerificacionOpen}
         usuario={sesion?.nombre ?? ""}
+        userId={sesion?.id}
       />
       <RatingDialog
         evaluacion={evaluacion}
