@@ -24,7 +24,7 @@ import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
-import { TermsSection } from "@/components/troncal/TermsSection";
+import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { usePublicaciones } from "@/lib/use-publicaciones";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
@@ -77,6 +77,8 @@ function Index() {
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
+
 
   const sesion = useSesion();
   const { cargas: CARGAS, camiones: CAMIONES } = usePublicaciones();
@@ -363,17 +365,23 @@ function Index() {
       </main>
       )}
 
-      <TermsSection />
-
       <footer id="soporte" className="mt-10 border-t border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} TroncalTrack — Los Ángeles, Región del Biobío, Chile.</p>
-          <button
-            onClick={() => setDonarOpen(true)}
-            className="cursor-pointer text-left font-medium text-primary hover:underline sm:ml-auto"
-          >
-            Apoyar el proyecto / Donaciones
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <button
+              onClick={() => setTermsOpen(true)}
+              className="cursor-pointer text-left font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Términos y Condiciones
+            </button>
+            <button
+              onClick={() => setDonarOpen(true)}
+              className="cursor-pointer text-left font-medium text-primary hover:underline"
+            >
+              Apoyar el proyecto / Donaciones
+            </button>
+          </div>
         </div>
       </footer>
 
@@ -394,6 +402,7 @@ function Index() {
         onOpenChange={(o) => !o && setRastreo(null)}
       />
       <DonateDialog open={donarOpen} onOpenChange={setDonarOpen} />
+      <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
       <Toaster />
     </div>
   );

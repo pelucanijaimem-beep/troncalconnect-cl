@@ -1,5 +1,13 @@
-import { Mail, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type Bloque = {
   titulo: string;
@@ -102,71 +110,76 @@ const BLOQUES: Bloque[] = [
   },
 ];
 
-export function TermsSection() {
+export function TermsDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}) {
   return (
-    <section id="terminos" className="border-t border-border bg-background">
-      <div className="mx-auto max-w-4xl px-4 py-12">
-        <div className="flex items-center gap-2 text-primary">
-          <ShieldCheck className="h-5 w-5" />
-          <span className="text-xs font-bold uppercase tracking-wide">TroncalTrack.cl</span>
-        </div>
-        <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-          Términos, Condiciones y Políticas del Servicio
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">Última actualización: 2026</p>
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-          Bienvenido a TroncalTrack.cl. Al acceder, navegar o utilizar nuestra plataforma web y sus
-          servicios, el usuario (ya sea en rol de Empresa/Generador de Carga o
-          Transportista/Camionero) acepta de manera íntegra y sin reservas los términos descritos a
-          continuación.
-        </p>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col overflow-hidden p-0">
+        <DialogHeader className="border-b border-border px-6 py-5 text-left">
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            Términos, Condiciones y Políticas del Servicio
+          </DialogTitle>
+          <DialogDescription className="text-left">
+            TroncalTrack.cl — Última actualización: 2026
+          </DialogDescription>
+        </DialogHeader>
 
-        <ol className="mt-8 space-y-8">
-          {BLOQUES.map((b, i) => (
-            <li key={b.titulo} className="rounded-xl border border-border bg-surface p-5">
-              <div className="flex items-start gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-                  {i + 1}
-                </span>
-                <h3 className="mt-1 text-base font-bold text-foreground sm:text-lg">{b.titulo}</h3>
-              </div>
-
-              {b.intro && (
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.intro}</p>
-              )}
-
-              <div className="mt-4 space-y-4">
-                {b.puntos.map((p) => (
-                  <div key={p.texto} className="border-l-2 border-primary/30 pl-3">
-                    {p.titulo && (
-                      <p className="text-sm font-semibold text-foreground">{p.titulo}</p>
-                    )}
-                    <p className="text-sm leading-relaxed text-muted-foreground">{p.texto}</p>
-                    {p.lista && (
-                      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                        {p.lista.map((l) => (
-                          <li key={l}>{l}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        <div className="mt-8 flex flex-col gap-3 rounded-xl border border-border bg-surface p-5 sm:flex-row sm:items-center">
-          <p className="text-sm font-semibold text-foreground">
-            ¿Tienes dudas sobre estos términos o necesitas ayuda con un caso?
+        <div className="overflow-y-auto px-6 py-4">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Bienvenido a TroncalTrack.cl. Al acceder, navegar o utilizar nuestra plataforma web y sus
+            servicios, el usuario (ya sea en rol de Empresa/Generador de Carga o
+            Transportista/Camionero) acepta de manera íntegra y sin reservas los términos descritos a
+            continuación.
           </p>
-          <Button asChild className="sm:ml-auto">
-            <a href="mailto:soporte@troncaltrack.cl">
-              <Mail className="h-4 w-4" /> Contactar a Soporte
-            </a>
-          </Button>
+
+          <ol className="mt-6 space-y-6">
+            {BLOQUES.map((b, i) => (
+              <li key={b.titulo} className="rounded-xl border border-border bg-surface p-5">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+                    {i + 1}
+                  </span>
+                  <h3 className="mt-1 text-base font-bold text-foreground sm:text-lg">{b.titulo}</h3>
+                </div>
+
+                {b.intro && (
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.intro}</p>
+                )}
+
+                <div className="mt-4 space-y-4">
+                  {b.puntos.map((p) => (
+                    <div key={p.texto} className="border-l-2 border-primary/30 pl-3">
+                      {p.titulo && (
+                        <p className="text-sm font-semibold text-foreground">{p.titulo}</p>
+                      )}
+                      <p className="text-sm leading-relaxed text-muted-foreground">{p.texto}</p>
+                      {p.lista && (
+                        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                          {p.lista.map((l) => (
+                            <li key={l}>{l}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-      </div>
-    </section>
+
+        <DialogFooter className="border-t border-border px-6 py-4">
+          <Button className="w-full sm:w-auto" onClick={() => onOpenChange(false)}>
+            Entendido
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
