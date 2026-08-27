@@ -22,7 +22,7 @@ export function VerificationBadge({
         </span>
       )}
       {estado === "en_revision" && (
-        <span className={`${base} bg-warning-soft text-warning`}>
+        <span className={`${base} bg-warning/15 text-warning`}>
           <Clock className="h-3.5 w-3.5" /> Pendiente de Revisión
         </span>
       )}
