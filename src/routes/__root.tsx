@@ -81,7 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content: "Conecta camioneros y empresas cargadoras en Chile. Publica y encuentra fletes.",
-...
+      },
+      { property: "og:title", content: "TroncalTrack — Bolsa de Cargas para Chile" },
+      {
+        property: "og:description",
         content: "Conecta camioneros y empresas cargadoras en Chile. Publica y encuentra fletes.",
       },
       { property: "og:type", content: "website" },
