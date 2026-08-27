@@ -95,7 +95,7 @@ export function PostLoadDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={enviar} className="space-y-4">
+        <form onSubmit={(e) => void enviar(e)} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="l-origen">Origen</Label>
