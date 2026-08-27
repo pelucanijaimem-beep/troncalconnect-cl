@@ -1,4 +1,5 @@
-import { BadgeCheck, Phone } from "lucide-react";
+import { BadgeCheck, Lock, MessageCircle, Phone } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,9 +14,12 @@ import { money, type Carga } from "@/lib/troncal-data";
 export function LoadDetailsDialog({
   carga,
   onOpenChange,
+  accesoContacto = false,
 }: {
   carga: Carga | null;
   onOpenChange: (o: boolean) => void;
+  /** true solo con plan Pro activo: muestra teléfono, WhatsApp y empresa. */
+  accesoContacto?: boolean;
 }) {
   return (
     <Dialog open={!!carga} onOpenChange={onOpenChange}>
@@ -55,7 +59,15 @@ export function LoadDetailsDialog({
             </dl>
 
             <p className="flex items-center gap-2 text-sm text-foreground">
-              <span className="font-medium">{carga.empresa}</span>
+              <span className="font-medium">
+                {accesoContacto ? (
+                  carga.empresa
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-muted-foreground">
+                    <Lock className="h-3.5 w-3.5" /> Empresa reservada
+                  </span>
+                )}
+              </span>
               {carga.verificada && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
                   <BadgeCheck className="h-3.5 w-3.5" /> Empresa Verificada
@@ -63,12 +75,31 @@ export function LoadDetailsDialog({
               )}
             </p>
 
-            <DialogFooter>
-              <Button asChild className="w-full sm:w-auto">
-                <a href={`tel:${carga.telefono.replace(/\s/g, "")}`}>
-                  <Phone className="h-4 w-4" /> Llamar {carga.telefono}
-                </a>
-              </Button>
+            <DialogFooter className="gap-2">
+              {accesoContacto ? (
+                <>
+                  <Button asChild className="w-full sm:w-auto">
+                    <a href={`tel:${carga.telefono.replace(/\s/g, "")}`}>
+                      <Phone className="h-4 w-4" /> Llamar {carga.telefono}
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full sm:w-auto">
+                    <a
+                      href={`https://wa.me/${carga.telefono.replace(/[^0-9]/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MessageCircle className="h-4 w-4" /> WhatsApp
+                    </a>
+                  </Button>
+                </>
+              ) : (
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/planes" onClick={() => onOpenChange(false)}>
+                    <Lock className="h-4 w-4" /> Ver datos de contacto (Requiere Plan Pro)
+                  </Link>
+                </Button>
+              )}
             </DialogFooter>
           </>
         )}
