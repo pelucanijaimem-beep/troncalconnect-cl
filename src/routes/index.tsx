@@ -402,6 +402,7 @@ function Index() {
         onOpenChange={(o) => !o && setRastreo(null)}
       />
       <DonateDialog open={donarOpen} onOpenChange={setDonarOpen} />
+      <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
       <Toaster />
     </div>
   );
