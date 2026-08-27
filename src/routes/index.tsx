@@ -493,6 +493,16 @@ function Index() {
       />
       <DonateDialog open={donarOpen} onOpenChange={setDonarOpen} />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
+      <VerificationDialog
+        open={verificacionOpen}
+        onOpenChange={setVerificacionOpen}
+        usuario={sesion?.nombre ?? ""}
+      />
+      <RatingDialog
+        evaluacion={evaluacion}
+        autor={sesion?.nombre ?? "Usuario TroncalTrack"}
+        onOpenChange={(o) => !o && setEvaluacion(null)}
+      />
       <Toaster />
     </div>
   );
