@@ -44,7 +44,7 @@ const PLANES = [
     descripcion: "Para generadores de carga y empresas logísticas.",
     icono: Building2,
     cta: "Suscribirme como Empresa",
-    href: "https://mpago.la/1zS%CuL",
+    href: "https://mpago.la/1zS5CuL",
     externo: true,
     features: [
       "Publicación ilimitada de fletes y cargas",
