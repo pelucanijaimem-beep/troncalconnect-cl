@@ -1,6 +1,10 @@
-import { ArrowRight, BadgeCheck, CalendarDays, Phone, Truck } from "lucide-react";
+import { ArrowRight, CalendarDays, Phone, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Camion } from "@/lib/troncal-data";
+import { VerificationBadge } from "./VerificationBadge";
+import { RatingSummary } from "./StarRating";
+import { useVerificacion } from "@/lib/use-verificacion";
+import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
 
 export function TruckCard({
   camion,
@@ -9,6 +13,10 @@ export function TruckCard({
   camion: Camion;
   onContactar: (c: Camion) => void;
 }) {
+  const verificacion = useVerificacion(camion.conductor);
+  const calificaciones = useCalificaciones();
+  const { promedio, total } = resumen(calificaciones, camion.conductor);
+
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-md">
       <div className="flex flex-wrap items-start gap-3">
@@ -34,11 +42,8 @@ export function TruckCard({
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
         <span className="text-sm font-medium text-foreground">{camion.conductor}</span>
-        {camion.verificado && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
-            <BadgeCheck className="h-3.5 w-3.5" /> Camionero Verificado
-          </span>
-        )}
+        <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
+        <RatingSummary promedio={promedio} total={total} />
         <Button className="ml-auto w-full sm:w-auto" onClick={() => onContactar(camion)}>
           <Phone className="h-4 w-4" /> Contactar / Llamar
         </Button>
