@@ -73,7 +73,7 @@ export function LoadCard({
             {money(carga.valorKm, carga.pais)} / km
           </p>
           <p className="text-sm font-semibold text-foreground">
-            Total: {money(total, carga.pais)}
+            Total: {money(montoTotal, carga.pais)}
           </p>
         </div>
       </div>
@@ -99,7 +99,7 @@ export function LoadCard({
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
         <span className="text-sm font-medium text-foreground">{carga.empresa}</span>
         <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
-        <RatingSummary promedio={promedio} total={total} />
+        <RatingSummary promedio={promedio} total={totalEval} />
         {carga.soloVerificados && (
           <span className="inline-flex items-center gap-1 rounded-full bg-trust-soft px-2 py-0.5 text-xs font-semibold text-trust">
             <ShieldCheck className="h-3.5 w-3.5" /> Exclusiva para verificados
