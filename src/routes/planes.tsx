@@ -110,7 +110,7 @@ const PLANES: Plan[] = [
     subtitulo: "Para generadores de carga y empresas logísticas.",
     precioMensual: 29990,
     cta: "Suscribirme como Empresa",
-    href: "https://mpago.la/2AuV6gH",
+    href: "https://mpago.la/1zS%CuL",
     externo: true,
     icono: Building2,
     features: [
