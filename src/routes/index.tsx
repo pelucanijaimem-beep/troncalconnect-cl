@@ -174,6 +174,32 @@ function Index() {
       resumen: `${t.origen} → ${t.destino} · ${t.carroceria} · ${t.toneladas} Ton`,
     });
 
+  const postular = async (c: Carga) => {
+    if (!sesion) {
+      abrirAuth("registro");
+      return;
+    }
+    if (!sesion.planActivo) {
+      toast.error("Necesitas un plan mensual activo", {
+        description:
+          "Suscríbete al Plan Transportista Pro ($14.990 CLP/mes) para postular a las cargas.",
+      });
+      return;
+    }
+    const error = await postularACarga(c.id, sesion.id, `${c.origen} → ${c.destino}`);
+    if (error) {
+      toast.error("No pudimos enviar tu postulación", {
+        description: "Verifica que tu plan mensual esté activo e inténtalo nuevamente.",
+      });
+      return;
+    }
+    agregarPostulacion(c.id);
+    toast.success("Postulación enviada", {
+      description: `El cargador ${c.empresa} recibirá tus datos de contacto.`,
+    });
+  };
+
+
   const iniciar = (c: Carga) => {
     iniciarViaje(c.id);
     setViajeActivo(c);
