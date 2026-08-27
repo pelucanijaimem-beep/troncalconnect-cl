@@ -188,9 +188,9 @@ function Index() {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
     setEvaluacion({
-      evaluado: esCamionero ? c.empresa : c.conductor ?? c.empresa,
+      evaluado: c.empresa,
       ruta: `${c.origen} → ${c.destino}`,
-      papel: esCamionero ? "Generador de Carga" : "Transportista",
+      papel: "Generador de Carga",
     });
   };
 
