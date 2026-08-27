@@ -134,6 +134,13 @@ export function Header({
                     <CreditCard className="h-4 w-4" /> Planes y Membresías
                   </Link>
                 </DropdownMenuItem>
+                {esAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="cursor-pointer">
+                      <ShieldCheck className="h-4 w-4" /> Panel de Administración
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={onSalir} className="cursor-pointer">
                   <LogOut className="h-4 w-4" /> Cerrar Sesión
                 </DropdownMenuItem>
