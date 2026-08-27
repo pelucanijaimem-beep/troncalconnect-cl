@@ -109,3 +109,12 @@ export function useVerificacion(clave: string | undefined | null): Verificacion 
   if (!clave) return VERIFICACION_VACIA;
   return m[claveUsuario(clave)] ?? VERIFICACION_VACIA;
 }
+
+/** Lee una verificación desde un mapa ya obtenido con useVerificaciones(). */
+export function getVerificacionDe(
+  mapa: Record<string, Verificacion>,
+  clave: string | undefined | null,
+): Verificacion {
+  if (!clave) return VERIFICACION_VACIA;
+  return mapa[claveUsuario(clave)] ?? VERIFICACION_VACIA;
+}
