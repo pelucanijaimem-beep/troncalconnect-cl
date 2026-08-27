@@ -90,9 +90,11 @@ export function LoadCard({
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
         <span className="text-sm font-medium text-foreground">{carga.empresa}</span>
-        {carga.verificada && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
-            <BadgeCheck className="h-3.5 w-3.5" /> Empresa Verificada
+        <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
+        <RatingSummary promedio={promedio} total={total} />
+        {carga.soloVerificados && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-trust-soft px-2 py-0.5 text-xs font-semibold text-trust">
+            <ShieldCheck className="h-3.5 w-3.5" /> Exclusiva para verificados
           </span>
         )}
         <div className="ml-auto flex w-full flex-wrap gap-2 sm:w-auto">
