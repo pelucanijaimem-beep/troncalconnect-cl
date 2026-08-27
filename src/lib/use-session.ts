@@ -1,70 +1,116 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import type { Rol } from "@/components/troncal/RoleSwitcher";
 
 export type Sesion = {
+  id: string;
   nombre: string;
   email: string;
   rol: Rol;
   telefono?: string;
+  planActivo: boolean;
 };
 
-const KEY = "troncaltrack.sesion";
 let sesion: Sesion | null = null;
-let cargada = false;
+let iniciado = false;
 const oyentes = new Set<() => void>();
 
-function cargar() {
-  if (cargada || typeof window === "undefined") return;
-  cargada = true;
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (raw) sesion = JSON.parse(raw) as Sesion;
-  } catch {
-    sesion = null;
-  }
+const emitir = () => oyentes.forEach((f) => f());
+
+async function cargarPerfil(userId: string, email: string) {
+  const { data } = await supabase
+    .from("perfiles")
+    .select("nombre, email, telefono, rol, plan_activo")
+    .eq("id", userId)
+    .maybeSingle();
+
+  sesion = {
+    id: userId,
+    nombre: data?.nombre || email.split("@")[0] || "Usuario",
+    email: data?.email || email,
+    rol: (data?.rol as Rol) ?? "camionero",
+    ...(data?.telefono ? { telefono: data.telefono } : {}),
+    planActivo: Boolean(data?.plan_activo),
+  };
+  emitir();
 }
 
-function emitir() {
-  oyentes.forEach((f) => f());
+function iniciar() {
+  if (iniciado || typeof window === "undefined") return;
+  iniciado = true;
+
+  void supabase.auth.getSession().then(({ data }) => {
+    const u = data.session?.user;
+    if (u) void cargarPerfil(u.id, u.email ?? "");
+  });
+
+  supabase.auth.onAuthStateChange((_evento, s) => {
+    const u = s?.user;
+    if (!u) {
+      sesion = null;
+      emitir();
+      return;
+    }
+    void cargarPerfil(u.id, u.email ?? "");
+  });
 }
 
 function subscribe(f: () => void) {
-  cargar();
+  iniciar();
   oyentes.add(f);
   return () => oyentes.delete(f);
 }
 
-function getSnapshot() {
-  cargar();
-  return sesion;
+const getSnapshot = () => sesion;
+
+/** Refresca el perfil del usuario actual desde la base de datos. */
+export async function refrescarSesion() {
+  const { data } = await supabase.auth.getUser();
+  if (data.user) await cargarPerfil(data.user.id, data.user.email ?? "");
 }
 
-export function iniciarSesion(nueva: Sesion) {
-  sesion = nueva;
-  cargada = true;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(nueva));
-  } catch {
-    /* almacenamiento no disponible */
-  }
-  emitir();
+export async function registrarUsuario(datos: {
+  nombre: string;
+  email: string;
+  password: string;
+  rol: Rol;
+  telefono?: string;
+  rut?: string;
+}) {
+  const { error } = await supabase.auth.signUp({
+    email: datos.email,
+    password: datos.password,
+    options: {
+      emailRedirectTo: `${window.location.origin}/`,
+      data: {
+        nombre: datos.nombre,
+        rol: datos.rol,
+        telefono: datos.telefono ?? "",
+        rut: datos.rut ?? "",
+      },
+    },
+  });
+  return error?.message ?? null;
 }
 
-export function cerrarSesion() {
+export async function iniciarSesionEmail(email: string, password: string) {
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  return error?.message ?? null;
+}
+
+export async function recuperarPassword(email: string) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/`,
+  });
+  return error?.message ?? null;
+}
+
+export async function cerrarSesion() {
+  await supabase.auth.signOut();
   sesion = null;
-  cargada = true;
-  try {
-    window.localStorage.removeItem(KEY);
-  } catch {
-    /* almacenamiento no disponible */
-  }
   emitir();
 }
 
 export function useSesion() {
-  return useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    () => null as Sesion | null,
-  );
+  return useSyncExternalStore(subscribe, getSnapshot, () => null as Sesion | null);
 }

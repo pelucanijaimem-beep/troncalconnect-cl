@@ -12,7 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
-import { iniciarSesion } from "@/lib/use-session";
+import {
+  iniciarSesionEmail,
+  recuperarPassword,
+  registrarUsuario,
+} from "@/lib/use-session";
 
 type Vista = "login" | "registro" | "recuperar";
 
@@ -29,6 +33,7 @@ export function AuthDialog({
 }) {
   const [vista, setVista] = useState<Vista>(modo);
   const [rolCuenta, setRolCuenta] = useState<Rol>(rol);
+  const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -37,30 +42,50 @@ export function AuthDialog({
     }
   }, [open, modo, rol]);
 
-  const enviar = (e: FormEvent, mensaje: string) => {
+  const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const email = String(new FormData(e.currentTarget).get("email") ?? "");
+    setEnviando(true);
+    const error = await recuperarPassword(email);
+    setEnviando(false);
+    if (error) {
+      toast.error("No pudimos enviar el correo", { description: error });
+      return;
+    }
     onOpenChange(false);
-    toast.success(mensaje);
+    toast.success("Te enviamos un correo para restablecer tu contraseña.");
   };
 
-  const autenticar = (e: FormEvent<HTMLFormElement>, tipo: "login" | "registro") => {
+  const autenticar = async (e: FormEvent<HTMLFormElement>, tipo: "login" | "registro") => {
     e.preventDefault();
     const datos = new FormData(e.currentTarget);
     const email = String(datos.get("email") ?? "");
+    const password = String(datos.get("password") ?? "");
     const nombre = String(datos.get("nombre") ?? "") || email.split("@")[0] || "Usuario";
     const telefono = String(datos.get("telefono") ?? "");
-    iniciarSesion({
-      nombre,
-      email,
-      rol: tipo === "registro" ? rolCuenta : rol,
-      ...(telefono ? { telefono } : {}),
-    });
+    const rut = String(datos.get("rut") ?? "");
+
+    setEnviando(true);
+    const error =
+      tipo === "registro"
+        ? await registrarUsuario({ nombre, email, password, rol: rolCuenta, telefono, rut })
+        : await iniciarSesionEmail(email, password);
+    setEnviando(false);
+
+    if (error) {
+      toast.error(tipo === "registro" ? "No pudimos crear tu cuenta" : "No pudimos iniciar sesión", {
+        description: error,
+      });
+      return;
+    }
+
     onOpenChange(false);
     toast.success(
       tipo === "registro" ? "¡Cuenta creada! Ya puedes ver las cargas en vivo." : "Sesión iniciada.",
       { description: "Tu tablero privado está activo." },
     );
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,17 +98,21 @@ export function AuthDialog({
                 Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.
               </DialogDescription>
             </DialogHeader>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => enviar(e, "Te enviamos un correo para restablecer tu contraseña.")}
-            >
+            <form className="space-y-4" onSubmit={(e) => void enviar(e)}>
               <div className="space-y-1.5">
                 <Label htmlFor="r-email">Correo electrónico</Label>
-                <Input id="r-email" type="email" placeholder="tucorreo@ejemplo.cl" required />
+                <Input
+                  id="r-email"
+                  name="email"
+                  type="email"
+                  placeholder="tucorreo@ejemplo.cl"
+                  required
+                />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={enviando}>
                 Enviar enlace de recuperación
               </Button>
+
               <Button
                 type="button"
                 variant="ghost"
@@ -110,14 +139,14 @@ export function AuthDialog({
               </TabsList>
 
               <TabsContent value="login" className="mt-4">
-                <form className="space-y-4" onSubmit={(e) => autenticar(e, "login")}>
+                <form className="space-y-4" onSubmit={(e) => void autenticar(e, "login")}>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-email">Correo electrónico</Label>
                     <Input id="l-email" name="email" type="email" placeholder="tucorreo@ejemplo.cl" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-pass">Contraseña</Label>
-                    <Input id="l-pass" type="password" placeholder="••••••••" required />
+                    <Input id="l-pass" name="password" type="password" placeholder="••••••••" required />
                   </div>
                   <button
                     type="button"
@@ -126,14 +155,14 @@ export function AuthDialog({
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full" disabled={enviando}>
                     Iniciar Sesión
                   </Button>
                 </form>
               </TabsContent>
 
               <TabsContent value="registro" className="mt-4">
-                <form className="space-y-4" onSubmit={(e) => autenticar(e, "registro")}>
+                <form className="space-y-4" onSubmit={(e) => void autenticar(e, "registro")}>
                   <div className="space-y-1.5">
                     <Label>Tipo de cuenta</Label>
                     <RoleSwitcher rol={rolCuenta} onChange={setRolCuenta} />
@@ -151,7 +180,7 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-rut">RUT</Label>
-                    <Input id="s-rut" placeholder="12.345.678-9" required />
+                    <Input id="s-rut" name="rut" placeholder="12.345.678-9" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-email">Correo electrónico</Label>
@@ -163,11 +192,19 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-pass">Contraseña</Label>
-                    <Input id="s-pass" type="password" placeholder="••••••••" required />
+                    <Input
+                      id="s-pass"
+                      name="password"
+                      type="password"
+                      minLength={6}
+                      placeholder="••••••••"
+                      required
+                    />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full" disabled={enviando}>
                     Regístrate
                   </Button>
+
                 </form>
               </TabsContent>
             </Tabs>

@@ -5,6 +5,8 @@ import {
   Package,
   Phone,
   PlayCircle,
+  Send,
+
   Satellite,
   ShieldCheck,
 } from "lucide-react";
@@ -27,6 +29,8 @@ export function LoadCard({
   onFinalizar,
   onRastrear,
   onVerViaje,
+  onPostular,
+  yaPostulada = false,
 }: {
   carga: Carga;
   rol: Rol;
@@ -37,6 +41,8 @@ export function LoadCard({
   onFinalizar: (c: Carga) => void;
   onRastrear: (c: Carga) => void;
   onVerViaje: (c: Carga) => void;
+  onPostular?: (c: Carga) => void;
+  yaPostulada?: boolean;
 }) {
   const verificacion = useVerificacion(carga.empresa);
   const calificaciones = useCalificaciones();
@@ -44,6 +50,7 @@ export function LoadCard({
   const montoTotal = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
+
 
 
   return (
@@ -119,6 +126,16 @@ export function LoadCard({
               >
                 <Phone className="h-4 w-4" /> Contactar
               </Button>
+              {onPostular && !enRuta && !entregada && (
+                <Button
+                  className="flex-1 sm:flex-none"
+                  disabled={yaPostulada}
+                  onClick={() => onPostular(carga)}
+                >
+                  <Send className="h-4 w-4" /> {yaPostulada ? "Postulación enviada" : "Postular"}
+                </Button>
+              )}
+
               {!enRuta && !entregada && (
                 <Button className="flex-1 sm:flex-none" onClick={() => onIniciar(carga)}>
                   <PlayCircle className="h-4 w-4" /> Iniciar Viaje
