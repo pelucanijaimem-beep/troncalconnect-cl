@@ -33,6 +33,7 @@ export const Route = createFileRoute("/registro")({
 function RegistroPage() {
   const navigate = useNavigate();
   const [rol, setRol] = useState<Rol>("camionero");
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
