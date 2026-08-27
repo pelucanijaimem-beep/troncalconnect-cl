@@ -9,103 +9,46 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type Bloque = {
-  titulo: string;
-  intro?: string;
-  puntos: { titulo?: string; texto: string; lista?: string[] }[];
-};
-
-const BLOQUES: Bloque[] = [
+const SECCIONES = [
   {
+    numero: "1",
     titulo: "Naturaleza del Servicio (Plataforma de Intermediación Digital)",
-    intro:
-      "TroncalTrack es una plataforma tecnológica independiente cuyo único propósito es poner en contacto a empresas que requieren trasladar mercancías con transportistas o empresas de transporte que ofrecen dichos servicios.",
-    puntos: [
-      {
-        titulo: "No somos una empresa de transportes",
-        texto:
-          "TroncalTrack no posee flota vehicular propia, no actúa como transportista, ni opera como agente o consignatario de carga.",
-      },
-      {
-        titulo: "Sin relación de subordinación",
-        texto:
-          "El uso de la plataforma no establece ninguna relación de sociedad, asociación, contrato de trabajo o representación jurídica entre TroncalTrack y ninguna de las partes que interactúan en ella.",
-      },
+    contenido: [
+      "TRONCALTRACK.CL es una plataforma tecnológica de información e intermediación digital que pone en contacto a usuarios que requieren contratar servicios de transporte de carga ('Generadores de Carga' / 'Empresas') con prestadores independientes de servicios de transporte de carga ('Transportistas').",
+      "TRONCALTRACK.CL NO ES UNA EMPRESA DE TRANSPORTES, NI OPERADOR LOGÍSTICO, NI CONSOLIDADOR DE CARGA, NI AGENCIA DE ADUANAS. La plataforma no presta servicios de transporte, no es dueña de flota de camiones, ni actúa como empleador o patrón de los transportistas registrados.",
     ],
   },
   {
-    titulo: "Exclusión de Responsabilidad Operativa y Contractual",
-    intro: "TroncalTrack actúa exclusivamente como un canal o punto de encuentro digital. Por lo tanto:",
-    puntos: [
-      {
-        titulo: "Negociación Directa",
-        texto:
-          "Las condiciones del servicio de transporte (tales como precios, tarifas, formas y plazos de pago, horarios de entrega, requerimientos de carga, seguros y especificaciones del trayecto) se negocian, acuerdan y firman de forma libre y directa entre la Empresa y el Transportista.",
-      },
-      {
-        titulo: "Sin responsabilidad por incumplimientos",
-        texto:
-          "TroncalTrack NO se hace responsable, bajo ningún motivo ni circunstancia, por el incumplimiento parcial, total o defectuoso de los acuerdos pactados entre las partes. Esto incluye, pero no se limita a:",
-        lista: [
-          "Retrasos en las entregas o recogidas de carga.",
-          "Extravíos, robos, hurtos, merma o daños en la mercancía.",
-          "Incumplimiento o no pago de las tarifas pactadas por parte de la empresa.",
-          "Cancelaciones de viajes a última hora por cualquiera de las partes.",
-          "Fallas mecánicas, siniestros o accidentes en ruta.",
-        ],
-      },
+    numero: "2",
+    titulo: "Exclusión y Limitación de Responsabilidad Legal",
+    contenido: [
+      "Al utilizar la plataforma, el Usuario (tanto Empresa como Transportista) reconoce y acepta expresamente que TRONCALTRACK.CL queda totalmente eximida de cualquier responsabilidad legal, civil, penal o comercial derivada de:",
+      "Robos, Hurtos o Enajenación Indebida: TroncalTrack.cl no se hace responsable por el robo, asalto, piratería de carretera, pérdida total o parcial, mermas o daños materiales de las mercancías o bienes transportados, cualquiera sea la causa o circunstancia durante el trayecto, carga o descarga.",
+      "Incumplimientos Contratados: TroncalTrack.cl no garantiza el cumplimiento de los tiempos de entrega, acuerdos de pago, condiciones de la carga, ni los compromisos pactados entre el Generador de Carga y el Transportista. La relación contractual del flete es exclusiva y directa entre las partes.",
+      "Seguros de Carga: Es responsabilidad única del Generador de Carga contratar las pólizas de seguro de transporte de carga correspondientes, y es responsabilidad del Transportista contar con las pólizas de responsabilidad civil o daños a terceros exigidas por la ley chilena.",
+      "Daños a Terceros o Accidentes: TroncalTrack.cl no asume responsabilidad alguna por accidentes de tránsito, siniestros, infracciones a la Ley de Tránsito, o daños causados a terceros por los vehículos de los transportistas.",
     ],
   },
   {
-    titulo: "Resolución de Controversias",
-    intro:
-      "Dado que TroncalTrack no forma parte del contrato comercial suscrito entre el transportista y la empresa contratante:",
-    puntos: [
-      {
-        texto:
-          "Cualquier discrepancia, reclamo, disputa comercial o acción legal que surja derivada del servicio de transporte deberá ser resuelta única y exclusivamente entre la Empresa y el Transportista.",
-      },
-      {
-        texto:
-          "TroncalTrack no actuará como árbitro, mediador formal ni tribunal en ningún tipo de conflicto comercial, administrativo o legal.",
-      },
+    numero: "3",
+    titulo: "Sello de Verificación 'TroncalCheck'",
+    contenido: [
+      "La verificación de antecedentes (TroncalCheck) realizada por TroncalTrack.cl consiste en una revisión informativa de documentos públicos (tales como RUT, revisión técnica, inscripción MTT u hoja de vida de conductor).",
+      "Dicha verificación constituye una herramienta de apoyo preventivo y no representa una garantía absoluta o fianza sobre la conducta moral, idoneidad profesional o solvencia financiera de los usuarios. Cada parte debe aplicar la debida diligencia antes de entregar mercancías o firmar órdenes de flete.",
     ],
   },
   {
-    titulo: "Capacidad de Gestión y Soporte",
-    intro:
-      "La intervención de TroncalTrack ante cualquier evento, eventualidad o desacuerdo se limita estrictamente a:",
-    puntos: [
-      {
-        texto:
-          "Facilitar, en la medida de sus posibilidades técnicas, las vías de contacto registradas (teléfono, correo electrónico o mensajería) para que las partes involucradas puedan comunicarse directamente y gestionar la solución del problema.",
-      },
-      {
-        texto:
-          "TroncalTrack se reserva el derecho discrecional de suspender o bloquear de forma definitiva la cuenta de cualquier usuario (empresa o transportista) que acumule reclamos reiterados de incumplimiento o mal uso del servicio.",
-      },
+    numero: "4",
+    titulo: "Tarifas y Negociación Directa",
+    contenido: [
+      "Los precios de los fletes, condiciones de pago y tarifas mostradas o acordadas dentro o fuera de la plataforma son pactados libremente entre el Transportista y la Empresa. TroncalTrack.cl únicamente cobra una tarifa por concepto de suscripción o acceso al software/directorio de contactos y no retiene porcentajes ni interviene en el flujo de dinero del flete.",
     ],
   },
   {
-    titulo: "Veracidad de la Información y Verificación",
-    puntos: [
-      {
-        texto:
-          "Cada usuario es el único y exclusivo responsable de la veracidad, vigencia y legalidad de la información que publica o proporciona dentro de TroncalTrack (datos personales, licencias de conducir, permisos de circulación, revisiones técnicas, características de la carga, valores, etc.).",
-      },
-      {
-        texto:
-          "TroncalTrack no garantiza la autenticidad ni el estado legal o comercial de los usuarios ni de sus vehículos, recomendando siempre a las partes realizar sus propias validaciones antes de concretar una operación de transporte.",
-      },
-    ],
-  },
-  {
-    titulo: "Aceptación de los Términos",
-    puntos: [
-      {
-        texto:
-          "El uso continuo de la plataforma troncaltrack.cl implica la lectura, comprensión y aceptación total de este documento. Si un usuario no está de acuerdo con alguna de estas condiciones, deberá abstenerse de utilizar los servicios de la plataforma.",
-      },
+    numero: "5",
+    titulo: "Jurisdicción y Ley Aplicable",
+    contenido: [
+      "Para todos los efectos legales, estos términos se rigen por las leyes de la República de Chile. Cualquier controversia será sometida a los tribunales ordinarios de justicia de la ciudad de Concepción o Santiago de Chile.",
     ],
   },
 ];
@@ -123,10 +66,10 @@ export function TermsDialog({
         <DialogHeader className="border-b border-border px-6 py-5 text-left">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <ShieldCheck className="h-5 w-5 text-primary" />
-            Términos, Condiciones y Políticas del Servicio
+            Términos, Condiciones y Póliza de Responsabilidad
           </DialogTitle>
           <DialogDescription className="text-left">
-            TroncalTrack.cl — Última actualización: 2026
+            TroncalTrack.cl — Última actualización: Agosto de 2026
           </DialogDescription>
         </DialogHeader>
 
@@ -139,34 +82,20 @@ export function TermsDialog({
           </p>
 
           <ol className="mt-6 space-y-6">
-            {BLOQUES.map((b, i) => (
-              <li key={b.titulo} className="rounded-xl border border-border bg-surface p-5">
+            {SECCIONES.map((s) => (
+              <li key={s.numero} className="rounded-xl border border-border bg-surface p-5">
                 <div className="flex items-start gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-                    {i + 1}
+                    {s.numero}
                   </span>
-                  <h3 className="mt-1 text-base font-bold text-foreground sm:text-lg">{b.titulo}</h3>
+                  <h3 className="mt-1 text-base font-bold text-foreground sm:text-lg">{s.titulo}</h3>
                 </div>
 
-                {b.intro && (
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.intro}</p>
-                )}
-
-                <div className="mt-4 space-y-4">
-                  {b.puntos.map((p) => (
-                    <div key={p.texto} className="border-l-2 border-primary/30 pl-3">
-                      {p.titulo && (
-                        <p className="text-sm font-semibold text-foreground">{p.titulo}</p>
-                      )}
-                      <p className="text-sm leading-relaxed text-muted-foreground">{p.texto}</p>
-                      {p.lista && (
-                        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-                          {p.lista.map((l) => (
-                            <li key={l}>{l}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
+                <div className="mt-4 space-y-3">
+                  {s.contenido.map((parrafo, i) => (
+                    <p key={i} className="text-sm leading-relaxed text-muted-foreground">
+                      {parrafo}
+                    </p>
                   ))}
                 </div>
               </li>
