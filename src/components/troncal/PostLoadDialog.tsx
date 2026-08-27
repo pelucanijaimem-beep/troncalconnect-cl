@@ -165,8 +165,8 @@ export function PostLoadDialog({
             </span>
           </label>
           <DialogFooter>
-            <Button type="submit" className="w-full sm:w-auto">
-              Publicar Flete
+            <Button type="submit" disabled={enviando} className="w-full sm:w-auto">
+              {enviando ? "Publicando…" : "Publicar Flete"}
             </Button>
           </DialogFooter>
         </form>
