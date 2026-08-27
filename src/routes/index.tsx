@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PackagePlus, Search, Truck } from "lucide-react";
@@ -102,6 +102,7 @@ function Index() {
   const { cargas: CARGAS } = useCargas(Boolean(sesion));
   const { ids: postuladas, agregar: agregarPostulacion } = useMisPostulaciones(sesion?.id);
   const accesoContacto = Boolean(sesion?.planActivo);
+  const navigate = useNavigate();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const paisActual = getPais(pais);
