@@ -37,6 +37,7 @@ import {
 } from "@/components/troncal/RatingDialog";
 import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
 import { usePublicaciones } from "@/lib/use-publicaciones";
+import { postularACarga, useCargas, useMisPostulaciones } from "@/lib/use-cargas";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import {
   getPais,
