@@ -24,6 +24,9 @@
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-success-soft: var(--success-soft);
+  --color-trust: var(--trust);
+  --color-trust-foreground: var(--trust-foreground);
+  --color-trust-soft: var(--trust-soft);
   --shadow-card: var(--shadow-card);
 
   --radius-sm: calc(var(--radius) - 4px);
