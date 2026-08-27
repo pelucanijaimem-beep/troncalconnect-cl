@@ -139,14 +139,14 @@ export function AuthDialog({
               </TabsList>
 
               <TabsContent value="login" className="mt-4">
-                <form className="space-y-4" onSubmit={(e) => autenticar(e, "login")}>
+                <form className="space-y-4" onSubmit={(e) => void autenticar(e, "login")}>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-email">Correo electrónico</Label>
                     <Input id="l-email" name="email" type="email" placeholder="tucorreo@ejemplo.cl" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-pass">Contraseña</Label>
-                    <Input id="l-pass" type="password" placeholder="••••••••" required />
+                    <Input id="l-pass" name="password" type="password" placeholder="••••••••" required />
                   </div>
                   <button
                     type="button"
@@ -155,14 +155,14 @@ export function AuthDialog({
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full" disabled={enviando}>
                     Iniciar Sesión
                   </Button>
                 </form>
               </TabsContent>
 
               <TabsContent value="registro" className="mt-4">
-                <form className="space-y-4" onSubmit={(e) => autenticar(e, "registro")}>
+                <form className="space-y-4" onSubmit={(e) => void autenticar(e, "registro")}>
                   <div className="space-y-1.5">
                     <Label>Tipo de cuenta</Label>
                     <RoleSwitcher rol={rolCuenta} onChange={setRolCuenta} />
@@ -180,7 +180,7 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-rut">RUT</Label>
-                    <Input id="s-rut" placeholder="12.345.678-9" required />
+                    <Input id="s-rut" name="rut" placeholder="12.345.678-9" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-email">Correo electrónico</Label>
@@ -192,11 +192,19 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-pass">Contraseña</Label>
-                    <Input id="s-pass" type="password" placeholder="••••••••" required />
+                    <Input
+                      id="s-pass"
+                      name="password"
+                      type="password"
+                      minLength={6}
+                      placeholder="••••••••"
+                      required
+                    />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full" disabled={enviando}>
                     Regístrate
                   </Button>
+
                 </form>
               </TabsContent>
             </Tabs>
