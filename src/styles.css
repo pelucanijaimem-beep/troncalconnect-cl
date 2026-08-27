@@ -27,6 +27,7 @@
   --color-trust: var(--trust);
   --color-trust-foreground: var(--trust-foreground);
   --color-trust-soft: var(--trust-soft);
+  --color-warning: var(--warning);
   --shadow-card: var(--shadow-card);
 
   --radius-sm: calc(var(--radius) - 4px);
