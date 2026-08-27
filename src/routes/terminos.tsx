@@ -1,13 +1,31 @@
-import { ShieldCheck } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ShieldCheck, ArrowLeft, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
+export const Route = createFileRoute("/terminos")({
+  head: () => ({
+    meta: [
+      { title: "Términos, Condiciones y Póliza — TroncalTrack" },
+      {
+        name: "description",
+        content:
+          "Términos, condiciones de uso y póliza de limitación de responsabilidad de TroncalTrack.cl",
+      },
+      {
+        property: "og:title",
+        content: "Términos, Condiciones y Póliza — TroncalTrack",
+      },
+      {
+        property: "og:description",
+        content:
+          "Términos, condiciones de uso y póliza de limitación de responsabilidad de TroncalTrack.cl",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: TerminosPage,
+});
 
 const SECCIONES = [
   {
@@ -53,62 +71,71 @@ const SECCIONES = [
   },
 ];
 
-export function TermsDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (o: boolean) => void;
-}) {
+function TerminosPage() {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col overflow-hidden p-0">
-        <DialogHeader className="border-b border-border px-6 py-5 text-left">
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            Términos, Condiciones y Póliza de Responsabilidad
-          </DialogTitle>
-          <DialogDescription className="text-left">
-            TroncalTrack.cl — Última actualización: Agosto de 2026
-          </DialogDescription>
-        </DialogHeader>
+    <main className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+          <Link to="/" className="flex items-center gap-2 text-lg font-bold text-foreground">
+            <span className="text-primary">TroncalTrack</span>
+            <span className="text-xs align-top text-muted-foreground">™</span>
+          </Link>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/" className="flex items-center gap-1.5">
+              <ArrowLeft className="h-4 w-4" />
+              Volver al inicio
+            </Link>
+          </Button>
+        </div>
+      </header>
 
-        <div className="overflow-y-auto px-6 py-4">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Bienvenido a TroncalTrack.cl. Al acceder, navegar o utilizar nuestra plataforma web y sus
-            servicios, el usuario (ya sea en rol de Empresa/Generador de Carga o
-            Transportista/Camionero) acepta de manera íntegra y sin reservas los términos descritos a
-            continuación.
-          </p>
-
-          <ol className="mt-6 space-y-6">
-            {SECCIONES.map((s) => (
-              <li key={s.numero} className="rounded-xl border border-border bg-surface p-5">
-                <div className="flex items-start gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-                    {s.numero}
-                  </span>
-                  <h3 className="mt-1 text-base font-bold text-foreground sm:text-lg">{s.titulo}</h3>
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  {s.contenido.map((parrafo, i) => (
-                    <p key={i} className="text-sm leading-relaxed text-muted-foreground">
-                      {parrafo}
-                    </p>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ol>
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        <div className="mb-10 text-center">
+          <div className="mb-4 inline-flex items-center justify-center rounded-full bg-primary/10 p-3">
+            <ShieldCheck className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+            Términos, Condiciones de Uso y Póliza de Limitación de Responsabilidad
+          </h1>
+          <p className="mt-3 text-lg font-semibold text-foreground">TRONCALTRACK.CL</p>
+          <p className="mt-1 text-sm text-muted-foreground">Última actualización: Agosto de 2026</p>
         </div>
 
-        <DialogFooter className="border-t border-border px-6 py-4">
-          <Button className="w-full sm:w-auto" onClick={() => onOpenChange(false)}>
-            Entendido
+        <div className="space-y-8">
+          {SECCIONES.map((seccion) => (
+            <section
+              key={seccion.numero}
+              className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+            >
+              <h2 className="mb-4 flex items-start gap-3 text-xl font-bold text-foreground">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+                  {seccion.numero}
+                </span>
+                <span className="pt-0.5">{seccion.titulo}</span>
+              </h2>
+              <div className="space-y-4">
+                {seccion.contenido.map((parrafo, i) => (
+                  <p key={i} className="text-sm leading-relaxed text-muted-foreground">
+                    {parrafo}
+                  </p>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <div className="mt-12 flex flex-col items-center justify-center gap-3 border-t border-border pt-8 sm:flex-row">
+          <Button asChild>
+            <Link to="/registro" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Volver al registro
+            </Link>
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button variant="outline" asChild>
+            <Link to="/planes">Ver planes</Link>
+          </Button>
+        </div>
+      </div>
+    </main>
   );
 }

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RoleSwitcher, type Rol } from "@/components/troncal/RoleSwitcher";
@@ -32,10 +33,17 @@ export const Route = createFileRoute("/registro")({
 function RegistroPage() {
   const navigate = useNavigate();
   const [rol, setRol] = useState<Rol>("camionero");
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!aceptaTerminos) {
+      toast.error("Debes aceptar los términos y condiciones", {
+        description: "Marca la casilla para continuar.",
+      });
+      return;
+    }
     const datos = new FormData(e.currentTarget);
     const nombre = String(datos.get("nombre") ?? "");
     const email = String(datos.get("email") ?? "");
@@ -132,6 +140,26 @@ function RegistroPage() {
               placeholder="••••••••"
               required
             />
+          </div>
+
+          <div className="flex items-start gap-3 rounded-xl border border-border bg-surface p-4">
+            <Checkbox
+              id="terminos"
+              checked={aceptaTerminos}
+              onCheckedChange={(v) => setAceptaTerminos(Boolean(v))}
+              className="mt-0.5"
+            />
+            <Label htmlFor="terminos" className="cursor-pointer text-sm leading-snug text-muted-foreground">
+              Acepto los{" "}
+              <Link
+                to="/terminos"
+                target="_blank"
+                className="font-semibold text-primary hover:underline"
+              >
+                Términos, Condiciones y la Póliza de Exención de Responsabilidad
+              </Link>{" "}
+              de TroncalTrack.cl
+            </Label>
           </div>
 
           <Button
