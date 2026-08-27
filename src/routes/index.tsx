@@ -401,6 +401,8 @@ function Index() {
                     onFinalizar={finalizar}
                     onRastrear={rastrear}
                     onVerViaje={setViajeActivo}
+                    onPostular={(carga) => void postular(carga)}
+                    yaPostulada={postuladas.includes(c.id)}
                   />
                 ))
               : camiones.map((t) => (
