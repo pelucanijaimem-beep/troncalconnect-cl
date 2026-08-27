@@ -262,7 +262,7 @@ function Index() {
 
       <BenefitsGrid />
 
-      <PricingPlans onRegistro={() => abrirAuth("registro")} onDonar={() => setDonarOpen(true)} />
+      <PricingPlans onRegistro={() => abrirAuth("registro")} />
 
       <ComparisonTable />
 
