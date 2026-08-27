@@ -108,10 +108,11 @@ function Index() {
           coincide(c.destino, filtros.destino) &&
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
           (!filtros.fecha || c.fecha === filtros.fecha) &&
+          (!c.soloVerificados || rol !== "camionero" || soyVerificado) &&
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
-    [filtros, pais, CARGAS, verificaciones],
+    [filtros, pais, CARGAS, verificaciones, rol, soyVerificado],
   );
 
   const camiones = useMemo(
