@@ -24,7 +24,6 @@ import { AuthDialog } from "@/components/troncal/AuthDialog";
 import { PostTruckDialog } from "@/components/troncal/PostTruckDialog";
 import { PostLoadDialog } from "@/components/troncal/PostLoadDialog";
 import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
-import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
@@ -89,7 +88,6 @@ function Index() {
   const [authModo, setAuthModo] = useState<"login" | "registro">("login");
   const [camionOpen, setCamionOpen] = useState(false);
   const [fleteOpen, setFleteOpen] = useState(false);
-  const [donarOpen, setDonarOpen] = useState(false);
   const [detalle, setDetalle] = useState<Carga | null>(null);
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
@@ -241,7 +239,7 @@ function Index() {
         onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
         onPublicarCarga={() => requiereSesion(() => setFleteOpen(true))}
       />
-      <LaunchBanner onDonar={() => setDonarOpen(true)} />
+      <LaunchBanner />
 
       <Hero onRegistro={() => abrirAuth("registro")} onDemo={solicitarDemo} />
 
@@ -465,12 +463,6 @@ function Index() {
             >
               Registro
             </button>
-            <button
-              onClick={() => setDonarOpen(true)}
-              className="cursor-pointer text-left font-medium text-primary hover:underline"
-            >
-              Apoyar el proyecto / Donaciones
-            </button>
           </div>
         </div>
       </footer>
@@ -491,7 +483,6 @@ function Index() {
         viaje={viajeRastreo}
         onOpenChange={(o) => !o && setRastreo(null)}
       />
-      <DonateDialog open={donarOpen} onOpenChange={setDonarOpen} />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
       <VerificationDialog
         open={verificacionOpen}
