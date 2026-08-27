@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as TerminosRouteImport } from './routes/terminos'
@@ -17,6 +18,11 @@ import { Route as TerminosRouteImport } from './routes/terminos'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanesRoute = PlanesRouteImport.update({
@@ -37,12 +43,14 @@ const TerminosRoute = TerminosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/planes': typeof PlanesRoute
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/planes': typeof PlanesRoute
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/planes': typeof PlanesRoute
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/planes' | '/registro' | '/terminos'
+  fullPaths: '/' | '/admin' | '/planes' | '/registro' | '/terminos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/planes' | '/registro' | '/terminos'
-  id: '__root__' | '/' | '/planes' | '/registro' | '/terminos'
+  to: '/' | '/admin' | '/planes' | '/registro' | '/terminos'
+  id: '__root__' | '/' | '/admin' | '/planes' | '/registro' | '/terminos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   PlanesRoute: typeof PlanesRoute
   RegistroRoute: typeof RegistroRoute
   TerminosRoute: typeof TerminosRoute
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/planes': {
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   PlanesRoute: PlanesRoute,
   RegistroRoute: RegistroRoute,
   TerminosRoute: TerminosRoute,
