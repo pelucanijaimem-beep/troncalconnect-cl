@@ -35,6 +35,7 @@ export function AuthDialog({
 }) {
   const [vista, setVista] = useState<Vista>(modo);
   const [rolCuenta, setRolCuenta] = useState<Rol>(rol);
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
