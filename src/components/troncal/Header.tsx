@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Truck, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -145,6 +146,13 @@ export function Header({
                     {n.label}
                   </button>
                 ))}
+                <Link
+                  to="/planes"
+                  onClick={() => setMenuAbierto(false)}
+                  className="rounded-md px-2 py-2 text-left text-sm font-semibold text-foreground hover:bg-surface"
+                >
+                  Planes
+                </Link>
               </nav>
               <CountrySelector
                 pais={pais}
