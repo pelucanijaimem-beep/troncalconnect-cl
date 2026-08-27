@@ -3,6 +3,8 @@ import {
   CalendarDays,
   CheckCircle2,
   Package,
+  Lock,
+  MessageCircle,
   Phone,
   PlayCircle,
   Send,
@@ -10,6 +12,7 @@ import {
   Satellite,
   ShieldCheck,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { money, type Carga } from "@/lib/troncal-data";
 import type { Viaje } from "@/lib/use-trip-tracking";
@@ -31,6 +34,7 @@ export function LoadCard({
   onVerViaje,
   onPostular,
   yaPostulada = false,
+  accesoContacto = false,
 }: {
   carga: Carga;
   rol: Rol;
@@ -43,6 +47,8 @@ export function LoadCard({
   onVerViaje: (c: Carga) => void;
   onPostular?: (c: Carga) => void;
   yaPostulada?: boolean;
+  /** true solo para usuarios con plan Pro activo: habilita datos de contacto. */
+  accesoContacto?: boolean;
 }) {
   const verificacion = useVerificacion(carga.empresa);
   const calificaciones = useCalificaciones();
@@ -50,6 +56,7 @@ export function LoadCard({
   const montoTotal = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
+  const wsp = carga.telefono.replace(/[^0-9]/g, "");
 
 
 
@@ -104,7 +111,15 @@ export function LoadCard({
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
-        <span className="text-sm font-medium text-foreground">{carga.empresa}</span>
+        <span className="text-sm font-medium text-foreground">
+          {accesoContacto ? (
+            carga.empresa
+          ) : (
+            <span className="inline-flex items-center gap-1 text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" /> Empresa reservada
+            </span>
+          )}
+        </span>
         <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
         <RatingSummary promedio={promedio} total={totalEval} />
         {carga.soloVerificados && (
@@ -119,13 +134,33 @@ export function LoadCard({
 
           {rol === "camionero" ? (
             <>
-              <Button
-                variant="outline"
-                className="flex-1 sm:flex-none"
-                onClick={() => onContactar(carga)}
-              >
-                <Phone className="h-4 w-4" /> Contactar
-              </Button>
+              {accesoContacto ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="flex-1 sm:flex-none"
+                    onClick={() => onContactar(carga)}
+                  >
+                    <Phone className="h-4 w-4" /> Llamar
+                  </Button>
+                  <Button asChild variant="outline" className="flex-1 sm:flex-none">
+                    <a
+                      href={`https://wa.me/${wsp}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="Contactar por WhatsApp"
+                    >
+                      <MessageCircle className="h-4 w-4" /> WhatsApp
+                    </a>
+                  </Button>
+                </>
+              ) : (
+                <Button asChild variant="outline" className="flex-1 sm:flex-none">
+                  <Link to="/planes">
+                    <Lock className="h-4 w-4" /> Ver datos de contacto (Requiere Plan Pro)
+                  </Link>
+                </Button>
+              )}
               {onPostular && !enRuta && !entregada && (
                 <Button
                   className="flex-1 sm:flex-none"

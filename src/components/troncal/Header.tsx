@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Truck, Menu } from "lucide-react";
+import { Truck, Menu, UserCircle2, LogOut, CreditCard, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -9,6 +9,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
 import { CountrySelector } from "./CountrySelector";
 import type { PaisCodigo } from "@/lib/troncal-data";
@@ -102,14 +110,35 @@ export function Header({
             onOpenChange={setPaisOpen}
           />
           {sesion ? (
-            <>
-              <span className="max-w-40 truncate text-sm font-semibold text-foreground">
-                {sesion.nombre}
-              </span>
-              <Button variant="outline" onClick={onSalir}>
-                Cerrar Sesión
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="max-w-52 cursor-pointer">
+                  <UserCircle2 className="h-4 w-4" />
+                  <span className="truncate">Mi Cuenta</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-60">
+                <DropdownMenuLabel className="space-y-0.5">
+                  <span className="block truncate text-sm font-bold">{sesion.nombre}</span>
+                  <span className="block truncate text-xs font-normal text-muted-foreground">
+                    {sesion.email}
+                  </span>
+                  <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    {sesion.planActivo ? "Plan Pro activo" : "Plan Inicial"}
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/planes" className="cursor-pointer">
+                    <CreditCard className="h-4 w-4" /> Planes y Membresías
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onSalir} className="cursor-pointer">
+                  <LogOut className="h-4 w-4" /> Cerrar Sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Button variant="outline" onClick={() => onAuth("login")}>
@@ -163,9 +192,26 @@ export function Header({
               />
               <RoleSwitcher rol={rol} onChange={onRolChange} />
               {sesion ? (
-                <Button variant="outline" className="w-full" onClick={onSalir}>
-                  Cerrar Sesión ({sesion.nombre})
-                </Button>
+                <div className="space-y-2 rounded-lg border border-border bg-surface p-3">
+                  <p className="flex items-center gap-2 text-sm font-bold text-foreground">
+                    <UserCircle2 className="h-4 w-4" /> {sesion.nombre}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">{sesion.email}</p>
+                  <p className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                    <BadgeCheck className="h-3.5 w-3.5" />
+                    {sesion.planActivo ? "Plan Pro activo" : "Plan Inicial"}
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      onSalir();
+                    }}
+                  >
+                    <LogOut className="h-4 w-4" /> Cerrar Sesión
+                  </Button>
+                </div>
               ) : (
                 <>
                   <Button variant="outline" className="w-full" onClick={() => onAuth("login")}>
