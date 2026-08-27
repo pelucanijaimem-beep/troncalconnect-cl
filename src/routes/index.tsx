@@ -187,6 +187,11 @@ function Index() {
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
+    setEvaluacion({
+      evaluado: esCamionero ? c.empresa : c.conductor ?? c.empresa,
+      ruta: `${c.origen} → ${c.destino}`,
+      papel: esCamionero ? "Generador de Carga" : "Transportista",
+    });
   };
 
   const rastrear = (c: Carga) => {
