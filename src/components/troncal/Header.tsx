@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Truck, Menu, UserCircle2, LogOut, CreditCard, BadgeCheck } from "lucide-react";
+import {
+  Truck,
+  Menu,
+  UserCircle2,
+  LogOut,
+  CreditCard,
+  BadgeCheck,
+  ShieldCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -21,6 +29,7 @@ import { RoleSwitcher, type Rol } from "./RoleSwitcher";
 import { CountrySelector } from "./CountrySelector";
 import type { PaisCodigo } from "@/lib/troncal-data";
 import type { Sesion } from "@/lib/use-session";
+import { useEsAdmin } from "@/lib/use-admin";
 
 type Props = {
   sesion: Sesion | null;
@@ -53,6 +62,7 @@ export function Header({
   const [paisOpen, setPaisOpen] = useState(false);
   const [paisOpenMovil, setPaisOpenMovil] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const { esAdmin } = useEsAdmin(sesion?.id);
 
   const items = (cerrarMenu: boolean, abrirPaises: () => void) => [
     { label: "Cargas", onClick: () => scrollA("cargas") },
