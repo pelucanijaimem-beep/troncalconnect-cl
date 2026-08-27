@@ -77,7 +77,7 @@ function RegistroPage() {
           </p>
         </div>
 
-        <form className="mt-6 space-y-4" onSubmit={enviar}>
+        <form className="mt-6 space-y-4" onSubmit={(e) => void enviar(e)}>
           <div className="space-y-1.5">
             <Label>Tipo de cuenta</Label>
             <RoleSwitcher rol={rol} onChange={setRol} />
@@ -97,7 +97,7 @@ function RegistroPage() {
 
           <div className="space-y-1.5">
             <Label htmlFor="rut">RUT</Label>
-            <Input id="rut" placeholder="12.345.678-9" required />
+            <Input id="rut" name="rut" placeholder="12.345.678-9" required />
           </div>
 
           <div className="space-y-1.5">
@@ -124,15 +124,24 @@ function RegistroPage() {
 
           <div className="space-y-1.5">
             <Label htmlFor="pass">Contraseña</Label>
-            <Input id="pass" type="password" placeholder="••••••••" required />
+            <Input
+              id="pass"
+              name="password"
+              type="password"
+              minLength={6}
+              placeholder="••••••••"
+              required
+            />
           </div>
 
           <Button
             type="submit"
+            disabled={enviando}
             className="w-full cursor-pointer transition-all hover:brightness-110"
           >
             Registrarme gratis
           </Button>
+
         </form>
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
