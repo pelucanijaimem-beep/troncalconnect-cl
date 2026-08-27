@@ -99,7 +99,7 @@ export function AuthDialog({
             <DialogHeader>
               <DialogTitle>Bienvenido a TroncalTrack</DialogTitle>
               <DialogDescription>
-                Crear tu cuenta es gratis durante nuestro lanzamiento regional.
+                Ingresa a tu cuenta o regístrate para acceder al tablero de cargas en vivo.
               </DialogDescription>
             </DialogHeader>
 
@@ -166,7 +166,7 @@ export function AuthDialog({
                     <Input id="s-pass" type="password" placeholder="••••••••" required />
                   </div>
                   <Button type="submit" className="w-full">
-                    Regístrate Gratis
+                    Regístrate
                   </Button>
                 </form>
               </TabsContent>

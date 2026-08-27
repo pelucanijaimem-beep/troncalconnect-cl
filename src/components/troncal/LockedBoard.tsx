@@ -20,7 +20,7 @@ export function LockedBoard({
           Las cargas en vivo son solo para usuarios registrados
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Protegemos los datos de contacto de empresas y camioneros. Crea tu cuenta gratuita para
+          Protegemos los datos de contacto de empresas y camioneros. Crea tu cuenta para
           ver los fletes disponibles, las tarifas por kilómetro y contactar directamente.
         </p>
 
@@ -69,12 +69,12 @@ export function LockedBoard({
             <LogIn className="h-4 w-4" /> Iniciar Sesión para Ver Cargas en Vivo
           </Button>
           <Button size="lg" variant="outline" onClick={onRegistro}>
-            Crear cuenta gratis
+            Crear cuenta
           </Button>
         </div>
         <p className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
-          <ShieldCheck className="h-4 w-4 text-success" /> Registro gratuito durante el lanzamiento
-          regional. Sin tarjeta de crédito.
+          <ShieldCheck className="h-4 w-4 text-success" /> Registro con el Plan Inicial, sin tarjeta
+          de crédito.
         </p>
       </div>
     </section>

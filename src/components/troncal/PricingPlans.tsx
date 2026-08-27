@@ -1,63 +1,83 @@
-import { Check, Heart } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { BadgeCheck, Building2, Check, Search, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PLANES = [
   {
-    nombre: "Básico",
-    precio: "US$ 39 / mes",
-    descripcion: "Para camioneros independientes que recién parten.",
+    id: "inicial",
+    nombre: "Inicial",
+    precio: "$0",
+    periodo: "CLP / mes",
+    descripcion: "Para partir explorando el mercado de cargas.",
+    icono: Search,
+    cta: "Comenzar Gratis",
     features: [
-      "Búsqueda de cargas ilimitada",
-      "Calculadora de valor por kilómetro",
-      "Alertas diarias por WhatsApp",
+      "Ver el tablero de cargas con actualización diferida",
+      "Perfil básico sin verificar",
+      "Hasta 2 publicaciones de carga al mes",
     ],
   },
   {
-    nombre: "Avanzado",
-    precio: "US$ 79 / mes",
+    id: "transportista",
+    nombre: "Transportista Pro",
+    precio: "$14.990",
+    periodo: "CLP / mes",
     destacado: true,
-    descripcion: "Para flotas pequeñas y transportistas frecuentes.",
+    descripcion: "El más elegido por choferes y dueños de camión.",
+    icono: Truck,
+    cta: "Suscribirme como Transportista",
     features: [
-      "Todo lo del plan Básico",
-      "Alertas en tiempo real y retornos (backhauls)",
-      "Reputación y verificación de empresas",
-      "Seguimiento GPS en ruta",
+      "Sello azul de verificación «TroncalCheck» (tras validar RUT y documentos)",
+      "Acceso instantáneo a datos de contacto directo (Teléfono / WhatsApp de la carga)",
+      "Alertas de cargas de retorno en tiempo real para tus rutas preferidas",
+      "Posicionamiento prioritario en las búsquedas de los generadores de carga",
     ],
   },
   {
-    nombre: "Pro",
-    precio: "US$ 149 / mes",
-    descripcion: "Para empresas cargadoras y flotas medianas.",
+    id: "empresa",
+    nombre: "Empresa Pro",
+    precio: "$29.990",
+    periodo: "CLP / mes",
+    descripcion: "Para generadores de carga y empresas logísticas.",
+    icono: Building2,
+    cta: "Suscribirme como Empresa",
     features: [
-      "Todo lo del plan Avanzado",
-      "Publicación ilimitada de fletes",
-      "Bloqueo de empresas o choferes",
-      "Soporte prioritario 24/7",
+      "Publicación ilimitada de fletes y cargas",
+      "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
+      "Perfil corporativo verificado con logo y contacto de logística",
+      "Soporte prioritario",
     ],
   },
 ];
 
-export function PricingPlans({ onRegistro, onDonar }: { onRegistro: () => void; onDonar: () => void }) {
+export function PricingPlans({ onRegistro }: { onRegistro: () => void; onDonar?: () => void }) {
   return (
     <section id="planes" className="border-b border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-12">
         <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-          Planes y Precios
+          Planes y Membresías
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Todos los planes están liberados durante el lanzamiento regional: paga $0 CLP / $0 USD por
-          un año completo.
+          Precios transparentes en pesos chilenos (CLP), sin permanencia mínima. Paga con tarjeta,
+          Mercado Pago o Webpay (Flow).
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {PLANES.map((p) => (
             <article
-              key={p.nombre}
+              key={p.id}
               className={`flex flex-col rounded-2xl border bg-card p-6 shadow-card ${
                 p.destacado ? "border-primary ring-1 ring-primary" : "border-border"
               }`}
             >
               <div className="flex items-center gap-2">
+                <span
+                  className={`flex h-8 w-8 items-center justify-center rounded-md ${
+                    p.destacado ? "bg-primary text-primary-foreground" : "bg-surface text-primary"
+                  }`}
+                >
+                  <p.icono className="h-4 w-4" />
+                </span>
                 <h3 className="text-lg font-extrabold text-foreground">{p.nombre}</h3>
                 {p.destacado && (
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
@@ -67,16 +87,19 @@ export function PricingPlans({ onRegistro, onDonar }: { onRegistro: () => void; 
               </div>
               <p className="mt-1 text-sm text-muted-foreground">{p.descripcion}</p>
 
-              <p className="mt-4 text-sm font-medium text-muted-foreground line-through">
-                {p.precio}
+              <p className="mt-4 flex items-baseline gap-1">
+                <span className="text-2xl font-extrabold text-foreground">{p.precio}</span>
+                <span className="text-sm font-semibold text-muted-foreground">{p.periodo}</span>
               </p>
-              <p className="text-2xl font-extrabold text-primary">¡GRATIS x 1 AÑO!</p>
-              <p className="text-sm font-semibold text-foreground">$0 CLP / $0 USD</p>
 
               <ul className="mt-4 flex-1 space-y-2">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    {p.destacado ? (
+                      <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-trust" />
+                    ) : (
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    )}
                     {f}
                   </li>
                 ))}
@@ -87,20 +110,18 @@ export function PricingPlans({ onRegistro, onDonar }: { onRegistro: () => void; 
                 variant={p.destacado ? "default" : "outline"}
                 onClick={onRegistro}
               >
-                Activar gratis
+                {p.cta}
               </Button>
             </article>
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col items-start gap-3 rounded-xl border border-dashed border-border bg-card p-4 sm:flex-row sm:items-center">
-          <p className="text-sm text-muted-foreground">
-            ¿Te sirve TroncalTrack? Puedes aportar de forma voluntaria en USD o USDC (dólar digital).
-          </p>
-          <Button variant="ghost" size="sm" onClick={onDonar} className="sm:ml-auto text-primary">
-            <Heart className="h-4 w-4" /> Apoyar el Proyecto / Donaciones
-          </Button>
-        </div>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          ¿Quieres pagar anual y ahorrar un 20%?{" "}
+          <Link to="/planes" className="font-semibold text-primary hover:underline">
+            Ver todos los detalles de Planes y Membresías
+          </Link>
+        </p>
       </div>
     </section>
   );

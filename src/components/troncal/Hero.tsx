@@ -12,7 +12,7 @@ export function Hero({
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-4xl px-4 py-14 text-center lg:py-20">
         <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
-          Lanzamiento regional · 100% gratis
+          Cobertura regional · Chile y Sudamérica
         </span>
         <h1 className="mt-5 text-3xl font-extrabold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
           Tu camino al éxito empieza con el tablero de cargas de TroncalTrack.

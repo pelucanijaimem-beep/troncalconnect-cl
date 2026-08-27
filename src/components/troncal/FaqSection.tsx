@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 const PREGUNTAS = [
   {
     q: "¿Cómo publico un flete si soy empresa?",
-    a: "Crea tu cuenta gratuita, entra al panel privado y pulsa «Publicar Flete». Indica origen, destino, fecha de carguío, tipo de carrocería, toneladas y tarifa ofrecida. Tu publicación queda visible al instante para los camioneros disponibles en esa ruta.",
+    a: "Crea tu cuenta, entra al panel privado y pulsa «Publicar Flete». Indica origen, destino, fecha de carguío, tipo de carrocería, toneladas y tarifa ofrecida. Tu publicación queda visible al instante para los camioneros disponibles en esa ruta.",
   },
   {
     q: "¿Cómo busco cargas de retorno para no viajar en vacío?",
@@ -25,7 +25,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Tiene costo usar la plataforma?",
-    a: "No. Durante el lanzamiento regional el uso es 100% gratuito para camioneros y empresas. Si quieres apoyar el proyecto, puedes hacerlo de forma voluntaria desde el enlace de donaciones.",
+    a: "El Plan Inicial es gratuito e incluye el tablero con actualización diferida y hasta 2 publicaciones de carga al mes. Para contacto directo, alertas en tiempo real y publicación ilimitada, ofrecemos los planes Transportista Pro ($14.990 CLP/mes) y Empresa Pro ($29.990 CLP/mes).",
   },
   {
     q: "¿Cómo sé que el otro usuario es confiable?",
@@ -58,7 +58,7 @@ export function FaqSection({ onRegistro }: { onRegistro: () => void }) {
         <div className="mt-8 rounded-2xl border border-border bg-surface p-6 text-center">
           <p className="font-bold text-foreground">¿Listo para tu próxima carga?</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Regístrate gratis y accede al tablero en vivo en menos de un minuto.
+            Regístrate y accede al tablero en vivo en menos de un minuto.
           </p>
           <Button className="mt-4" onClick={onRegistro}>
             Comenzar Ahora
