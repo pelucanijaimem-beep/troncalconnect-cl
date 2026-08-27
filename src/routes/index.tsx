@@ -180,7 +180,7 @@ function Index() {
   const tarifaPromedioKm = (() => {
     const lista = CARGAS.filter((c) => c.pais === pais && c.km > 0);
     if (!lista.length) return 1180;
-    return Math.round(lista.reduce((a, c) => a + c.tarifa / c.km, 0) / lista.length);
+    return Math.round(lista.reduce((a, c) => a + c.valorKm, 0) / lista.length);
   })();
   const rutasActivas = new Set(
     CARGAS.filter((c) => c.pais === pais).map((c) => `${c.origen}-${c.destino}`),
