@@ -24,7 +24,7 @@ import { DonateDialog } from "@/components/troncal/DonateDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
-import { TermsSection } from "@/components/troncal/TermsSection";
+import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { usePublicaciones } from "@/lib/use-publicaciones";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
