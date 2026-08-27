@@ -26,6 +26,7 @@ import { PostLoadDialog } from "@/components/troncal/PostLoadDialog";
 import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
+import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
@@ -383,6 +384,16 @@ function Index() {
             onChange={(v) => setFiltros({ ...filtros, carroceria: v })}
           />
         </div>
+
+        <AvailabilityPanel
+          esCamionero={esCamionero}
+          usuario={{
+            ...(sesion?.id ? { id: sesion.id } : {}),
+            ...(sesion?.nombre ? { nombre: sesion.nombre } : {}),
+            ...(sesion?.telefono ? { telefono: sesion.telefono } : {}),
+          }}
+        />
+
 
         <section className="mt-6">
           <h2 className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
