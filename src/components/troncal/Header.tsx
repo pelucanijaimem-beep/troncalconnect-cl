@@ -115,7 +115,7 @@ export function Header({
               <Button variant="outline" onClick={() => onAuth("login")}>
                 Iniciar Sesión
               </Button>
-              <Button onClick={() => onAuth("registro")}>Regístrate Gratis</Button>
+              <Button onClick={() => onAuth("registro")}>Regístrate</Button>
             </>
           )}
         </div>
@@ -172,7 +172,7 @@ export function Header({
                     Iniciar Sesión
                   </Button>
                   <Button className="w-full" onClick={() => onAuth("registro")}>
-                    Regístrate Gratis
+                    Regístrate
                   </Button>
                 </>
               )}

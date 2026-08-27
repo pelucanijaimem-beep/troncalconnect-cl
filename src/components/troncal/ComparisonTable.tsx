@@ -38,7 +38,7 @@ export function ComparisonTable() {
           Tabla Comparativa
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Compara las funciones incluidas en cada plan. Hoy todas están liberadas sin costo.
+          Compara las funciones incluidas en cada plan.
         </p>
 
         <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-card">

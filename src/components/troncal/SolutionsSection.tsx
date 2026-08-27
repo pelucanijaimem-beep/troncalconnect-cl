@@ -22,7 +22,7 @@ const PERFILES = [
     icon: Network,
     titulo: "Operadores Logísticos",
     texto: "Gestiona tu flota y optimiza tus rutas de tramo largo por todo Chile.",
-    cta: "Crear cuenta gratis",
+    cta: "Crear cuenta",
     accion: "registro" as const,
   },
 ];

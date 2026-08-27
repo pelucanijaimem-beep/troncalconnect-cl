@@ -24,7 +24,7 @@ export function DonateDialog({
             <Heart className="h-5 w-5 text-primary" /> Apoyar el Proyecto / Donaciones
           </DialogTitle>
           <DialogDescription>
-            TroncalTrack es gratis para camioneros y empresas. Si te sirve, puedes aportar de forma
+            Si TroncalTrack te sirve, puedes aportar de forma
             voluntaria en dólares o dólar digital (USDC) para mantener la plataforma en línea.
           </DialogDescription>
         </DialogHeader>

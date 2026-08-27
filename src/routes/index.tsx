@@ -54,13 +54,10 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Encuentra fletes y camiones disponibles en Chile, Argentina, Perú y Bolivia. Publica tu carga o tu camión gratis y rastrea tus viajes con GPS en vivo.",
-      },
-      { property: "og:title", content: "TroncalTrack — Bolsa de Cargas y Camiones en Sudamérica" },
-      {
-        property: "og:description",
+          "Encuentra fletes y camiones disponibles en Chile, Argentina, Perú y Bolivia. Publica tu carga o tu camión y rastrea tus viajes con GPS en vivo.",
+...
         content:
-          "Fletes, camiones disponibles, tarifas por kilómetro y rastreo GPS en vivo. 100% gratis durante el lanzamiento regional.",
+          "Fletes, camiones disponibles, tarifas por kilómetro y rastreo GPS en vivo. Planes desde $0 CLP para transportistas y empresas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -147,7 +144,7 @@ function Index() {
   const requiereSesion = (accion: () => void) => {
     if (!sesion) {
       abrirAuth("registro");
-      toast.info("Crea tu cuenta gratuita", {
+      toast.info("Crea tu cuenta", {
         description: "Necesitas iniciar sesión para ver y publicar cargas en vivo.",
       });
       return;
