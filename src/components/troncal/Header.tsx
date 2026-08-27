@@ -84,6 +84,12 @@ export function Header({
               {n.label}
             </button>
           ))}
+          <Link
+            to="/planes"
+            className="text-sm font-semibold text-foreground transition-colors hover:text-primary"
+          >
+            Planes
+          </Link>
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
