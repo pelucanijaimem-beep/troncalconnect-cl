@@ -26,6 +26,7 @@ import { PostLoadDialog } from "@/components/troncal/PostLoadDialog";
 import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
+import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
