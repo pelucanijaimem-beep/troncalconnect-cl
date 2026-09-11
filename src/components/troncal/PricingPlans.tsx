@@ -1,5 +1,5 @@
 import { useNavigate, Link } from "@tanstack/react-router";
-import { BadgeCheck, Building2, Check, Search, Truck } from "lucide-react";
+import { BadgeCheck, Building2, Check, Gift, Search, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const PLANES = [
@@ -8,11 +8,13 @@ const PLANES = [
     nombre: "Inicial",
     precio: "$0",
     periodo: "CLP / mes",
+    destacadoGratis: true,
     descripcion: "Para partir explorando el mercado de cargas.",
     icono: Search,
     cta: "Comenzar Gratis",
     href: "/registro",
     features: [
+      "90 días de prueba gratis, sin tarjeta de crédito",
       "Ver el tablero de cargas con actualización diferida",
       "Perfil básico sin verificar",
       "Hasta 2 publicaciones de carga al mes",
@@ -78,6 +80,11 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
           Mercado Pago o Webpay (Flow).
         </p>
 
+        <div className="mt-5 flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-bold text-primary sm:text-base">
+          <Gift className="h-5 w-5 shrink-0" />
+          Regístrate hoy y prueba TroncalTrack gratis por 90 días, sin tarjeta de crédito.
+        </div>
+
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {PLANES.map((p) => (
             <article
@@ -98,6 +105,11 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
                 {p.destacado && (
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
                     Más elegido
+                  </span>
+                )}
+                {p.destacadoGratis && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-bold text-success">
+                    <Gift className="h-3 w-3" /> 90 días gratis
                   </span>
                 )}
               </div>
@@ -142,3 +154,4 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
     </section>
   );
 }
+
