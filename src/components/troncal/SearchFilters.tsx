@@ -1,4 +1,4 @@
-import { Search, ShieldCheck } from "lucide-react";
+import { Search, ShieldCheck, Undo2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,23 +23,40 @@ export type Filtros = {
   precioMax: string;
   /** Estado del camión: "todos" | "buscando" | "en_ruta". */
   estado: string;
+  /** Región de origen ("todas" para no filtrar). */
+  regionOrigen: string;
+  /** Región de destino ("todas" para no filtrar). */
+  regionDestino: string;
+  /** Solo cargas cuyo destino es la ciudad base del camionero. */
+  retorno: boolean;
 };
 
 export function SearchFilters({
   filtros,
   ciudades,
+  regiones = [],
   moneda = "CLP",
   mostrarEstado = false,
+  mostrarRetorno = false,
+  ciudadBase = "",
   onChange,
   onLimpiar,
+  onConfigurarRetorno,
 }: {
   filtros: Filtros;
   ciudades: string[];
+  /** Regiones disponibles para el país seleccionado. */
+  regiones?: string[];
   moneda?: string;
   /** Muestra el filtro de estado del camión (vista de empresas). */
   mostrarEstado?: boolean;
+  /** Muestra el filtro de viaje de retorno (vista de camioneros). */
+  mostrarRetorno?: boolean;
+  /** Ciudad base guardada en las alertas del camionero. */
+  ciudadBase?: string;
   onChange: (f: Filtros) => void;
   onLimpiar: () => void;
+  onConfigurarRetorno?: () => void;
 }) {
   const set = (k: keyof Filtros, v: string) => onChange({ ...filtros, [k]: v });
 
@@ -50,6 +67,7 @@ export function SearchFilters({
           <option key={c} value={c} />
         ))}
       </datalist>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-1.5">
           <Label htmlFor="origen">Origen</Label>
