@@ -34,7 +34,7 @@ export async function crearNotificacion(entrada: {
     tipo: entrada.tipo,
     titulo: entrada.titulo,
     mensaje: entrada.mensaje,
-    datos: entrada.datos ?? {},
+    datos: (entrada.datos ?? {}) as never,
   });
   return error?.message ?? null;
 }
