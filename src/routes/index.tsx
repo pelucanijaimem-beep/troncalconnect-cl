@@ -426,8 +426,10 @@ function Index() {
         {esCamionero && !soyVerificado ? (
           <VerificationGate
             estado={miVerificacion.estado}
+            checklist={miVerificacion.checklist}
             onVerificar={() => setVerificacionOpen(true)}
           />
+
         ) : (
           <>
         <section className="mb-6">
@@ -462,6 +464,9 @@ function Index() {
                 <Button variant="outline" onClick={() => setComparaOpen(true)}>
                   <Star className="h-4 w-4" /> Mis cargas guardadas ({favoritas.length})
                 </Button>
+                <Button variant="outline" onClick={() => setAlertasOpen(true)}>
+                  <BellRing className="h-4 w-4" /> Mis alertas de coincidencia
+                </Button>
               </>
 
             ) : (
@@ -474,17 +479,23 @@ function Index() {
                 </Button>
               </>
             )}
+            <NotificationsBell userId={sesion.id} />
           </div>
         </section>
 
         <SearchFilters
           filtros={filtros}
           ciudades={paisActual.ciudades}
+          regiones={regiones}
           moneda={paisActual.moneda}
           mostrarEstado={!esCamionero}
+          mostrarRetorno={esCamionero}
+          ciudadBase={alertas.ciudadBase}
           onChange={setFiltros}
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
+          onConfigurarRetorno={() => setAlertasOpen(true)}
         />
+
 
         <div className="mt-4">
           <EquipmentPills
