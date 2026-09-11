@@ -117,7 +117,10 @@ function AdminPage() {
     const [s, p, c] = await Promise.all([
       supabase
         .from("verificaciones")
-        .select("id, user_id, nombre, estado, asegurado, documentos, nota_admin, updated_at")
+        .select(
+          "id, user_id, nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at",
+        )
+
         .order("updated_at", { ascending: false }),
       supabase
         .from("perfiles")
