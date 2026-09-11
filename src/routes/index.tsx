@@ -30,6 +30,7 @@ import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
+import { VerificationGate } from "@/components/troncal/VerificationGate";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
 import { PodDialog } from "@/components/troncal/PodDialog";
@@ -357,6 +358,13 @@ function Index() {
           />
         </div>
 
+        {esCamionero && !soyVerificado ? (
+          <VerificationGate
+            estado={miVerificacion.estado}
+            onVerificar={() => setVerificacionOpen(true)}
+          />
+        ) : (
+          <>
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
@@ -528,6 +536,8 @@ function Index() {
             )}
           </div>
         </section>
+          </>
+        )}
       </main>
       )}
 
