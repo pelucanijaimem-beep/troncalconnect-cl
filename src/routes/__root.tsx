@@ -77,18 +77,40 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "TroncalTrack — Bolsa de Cargas para Chile" },
+      { title: "TroncalTrack — Plataforma de Gestión y Logística para el Transporte en Chile" },
       {
         name: "description",
-        content: "Conecta camioneros y empresas cargadoras en Chile. Publica y encuentra fletes.",
+        content:
+          "Optimiza flotas, controla rutas y conecta con camioneros, empresas y comisionistas en Chile. 90 días de prueba gratis.",
       },
-      { property: "og:title", content: "TroncalTrack — Bolsa de Cargas para Chile" },
+      { property: "og:site_name", content: "TroncalTrack" },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://troncaltrack.com/" },
+      {
+        property: "og:title",
+        content: "TroncalTrack — Gestión y Logística para el Transporte en Chile",
+      },
       {
         property: "og:description",
-        content: "Conecta camioneros y empresas cargadoras en Chile. Publica y encuentra fletes.",
+        content:
+          "La plataforma profesional para camioneros, empresas y comisionistas. ¡Prueba 90 días gratis!",
       },
-      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://troncaltrack.com/og-image.jpg" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "TroncalTrack — Logistics Solutions" },
+      { property: "og:locale", content: "es_CL" },
       { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "TroncalTrack — Gestión y Logística para el Transporte en Chile",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "La plataforma profesional para camioneros, empresas y comisionistas. ¡Prueba 90 días gratis!",
+      },
+      { name: "twitter:image", content: "https://troncaltrack.com/og-image.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -99,6 +121,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
     ],
   }),
 
