@@ -1,8 +1,8 @@
 import { Clock, Lock, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { EstadoVerificacion } from "@/lib/use-verificacion";
+import { VerificationChecklist } from "./VerificationChecklist";
+import type { Checklist, EstadoVerificacion } from "@/lib/use-verificacion";
+
 
 const COPY: Record<
   EstadoVerificacion,
@@ -39,9 +39,11 @@ const COPY: Record<
 
 export function VerificationGate({
   estado,
+  checklist,
   onVerificar,
 }: {
   estado: EstadoVerificacion;
+  checklist: Checklist;
   onVerificar: () => void;
 }) {
   const { icono: Icono, titulo, descripcion, cta } = COPY[estado];
@@ -57,45 +59,19 @@ export function VerificationGate({
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">{descripcion}</p>
 
-        <div
-          className="relative mt-6 rounded-xl border border-dashed border-border bg-surface p-4"
-          aria-hidden="true"
-        >
-          <div className="pointer-events-none select-none opacity-40 blur-[2px]">
-            <div className="grid gap-3 sm:grid-cols-4">
-              <div className="space-y-1.5">
-                <Label>Origen</Label>
-                <Input placeholder="Los Ángeles" disabled />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Destino</Label>
-                <Input placeholder="Santiago" disabled />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Carrocería</Label>
-                <Input placeholder="Rampla Plana" disabled />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Fecha</Label>
-                <Input placeholder="dd-mm-aaaa" disabled />
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="h-20 rounded-xl border border-border bg-card" />
-              ))}
-            </div>
-          </div>
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl bg-background/60 px-4 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Icono className="h-6 w-6" />
-            </span>
-            <p className="text-sm font-semibold text-foreground">
-              Cargas ocultas · Requiere sello TroncalCheck
-            </p>
-          </div>
+        <div className="mt-6 flex items-center gap-3 rounded-xl border border-dashed border-border bg-surface p-4">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <Icono className="h-5 w-5" />
+          </span>
+          <p className="text-sm font-semibold text-foreground">
+            Cargas ocultas · Requiere sello TroncalCheck
+          </p>
         </div>
+
+        <div className="mt-4">
+          <VerificationChecklist checklist={checklist} />
+        </div>
+
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Button size="lg" onClick={onVerificar}>

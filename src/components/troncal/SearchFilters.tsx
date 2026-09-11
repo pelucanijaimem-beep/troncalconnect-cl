@@ -1,4 +1,4 @@
-import { Search, ShieldCheck } from "lucide-react";
+import { Search, ShieldCheck, Undo2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,23 +23,40 @@ export type Filtros = {
   precioMax: string;
   /** Estado del camión: "todos" | "buscando" | "en_ruta". */
   estado: string;
+  /** Región de origen ("todas" para no filtrar). */
+  regionOrigen: string;
+  /** Región de destino ("todas" para no filtrar). */
+  regionDestino: string;
+  /** Solo cargas cuyo destino es la ciudad base del camionero. */
+  retorno: boolean;
 };
 
 export function SearchFilters({
   filtros,
   ciudades,
+  regiones = [],
   moneda = "CLP",
   mostrarEstado = false,
+  mostrarRetorno = false,
+  ciudadBase = "",
   onChange,
   onLimpiar,
+  onConfigurarRetorno,
 }: {
   filtros: Filtros;
   ciudades: string[];
+  /** Regiones disponibles para el país seleccionado. */
+  regiones?: string[];
   moneda?: string;
   /** Muestra el filtro de estado del camión (vista de empresas). */
   mostrarEstado?: boolean;
+  /** Muestra el filtro de viaje de retorno (vista de camioneros). */
+  mostrarRetorno?: boolean;
+  /** Ciudad base guardada en las alertas del camionero. */
+  ciudadBase?: string;
   onChange: (f: Filtros) => void;
   onLimpiar: () => void;
+  onConfigurarRetorno?: () => void;
 }) {
   const set = (k: keyof Filtros, v: string) => onChange({ ...filtros, [k]: v });
 
@@ -50,6 +67,7 @@ export function SearchFilters({
           <option key={c} value={c} />
         ))}
       </datalist>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-1.5">
           <Label htmlFor="origen">Origen</Label>
@@ -136,6 +154,48 @@ export function SearchFilters({
             </Select>
           </div>
         )}
+        {regiones.length > 0 && (
+          <>
+            <div className="space-y-1.5">
+              <Label>Región de origen</Label>
+              <Select
+                value={filtros.regionOrigen}
+                onValueChange={(v) => set("regionOrigen", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todas las regiones" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todas">Todas las regiones</SelectItem>
+                  {regiones.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Región de destino</Label>
+              <Select
+                value={filtros.regionDestino}
+                onValueChange={(v) => set("regionDestino", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todas las regiones" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todas">Todas las regiones</SelectItem>
+                  {regiones.map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2">
@@ -148,6 +208,31 @@ export function SearchFilters({
             <ShieldCheck className="h-4 w-4 text-trust" /> Solo Transportistas Verificados
           </span>
         </label>
+        {mostrarRetorno && (
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2">
+            <Switch
+              checked={filtros.retorno}
+              onCheckedChange={(v) => onChange({ ...filtros, retorno: v })}
+              aria-label="Solo viajes de retorno"
+              disabled={!ciudadBase}
+            />
+            <span className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+              <Undo2 className="h-4 w-4 text-primary" /> Viaje de retorno
+              {ciudadBase ? (
+                <span className="font-normal text-muted-foreground">a {ciudadBase}</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onConfigurarRetorno}
+                  className="cursor-pointer font-semibold text-primary underline"
+                >
+                  definir ciudad base
+                </button>
+              )}
+            </span>
+          </label>
+        )}
+
         <Button className="flex-1 sm:flex-none">
           <Search className="h-4 w-4" /> Buscar
         </Button>

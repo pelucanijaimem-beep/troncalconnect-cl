@@ -19,6 +19,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
+import {
+  DOCUMENTOS_REQUERIDOS,
+  normalizarChecklist,
+  type ClaveDocumento,
+} from "@/lib/use-verificacion";
+
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -51,9 +57,11 @@ type Solicitud = {
   estado: string;
   asegurado: boolean;
   documentos: Record<string, string>;
+  checklist: unknown;
   nota_admin: string;
   updated_at: string;
 };
+
 
 type Perfil = {
   id: string;
@@ -115,7 +123,10 @@ function AdminPage() {
     const [s, p, c] = await Promise.all([
       supabase
         .from("verificaciones")
-        .select("id, user_id, nombre, estado, asegurado, documentos, nota_admin, updated_at")
+        .select(
+          "id, user_id, nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at",
+        )
+
         .order("updated_at", { ascending: false }),
       supabase
         .from("perfiles")
@@ -135,8 +146,28 @@ function AdminPage() {
     if (esAdmin) void recargar();
   }, [esAdmin, recargar]);
 
+  const marcarDocumento = async (
+    s: Solicitud,
+    clave: ClaveDocumento,
+    estado: "aprobado" | "rechazado" | "pendiente",
+  ) => {
+    const actual = normalizarChecklist(s.checklist);
+    const motivo = estado === "rechazado" ? (notas[s.id] ?? "") : "";
+    const nuevo = { ...actual, [clave]: { estado, motivo } };
+    const { error } = await supabase
+      .from("verificaciones")
+      .update({ checklist: nuevo })
+      .eq("id", s.id);
+    if (error) {
+      toast.error("No se pudo actualizar el documento", { description: error.message });
+      return;
+    }
+    await recargar();
+  };
+
   const resolver = async (s: Solicitud, aprobar: boolean) => {
     setTrabajando(true);
+
     const nota = notas[s.id] ?? "";
     const { error } = await supabase
       .from("verificaciones")
@@ -304,10 +335,52 @@ function AdminPage() {
 
                 <Input
                   className="mt-3"
-                  placeholder="Motivo del rechazo (opcional)"
+                  placeholder="Motivo del rechazo (se aplica al documento o a la solicitud)"
                   value={notas[s.id] ?? ""}
                   onChange={(e) => setNotas((n) => ({ ...n, [s.id]: e.target.value }))}
                 />
+
+                <div className="mt-3 space-y-2 rounded-lg border border-border bg-surface p-3">
+                  <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    Checklist documento por documento
+                  </p>
+                  {DOCUMENTOS_REQUERIDOS.map((d) => {
+                    const item = normalizarChecklist(s.checklist)[d.clave];
+                    return (
+                      <div
+                        key={d.clave}
+                        className="flex flex-wrap items-center justify-between gap-2"
+                      >
+                        <span className="text-sm text-foreground">
+                          {d.label}{" "}
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            · {ETIQUETA_ESTADO[item.estado] ?? item.estado}
+                          </span>
+                          {item.estado === "rechazado" && item.motivo && (
+                            <span className="text-xs text-destructive"> · {item.motivo}</span>
+                          )}
+                        </span>
+                        <span className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => void marcarDocumento(s, d.clave, "aprobado")}
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => void marcarDocumento(s, d.clave, "rechazado")}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { PackagePlus, Search, Star, Truck, Ban, Radio } from "lucide-react";
+import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/troncal/Header";
@@ -46,8 +46,18 @@ import {
 } from "@/components/troncal/RatingDialog";
 import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
 import { usePublicaciones } from "@/lib/use-publicaciones";
-import { postularACarga, useCargas, useMisPostulaciones } from "@/lib/use-cargas";
+import {
+  postularACarga,
+  primerPostulante,
+  useCargas,
+  useMisPostulaciones,
+} from "@/lib/use-cargas";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
+import { AlertPrefsDialog } from "@/components/troncal/AlertPrefsDialog";
+import { NotificationsBell } from "@/components/troncal/NotificationsBell";
+import { usePreferenciasAlerta } from "@/lib/use-alertas";
+import { avisarPostulacion } from "@/lib/notificaciones.functions";
+import { enRegion, mismaCiudad, regionesDe } from "@/lib/regiones";
 import {
   getPais,
   type Camion,
@@ -55,6 +65,7 @@ import {
   type PaisCodigo,
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -69,7 +80,11 @@ const FILTROS_VACIOS: Filtros = {
   precioMin: "",
   precioMax: "",
   estado: "todos",
+  regionOrigen: "todas",
+  regionDestino: "todas",
+  retorno: false,
 };
+
 
 function coincide(valor: string, filtro: string) {
   return !filtro.trim() || valor.toLowerCase().includes(filtro.trim().toLowerCase());
@@ -92,6 +107,7 @@ function Index() {
   const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
   const [comparaOpen, setComparaOpen] = useState(false);
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
+  const [alertasOpen, setAlertasOpen] = useState(false);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
@@ -102,7 +118,9 @@ function Index() {
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
+  const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
+  const regiones = useMemo(() => regionesDe(paisActual.ciudades), [paisActual.ciudades]);
   const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
   const soyVerificado = miVerificacion.estado === "verificado";
 
@@ -113,6 +131,11 @@ function Index() {
           c.pais === pais &&
           coincide(c.origen, filtros.origen) &&
           coincide(c.destino, filtros.destino) &&
+          enRegion(c.origen, filtros.regionOrigen) &&
+          enRegion(c.destino, filtros.regionDestino) &&
+          (!filtros.retorno ||
+            !alertas.ciudadBase ||
+            mismaCiudad(c.destino, alertas.ciudadBase)) &&
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
           (!filtros.fecha || c.fecha === filtros.fecha) &&
           (!c.soloVerificados || rol !== "camionero" || soyVerificado) &&
@@ -122,8 +145,18 @@ function Index() {
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
-    [filtros, pais, CARGAS, verificaciones, rol, soyVerificado, prefs.bloqueadas],
+    [
+      filtros,
+      pais,
+      CARGAS,
+      verificaciones,
+      rol,
+      soyVerificado,
+      prefs.bloqueadas,
+      alertas.ciudadBase,
+    ],
   );
+
 
   const favoritas = useMemo(
     () => CARGAS.filter((c) => prefs.favoritos.includes(c.id)),
@@ -137,6 +170,8 @@ function Index() {
           t.pais === pais &&
           coincide(t.origen, filtros.origen) &&
           coincide(t.destino, filtros.destino) &&
+          enRegion(t.origen, filtros.regionOrigen) &&
+          enRegion(t.destino, filtros.regionDestino) &&
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
           (!filtros.fecha || t.fecha === filtros.fecha) &&
           (filtros.estado === "todos" || (t.estado ?? "buscando") === filtros.estado) &&
@@ -145,6 +180,7 @@ function Index() {
       ),
     [filtros, pais, CAMIONES, verificaciones],
   );
+
 
 
   const esCamionero = rol === "camionero";
@@ -194,6 +230,14 @@ function Index() {
       abrirAuth("registro");
       return;
     }
+    if (!soyVerificado) {
+      toast.error("Necesitas el sello TroncalCheck", {
+        description:
+          "Completa tu verificación de identidad para reservar cargas al instante.",
+      });
+      setVerificacionOpen(true);
+      return;
+    }
     if (!sesion.planActivo) {
       toast.error("Necesitas un plan mensual activo", {
         description:
@@ -209,10 +253,16 @@ function Index() {
       return;
     }
     agregarPostulacion(c.id);
-    toast.success("Postulación enviada", {
-      description: `El cargador ${c.empresa} recibirá tus datos de contacto.`,
+    toast.success("Reserva enviada al instante", {
+      description: `${c.empresa} recibió tu aviso con tus datos de contacto y tu sello TroncalCheck.`,
     });
+    try {
+      await avisarPostulacion({ data: { cargaId: c.id } });
+    } catch {
+      /* la postulación ya quedó registrada aunque falle el aviso */
+    }
   };
+
 
 
   const iniciar = (c: Carga) => {
@@ -223,18 +273,33 @@ function Index() {
     });
   };
 
-  const finalizar = (c: Carga) => {
+  const finalizar = async (c: Carga) => {
     finalizarViaje(c.id);
     setViajeActivo(null);
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
+    const ruta = `${c.origen} → ${c.destino}`;
+    if (esCamionero) {
+      setEvaluacion({
+        evaluado: c.empresa,
+        cargaId: c.id,
+        ruta,
+        papel: "Generador de Carga",
+      });
+      return;
+    }
+    const camionero = await primerPostulante(c.id);
+    if (!camionero) return;
     setEvaluacion({
-      evaluado: c.empresa,
-      ruta: `${c.origen} → ${c.destino}`,
-      papel: "Generador de Carga",
+      evaluado: camionero.nombre,
+      evaluadoId: camionero.id,
+      cargaId: c.id,
+      ruta,
+      papel: "Transportista",
     });
   };
+
 
   const rastrear = (c: Carga) => {
     const v = getViaje(c.id);
@@ -361,8 +426,10 @@ function Index() {
         {esCamionero && !soyVerificado ? (
           <VerificationGate
             estado={miVerificacion.estado}
+            checklist={miVerificacion.checklist}
             onVerificar={() => setVerificacionOpen(true)}
           />
+
         ) : (
           <>
         <section className="mb-6">
@@ -397,6 +464,9 @@ function Index() {
                 <Button variant="outline" onClick={() => setComparaOpen(true)}>
                   <Star className="h-4 w-4" /> Mis cargas guardadas ({favoritas.length})
                 </Button>
+                <Button variant="outline" onClick={() => setAlertasOpen(true)}>
+                  <BellRing className="h-4 w-4" /> Mis alertas de coincidencia
+                </Button>
               </>
 
             ) : (
@@ -409,17 +479,23 @@ function Index() {
                 </Button>
               </>
             )}
+            <NotificationsBell userId={sesion.id} />
           </div>
         </section>
 
         <SearchFilters
           filtros={filtros}
           ciudades={paisActual.ciudades}
+          regiones={regiones}
           moneda={paisActual.moneda}
           mostrarEstado={!esCamionero}
+          mostrarRetorno={esCamionero}
+          ciudadBase={alertas.ciudadBase}
           onChange={setFiltros}
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
+          onConfigurarRetorno={() => setAlertasOpen(true)}
         />
+
 
         <div className="mt-4">
           <EquipmentPills
@@ -603,7 +679,7 @@ function Index() {
         onOpenChange={(o) => !o && setPodCarga(null)}
         onConfirmado={(c) => {
           setPodCarga(null);
-          finalizar(c);
+          void finalizar(c);
         }}
       />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
@@ -613,11 +689,23 @@ function Index() {
         usuario={sesion?.nombre ?? ""}
         userId={sesion?.id}
       />
+      <AlertPrefsDialog
+        open={alertasOpen}
+        onOpenChange={setAlertasOpen}
+        ciudades={paisActual.ciudades}
+        userId={sesion?.id}
+        nombre={sesion?.nombre ?? ""}
+        email={sesion?.email ?? ""}
+        prefsIniciales={alertas}
+        onGuardado={() => void recargarAlertas()}
+      />
       <RatingDialog
         evaluacion={evaluacion}
         autor={sesion?.nombre ?? "Usuario TroncalTrack"}
+        autorId={sesion?.id}
         onOpenChange={(o) => !o && setEvaluacion(null)}
       />
+
       <Toaster />
     </div>
   );
