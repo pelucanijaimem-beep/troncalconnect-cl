@@ -46,8 +46,18 @@ import {
 } from "@/components/troncal/RatingDialog";
 import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
 import { usePublicaciones } from "@/lib/use-publicaciones";
-import { postularACarga, useCargas, useMisPostulaciones } from "@/lib/use-cargas";
+import {
+  postularACarga,
+  primerPostulante,
+  useCargas,
+  useMisPostulaciones,
+} from "@/lib/use-cargas";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
+import { AlertPrefsDialog } from "@/components/troncal/AlertPrefsDialog";
+import { NotificationsBell } from "@/components/troncal/NotificationsBell";
+import { usePreferenciasAlerta } from "@/lib/use-alertas";
+import { avisarPostulacion } from "@/lib/notificaciones.functions";
+import { enRegion, mismaCiudad, regionesDe } from "@/lib/regiones";
 import {
   getPais,
   type Camion,
@@ -55,6 +65,7 @@ import {
   type PaisCodigo,
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -69,7 +80,11 @@ const FILTROS_VACIOS: Filtros = {
   precioMin: "",
   precioMax: "",
   estado: "todos",
+  regionOrigen: "todas",
+  regionDestino: "todas",
+  retorno: false,
 };
+
 
 function coincide(valor: string, filtro: string) {
   return !filtro.trim() || valor.toLowerCase().includes(filtro.trim().toLowerCase());
@@ -92,6 +107,7 @@ function Index() {
   const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
   const [comparaOpen, setComparaOpen] = useState(false);
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
+  const [alertasOpen, setAlertasOpen] = useState(false);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
@@ -102,7 +118,9 @@ function Index() {
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
+  const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
+  const regiones = useMemo(() => regionesDe(paisActual.ciudades), [paisActual.ciudades]);
   const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
   const soyVerificado = miVerificacion.estado === "verificado";
 
@@ -113,6 +131,11 @@ function Index() {
           c.pais === pais &&
           coincide(c.origen, filtros.origen) &&
           coincide(c.destino, filtros.destino) &&
+          enRegion(c.origen, filtros.regionOrigen) &&
+          enRegion(c.destino, filtros.regionDestino) &&
+          (!filtros.retorno ||
+            !alertas.ciudadBase ||
+            mismaCiudad(c.destino, alertas.ciudadBase)) &&
           (filtros.carroceria === "todas" || c.carroceria === filtros.carroceria) &&
           (!filtros.fecha || c.fecha === filtros.fecha) &&
           (!c.soloVerificados || rol !== "camionero" || soyVerificado) &&
@@ -122,8 +145,18 @@ function Index() {
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
-    [filtros, pais, CARGAS, verificaciones, rol, soyVerificado, prefs.bloqueadas],
+    [
+      filtros,
+      pais,
+      CARGAS,
+      verificaciones,
+      rol,
+      soyVerificado,
+      prefs.bloqueadas,
+      alertas.ciudadBase,
+    ],
   );
+
 
   const favoritas = useMemo(
     () => CARGAS.filter((c) => prefs.favoritos.includes(c.id)),
@@ -137,6 +170,8 @@ function Index() {
           t.pais === pais &&
           coincide(t.origen, filtros.origen) &&
           coincide(t.destino, filtros.destino) &&
+          enRegion(t.origen, filtros.regionOrigen) &&
+          enRegion(t.destino, filtros.regionDestino) &&
           (filtros.carroceria === "todas" || t.carroceria === filtros.carroceria) &&
           (!filtros.fecha || t.fecha === filtros.fecha) &&
           (filtros.estado === "todos" || (t.estado ?? "buscando") === filtros.estado) &&
@@ -145,6 +180,7 @@ function Index() {
       ),
     [filtros, pais, CAMIONES, verificaciones],
   );
+
 
 
   const esCamionero = rol === "camionero";
