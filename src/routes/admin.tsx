@@ -19,6 +19,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
+import {
+  DOCUMENTOS_REQUERIDOS,
+  normalizarChecklist,
+  type ClaveDocumento,
+} from "@/lib/use-verificacion";
+
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -140,8 +146,28 @@ function AdminPage() {
     if (esAdmin) void recargar();
   }, [esAdmin, recargar]);
 
+  const marcarDocumento = async (
+    s: Solicitud,
+    clave: ClaveDocumento,
+    estado: "aprobado" | "rechazado" | "pendiente",
+  ) => {
+    const actual = normalizarChecklist(s.checklist);
+    const motivo = estado === "rechazado" ? (notas[s.id] ?? "") : "";
+    const nuevo = { ...actual, [clave]: { estado, motivo } };
+    const { error } = await supabase
+      .from("verificaciones")
+      .update({ checklist: nuevo })
+      .eq("id", s.id);
+    if (error) {
+      toast.error("No se pudo actualizar el documento", { description: error.message });
+      return;
+    }
+    await recargar();
+  };
+
   const resolver = async (s: Solicitud, aprobar: boolean) => {
     setTrabajando(true);
+
     const nota = notas[s.id] ?? "";
     const { error } = await supabase
       .from("verificaciones")
