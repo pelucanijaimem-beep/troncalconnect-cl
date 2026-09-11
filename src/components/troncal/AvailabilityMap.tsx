@@ -22,9 +22,12 @@ function iconoCamion(propio: boolean) {
 export default function AvailabilityMap({
   camiones,
   miId,
+  mostrarDetalle = true,
 }: {
   camiones: CamionDisponible[];
   miId?: string;
+  /** false para visitantes sin sesión: el tooltip no revela el nombre del conductor ni el sello TroncalCheck. */
+  mostrarDetalle?: boolean;
 }) {
   const contenedor = useRef<HTMLDivElement>(null);
   const mapa = useRef<L.Map | null>(null);
@@ -63,8 +66,17 @@ export default function AvailabilityMap({
 
     camiones.forEach((c) => {
       const verificado = getVerificacionDe(verificaciones, c.nombre).estado === "verificado";
-      const insignia = verificado ? " · ✅ TroncalCheck" : "";
-      const etiqueta = `${c.id === miId ? "Tu camión" : c.nombre}${insignia} · ${c.velocidad} km/h`;
+      let etiqueta: string;
+      if (c.id === miId) {
+        const insignia = verificado ? " · ✅ TroncalCheck" : "";
+        etiqueta = `Tu camión${insignia} · ${c.velocidad} km/h`;
+      } else if (mostrarDetalle) {
+        const insignia = verificado ? " · ✅ TroncalCheck" : "";
+        etiqueta = `${c.nombre}${insignia} · ${c.velocidad} km/h`;
+      } else {
+        const insignia = verificado ? "Camión verificado ✅" : "Camión disponible";
+        etiqueta = `${insignia} · ${c.velocidad} km/h`;
+      }
       const existente = marcadores.current[c.id];
       if (existente) {
         existente.setLatLng([c.lat, c.lng]);
@@ -82,9 +94,10 @@ export default function AvailabilityMap({
       const limites = L.latLngBounds(camiones.map((c) => [c.lat, c.lng] as [number, number]));
       m.fitBounds(limites.pad(0.4), { maxZoom: 13 });
     }
-  }, [camiones, miId, verificaciones]);
+  }, [camiones, miId, verificaciones, mostrarDetalle]);
 
   return (
     <div ref={contenedor} className="h-full w-full" aria-label="Mapa de camiones disponibles en ruta" />
   );
 }
+
