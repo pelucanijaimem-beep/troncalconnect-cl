@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { PackagePlus, Search, Star, Truck, Ban } from "lucide-react";
+import { PackagePlus, Search, Star, Truck, Ban, Radio } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/troncal/Header";
@@ -55,7 +55,7 @@ import {
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
 
-export const Route = createFileRoute("/")({  
+export const Route = createFileRoute("/")({
   component: Index,
 });
 
@@ -297,6 +297,32 @@ function Index() {
         }}
       />
 
+      <section className="mx-auto max-w-6xl px-4 pb-2 pt-6">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">
+              <Radio className="h-5 w-5 text-primary" />
+              Actividad en vivo en Chile
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              Camiones transmitiendo su posición GPS en este momento. Inicia sesión para ver el
+              detalle de cada camión y contactar.
+            </p>
+          </div>
+        </div>
+
+        <AvailabilityPanel
+          esCamionero={esCamionero}
+          usuario={{
+            ...(sesion?.id ? { id: sesion.id } : {}),
+            ...(sesion?.nombre ? { nombre: sesion.nombre } : {}),
+            ...(sesion?.telefono ? { telefono: sesion.telefono } : {}),
+          }}
+          bloqueado={!sesion}
+          onRequiereSesion={() => abrirAuth("registro")}
+        />
+      </section>
+
       <SolutionsSection
         onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
         onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
@@ -411,16 +437,6 @@ function Index() {
             ))}
           </div>
         )}
-
-        <AvailabilityPanel
-          esCamionero={esCamionero}
-          usuario={{
-            ...(sesion?.id ? { id: sesion.id } : {}),
-            ...(sesion?.nombre ? { nombre: sesion.nombre } : {}),
-            ...(sesion?.telefono ? { telefono: sesion.telefono } : {}),
-          }}
-        />
-
 
         <section className="mt-6">
           <h2 className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
