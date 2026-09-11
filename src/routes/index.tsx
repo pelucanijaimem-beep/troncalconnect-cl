@@ -55,25 +55,7 @@ import {
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "TroncalTrack — Bolsa de Cargas y Camiones en Sudamérica" },
-      {
-        name: "description",
-        content:
-          "Encuentra fletes y camiones disponibles en Chile, Argentina, Perú y Bolivia. Publica tu carga o tu camión y rastrea tus viajes con GPS en vivo.",
-      },
-      { property: "og:title", content: "TroncalTrack — Bolsa de Cargas y Camiones en Sudamérica" },
-      {
-        property: "og:description",
-        content:
-          "Fletes, camiones disponibles, tarifas por kilómetro y rastreo GPS en vivo. Planes desde $0 CLP para transportistas y empresas.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+export const Route = createFileRoute("/")({  
   component: Index,
 });
 
