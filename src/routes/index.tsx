@@ -230,6 +230,14 @@ function Index() {
       abrirAuth("registro");
       return;
     }
+    if (!soyVerificado) {
+      toast.error("Necesitas el sello TroncalCheck", {
+        description:
+          "Completa tu verificación de identidad para reservar cargas al instante.",
+      });
+      setVerificacionOpen(true);
+      return;
+    }
     if (!sesion.planActivo) {
       toast.error("Necesitas un plan mensual activo", {
         description:
@@ -245,10 +253,16 @@ function Index() {
       return;
     }
     agregarPostulacion(c.id);
-    toast.success("Postulación enviada", {
-      description: `El cargador ${c.empresa} recibirá tus datos de contacto.`,
+    toast.success("Reserva enviada al instante", {
+      description: `${c.empresa} recibió tu aviso con tus datos de contacto y tu sello TroncalCheck.`,
     });
+    try {
+      await avisarPostulacion({ data: { cargaId: c.id } });
+    } catch {
+      /* la postulación ya quedó registrada aunque falle el aviso */
+    }
   };
+
 
 
   const iniciar = (c: Carga) => {
