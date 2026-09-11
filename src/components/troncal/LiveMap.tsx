@@ -1,7 +1,13 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { DARK_TILE_ATTRIBUTION, DARK_TILE_URL, inyectarEstilosPulso } from "./mapTheme";
+import {
+  DARK_LABELS_URL,
+  DARK_TILE_ATTRIBUTION,
+  DARK_TILE_MAX_ZOOM,
+  DARK_TILE_URL,
+  inyectarEstilosPulso,
+} from "./mapTheme";
 
 function iconoCamion(enVivo: boolean) {
   const fondo = enVivo ? "#16A34A" : "#6B7280";
@@ -50,7 +56,10 @@ export default function LiveMap({
     const m = L.map(contenedor.current, { zoomControl: true, attributionControl: true });
     L.tileLayer(DARK_TILE_URL, {
       attribution: DARK_TILE_ATTRIBUTION,
-      maxZoom: 18,
+      maxZoom: DARK_TILE_MAX_ZOOM,
+    }).addTo(m);
+    L.tileLayer(DARK_LABELS_URL, {
+      maxZoom: DARK_TILE_MAX_ZOOM,
     }).addTo(m);
 
     L.polyline([origen, destino], {
