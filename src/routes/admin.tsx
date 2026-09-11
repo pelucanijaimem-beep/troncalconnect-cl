@@ -51,9 +51,11 @@ type Solicitud = {
   estado: string;
   asegurado: boolean;
   documentos: Record<string, string>;
+  checklist: unknown;
   nota_admin: string;
   updated_at: string;
 };
+
 
 type Perfil = {
   id: string;
