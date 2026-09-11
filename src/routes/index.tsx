@@ -273,18 +273,33 @@ function Index() {
     });
   };
 
-  const finalizar = (c: Carga) => {
+  const finalizar = async (c: Carga) => {
     finalizarViaje(c.id);
     setViajeActivo(null);
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
+    const ruta = `${c.origen} → ${c.destino}`;
+    if (esCamionero) {
+      setEvaluacion({
+        evaluado: c.empresa,
+        cargaId: c.id,
+        ruta,
+        papel: "Generador de Carga",
+      });
+      return;
+    }
+    const camionero = await primerPostulante(c.id);
+    if (!camionero) return;
     setEvaluacion({
-      evaluado: c.empresa,
-      ruta: `${c.origen} → ${c.destino}`,
-      papel: "Generador de Carga",
+      evaluado: camionero.nombre,
+      evaluadoId: camionero.id,
+      cargaId: c.id,
+      ruta,
+      papel: "Transportista",
     });
   };
+
 
   const rastrear = (c: Carga) => {
     const v = getViaje(c.id);
