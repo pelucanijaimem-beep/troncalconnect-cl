@@ -178,3 +178,23 @@ export function useMisPostulaciones(userId?: string) {
 
   return { ids, agregar: (id: string) => setIds((p) => [...p, id]) };
 }
+
+/** Primer camionero que postuló a la carga, para la calificación cruzada. */
+export async function primerPostulante(
+  cargaId: string,
+): Promise<{ id: string; nombre: string } | null> {
+  const { data } = await supabase
+    .from("postulaciones")
+    .select("user_id")
+    .eq("carga_id", cargaId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (!data) return null;
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("id, nombre")
+    .eq("id", data.user_id as string)
+    .maybeSingle();
+  return perfil ? { id: perfil.id as string, nombre: perfil.nombre as string } : null;
+}
