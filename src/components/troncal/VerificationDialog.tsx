@@ -13,7 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
-import { enviarDocumentos, useVerificacion, type Documentos } from "@/lib/use-verificacion";
+import { VerificationChecklist } from "./VerificationChecklist";
+import {
+  DOCUMENTOS_REQUERIDOS,
+  enviarDocumentos,
+  useVerificacion,
+  type Documentos,
+} from "@/lib/use-verificacion";
 
 const CAMPOS: { name: keyof Documentos; label: string; ayuda: string; requerido: boolean }[] = [
   {
@@ -22,18 +28,12 @@ const CAMPOS: { name: keyof Documentos; label: string; ayuda: string; requerido:
     ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
     requerido: true,
   },
-  {
-    name: "licencia",
-    label: "Licencia de Conducir (Clase A4 / A5)",
-    ayuda: "Debe estar vigente y legible.",
+  ...DOCUMENTOS_REQUERIDOS.map((d) => ({
+    name: d.clave as keyof Documentos,
+    label: d.label,
+    ayuda: d.ayuda,
     requerido: true,
-  },
-  {
-    name: "padron",
-    label: "Padrón / Certificado de Anotaciones Vigentes (Patente)",
-    ayuda: "Del camión y de la rampla, si corresponde.",
-    requerido: true,
-  },
+  })),
   {
     name: "poliza",
     label: "Póliza de Seguro de Carga (Opcional)",
@@ -69,9 +69,12 @@ export function VerificationDialog({
       const archivo = input?.files?.[0];
       if (archivo) archivos[campo.name] = archivo;
     }
-    if (!archivos.identidad || !archivos.licencia || !archivos.padron) {
+    const faltantes = CAMPOS.filter(
+      (c) => c.requerido && !archivos[c.name] && !verificacion.documentos[c.name],
+    );
+    if (faltantes.length > 0) {
       toast.error("Faltan documentos obligatorios", {
-        description: "Adjunta identidad, licencia y padrón para iniciar la validación.",
+        description: `Adjunta: ${faltantes.map((f) => f.label).join(", ")}.`,
       });
       return;
     }
@@ -118,6 +121,8 @@ export function VerificationDialog({
             </p>
           )}
         </div>
+
+        <VerificationChecklist checklist={verificacion.checklist} />
 
         <form onSubmit={enviar} className="space-y-4">
           {CAMPOS.map((c) => (
