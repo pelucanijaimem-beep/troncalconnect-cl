@@ -3,7 +3,13 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { CamionDisponible } from "@/lib/use-disponibilidad";
 import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
-import { DARK_TILE_ATTRIBUTION, DARK_TILE_URL, inyectarEstilosPulso } from "./mapTheme";
+import {
+  DARK_LABELS_URL,
+  DARK_TILE_ATTRIBUTION,
+  DARK_TILE_MAX_ZOOM,
+  DARK_TILE_URL,
+  inyectarEstilosPulso,
+} from "./mapTheme";
 
 const CENTRO_POR_DEFECTO: [number, number] = [-36.826, -73.05];
 
@@ -41,7 +47,10 @@ export default function AvailabilityMap({
     const m = L.map(contenedor.current, { zoomControl: true }).setView(CENTRO_POR_DEFECTO, 6);
     L.tileLayer(DARK_TILE_URL, {
       attribution: DARK_TILE_ATTRIBUTION,
-      maxZoom: 18,
+      maxZoom: DARK_TILE_MAX_ZOOM,
+    }).addTo(m);
+    L.tileLayer(DARK_LABELS_URL, {
+      maxZoom: DARK_TILE_MAX_ZOOM,
     }).addTo(m);
     mapa.current = m;
     return () => {
@@ -100,4 +109,3 @@ export default function AvailabilityMap({
     <div ref={contenedor} className="h-full w-full" aria-label="Mapa de camiones disponibles en ruta" />
   );
 }
-
