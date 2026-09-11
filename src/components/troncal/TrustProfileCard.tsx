@@ -1,6 +1,7 @@
-import { MessageSquareQuote, ShieldCheck } from "lucide-react";
+import { HandCoins, MessageSquareQuote, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
+import { VerificationChecklist } from "./VerificationChecklist";
 import { RatingSummary, StarRating } from "./StarRating";
 import { useVerificacion } from "@/lib/use-verificacion";
 import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
@@ -14,7 +15,10 @@ export function TrustProfileCard({
 }) {
   const verificacion = useVerificacion(usuario);
   const calificaciones = useCalificaciones();
-  const { promedio, total, propias } = resumen(calificaciones, usuario);
+  const { promedio, total, propias, buenHistorialPago, promedioPago } = resumen(
+    calificaciones,
+    usuario,
+  );
 
   return (
     <section
@@ -33,6 +37,12 @@ export function TrustProfileCard({
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} />
             <RatingSummary promedio={promedio} total={total} />
+            {buenHistorialPago && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
+                <HandCoins className="h-3.5 w-3.5" /> Buen historial de pago (
+                {promedioPago.toFixed(1)})
+              </span>
+            )}
           </div>
         </div>
         <Button className="w-full sm:w-auto" onClick={onVerificar}>
@@ -41,6 +51,11 @@ export function TrustProfileCard({
             : "Verificación de Identidad"}
         </Button>
       </div>
+
+      <div className="mt-4">
+        <VerificationChecklist checklist={verificacion.checklist} compacto />
+      </div>
+
 
       {propias.length > 0 && (
         <div className="mt-4 space-y-3 border-t border-border pt-3">
