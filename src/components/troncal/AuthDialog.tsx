@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -36,6 +37,8 @@ export function AuthDialog({
   const [vista, setVista] = useState<Vista>(modo);
   const [rolCuenta, setRolCuenta] = useState<Rol>(rol);
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [verPassLogin, setVerPassLogin] = useState(false);
+  const [verPassRegistro, setVerPassRegistro] = useState(false);
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
@@ -155,7 +158,24 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-pass">Contraseña</Label>
-                    <Input id="l-pass" name="password" type="password" placeholder="••••••••" required />
+                    <div className="relative">
+                      <Input
+                        id="l-pass"
+                        name="password"
+                        type={verPassLogin ? "text" : "password"}
+                        placeholder="••••••••"
+                        required
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setVerPassLogin((v) => !v)}
+                        className="absolute inset-y-0 right-0 flex w-10 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
+                        aria-label={verPassLogin ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        {verPassLogin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -201,14 +221,26 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-pass">Contraseña</Label>
-                    <Input
-                      id="s-pass"
-                      name="password"
-                      type="password"
-                      minLength={6}
-                      placeholder="••••••••"
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="s-pass"
+                        name="password"
+                        type={verPassRegistro ? "text" : "password"}
+                        minLength={6}
+                        placeholder="••••••••"
+                        required
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setVerPassRegistro((v) => !v)}
+                        className="absolute inset-y-0 right-0 flex w-10 cursor-pointer items-center justify-center text-muted-foreground hover:text-foreground"
+                        aria-label={verPassRegistro ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        {verPassRegistro ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Mínimo 6 caracteres.</p>
                   </div>
                   <div className="flex items-start gap-3 rounded-xl border border-border bg-surface p-3">
                     <Checkbox
