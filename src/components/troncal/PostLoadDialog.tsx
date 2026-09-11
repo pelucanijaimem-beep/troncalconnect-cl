@@ -28,7 +28,9 @@ import {
   type PaisCodigo,
 } from "@/lib/troncal-data";
 import { publicarCargaDB } from "@/lib/use-cargas";
+import { avisarCoincidencias } from "@/lib/notificaciones.functions";
 import { useSesion } from "@/lib/use-session";
+
 
 export function PostLoadDialog({
   open,
@@ -59,7 +61,7 @@ export function PostLoadDialog({
     const tipoCamion = (carroceria || "Rampla Plana") as Carroceria;
 
     setEnviando(true);
-    const error = await publicarCargaDB({
+    const { id, error } = await publicarCargaDB({
       userId: sesion.id,
       titulo: `${origen} → ${destino}`,
       origen,
@@ -91,7 +93,19 @@ export function PostLoadDialog({
     toast.success("¡Flete publicado!", {
       description: "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real.",
     });
+
+    if (id) {
+      try {
+        const { avisados } = await avisarCoincidencias({ data: { cargaId: id } });
+        if (avisados > 0) {
+          toast.info(`${avisados} camioneros recibieron una alerta de coincidencia.`);
+        }
+      } catch {
+        /* el aviso es complementario: la carga ya quedó publicada */
+      }
+    }
   };
+
 
 
   return (
