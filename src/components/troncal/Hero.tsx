@@ -1,4 +1,4 @@
-import { CalendarCheck, Rocket } from "lucide-react";
+import { CalendarCheck, Gift, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Hero({
@@ -22,7 +22,16 @@ export function Hero({
           todo Chile.
         </p>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <button
+          type="button"
+          onClick={onRegistro}
+          className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary/10"
+        >
+          <Gift className="h-4 w-4" />
+          90 días de prueba gratis · Sin tarjeta de crédito
+        </button>
+
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button size="lg" onClick={onRegistro}>
             <Rocket className="h-4 w-4" /> Comenzar Ahora
           </Button>
