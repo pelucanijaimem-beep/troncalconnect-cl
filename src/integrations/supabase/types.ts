@@ -14,8 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      calificaciones: {
+        Row: {
+          autor_id: string
+          autor_nombre: string
+          carga_id: string | null
+          comentario: string
+          created_at: string
+          criterios: Json
+          estrellas: number
+          evaluado_id: string | null
+          evaluado_nombre: string
+          id: string
+          ruta: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          autor_id: string
+          autor_nombre?: string
+          carga_id?: string | null
+          comentario?: string
+          created_at?: string
+          criterios?: Json
+          estrellas?: number
+          evaluado_id?: string | null
+          evaluado_nombre?: string
+          id?: string
+          ruta?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          autor_id?: string
+          autor_nombre?: string
+          carga_id?: string | null
+          comentario?: string
+          created_at?: string
+          criterios?: Json
+          estrellas?: number
+          evaluado_id?: string | null
+          evaluado_nombre?: string
+          id?: string
+          ruta?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calificaciones_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cargas: {
         Row: {
+          completada_at: string | null
           created_at: string
           destino: string
           detalle: string
@@ -38,6 +95,7 @@ export type Database = {
           valor_km: number
         }
         Insert: {
+          completada_at?: string | null
           created_at?: string
           destino: string
           detalle?: string
@@ -60,6 +118,7 @@ export type Database = {
           valor_km?: number
         }
         Update: {
+          completada_at?: string | null
           created_at?: string
           destino?: string
           detalle?: string
@@ -80,6 +139,39 @@ export type Database = {
           toneladas?: number
           user_id?: string
           valor_km?: number
+        }
+        Relationships: []
+      }
+      notificaciones: {
+        Row: {
+          created_at: string
+          datos: Json
+          id: string
+          leida: boolean
+          mensaje: string
+          tipo: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          datos?: Json
+          id?: string
+          leida?: boolean
+          mensaje?: string
+          tipo?: string
+          titulo?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          datos?: Json
+          id?: string
+          leida?: boolean
+          mensaje?: string
+          tipo?: string
+          titulo?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -154,6 +246,51 @@ export type Database = {
           },
         ]
       }
+      preferencias_alertas: {
+        Row: {
+          activo: boolean
+          alertas_email: boolean
+          carrocerias: string[]
+          ciudad_base: string
+          created_at: string
+          destinos: string[]
+          email: string
+          id: string
+          nombre: string
+          origenes: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activo?: boolean
+          alertas_email?: boolean
+          carrocerias?: string[]
+          ciudad_base?: string
+          created_at?: string
+          destinos?: string[]
+          email?: string
+          id?: string
+          nombre?: string
+          origenes?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activo?: boolean
+          alertas_email?: boolean
+          carrocerias?: string[]
+          ciudad_base?: string
+          created_at?: string
+          destinos?: string[]
+          email?: string
+          id?: string
+          nombre?: string
+          origenes?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -178,6 +315,7 @@ export type Database = {
       verificaciones: {
         Row: {
           asegurado: boolean
+          checklist: Json
           created_at: string
           documentos: Json
           estado: string
@@ -189,6 +327,7 @@ export type Database = {
         }
         Insert: {
           asegurado?: boolean
+          checklist?: Json
           created_at?: string
           documentos?: Json
           estado?: string
@@ -200,6 +339,7 @@ export type Database = {
         }
         Update: {
           asegurado?: boolean
+          checklist?: Json
           created_at?: string
           documentos?: Json
           estado?: string
