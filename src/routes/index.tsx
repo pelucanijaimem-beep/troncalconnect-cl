@@ -679,7 +679,7 @@ function Index() {
         onOpenChange={(o) => !o && setPodCarga(null)}
         onConfirmado={(c) => {
           setPodCarga(null);
-          finalizar(c);
+          void finalizar(c);
         }}
       />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
@@ -689,11 +689,23 @@ function Index() {
         usuario={sesion?.nombre ?? ""}
         userId={sesion?.id}
       />
+      <AlertPrefsDialog
+        open={alertasOpen}
+        onOpenChange={setAlertasOpen}
+        ciudades={paisActual.ciudades}
+        userId={sesion?.id}
+        nombre={sesion?.nombre ?? ""}
+        email={sesion?.email ?? ""}
+        prefsIniciales={alertas}
+        onGuardado={() => void recargarAlertas()}
+      />
       <RatingDialog
         evaluacion={evaluacion}
         autor={sesion?.nombre ?? "Usuario TroncalTrack"}
+        autorId={sesion?.id}
         onOpenChange={(o) => !o && setEvaluacion(null)}
       />
+
       <Toaster />
     </div>
   );
