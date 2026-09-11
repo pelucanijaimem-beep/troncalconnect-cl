@@ -111,32 +111,41 @@ export async function publicarCargaDB(entrada: {
   soloVerificados: boolean;
   diasPago?: string;
 }) {
-  const { error } = await supabase.from("cargas").insert({
-    user_id: entrada.userId,
-    titulo: entrada.titulo,
-    origen: entrada.origen,
-    destino: entrada.destino,
-    tipo_camion: entrada.tipoCamion,
-    precio: entrada.precio,
-    empresa: entrada.empresa,
-    empresa_telefono: entrada.telefono,
-    empresa_verificada: entrada.verificada,
-    pais: entrada.pais,
-    km: entrada.km,
-    valor_km: entrada.valorKm,
-    toneladas: entrada.toneladas,
-    fecha: entrada.fecha || null,
-    detalle: entrada.detalle,
-    solo_verificados: entrada.soloVerificados,
-    dias_pago: entrada.diasPago ?? "Pago a 30 días",
-  });
+  const { data, error } = await supabase
+    .from("cargas")
+    .insert({
+      user_id: entrada.userId,
+      titulo: entrada.titulo,
+      origen: entrada.origen,
+      destino: entrada.destino,
+      tipo_camion: entrada.tipoCamion,
+      precio: entrada.precio,
+      empresa: entrada.empresa,
+      empresa_telefono: entrada.telefono,
+      empresa_verificada: entrada.verificada,
+      pais: entrada.pais,
+      km: entrada.km,
+      valor_km: entrada.valorKm,
+      toneladas: entrada.toneladas,
+      fecha: entrada.fecha || null,
+      detalle: entrada.detalle,
+      solo_verificados: entrada.soloVerificados,
+      dias_pago: entrada.diasPago ?? "Pago a 30 días",
+    })
+    .select("id")
+    .single();
+  return { id: (data?.id as string | undefined) ?? null, error: error?.message ?? null };
+}
+
+
+export async function completarCarga(id: string) {
+  const { error } = await supabase
+    .from("cargas")
+    .update({ estado: "completada", completada_at: new Date().toISOString() })
+    .eq("id", id);
   return error?.message ?? null;
 }
 
-export async function completarCarga(id: string) {
-  const { error } = await supabase.from("cargas").update({ estado: "completada" }).eq("id", id);
-  return error?.message ?? null;
-}
 
 /** Postular a una carga. Requiere plan mensual activo (validado también por la base de datos). */
 export async function postularACarga(cargaId: string, userId: string, mensaje: string) {
