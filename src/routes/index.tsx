@@ -323,7 +323,7 @@ function Index() {
 
   const solicitarDemo = () => {
     toast.success("Solicitud de demo enviada", {
-      description: "Te contactaremos al +569 4792 6230 o escríbenos a soporte@troncaltrack.cl.",
+      description: "Te contactaremos al +569 4792 6230 o escríbenos a soporte@troncaltrack.com.",
     });
   };
 
@@ -634,7 +634,7 @@ function Index() {
               Preguntas frecuentes
             </a>
             <a
-              href="mailto:soporte@troncaltrack.cl"
+              href="mailto:soporte@troncaltrack.com"
               className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
             >
               Soporte
@@ -645,6 +645,12 @@ function Index() {
             >
               Registro
             </button>
+            <a
+              href="mailto:sugerencias@troncaltrack.com?subject=Sugerencia%20para%20TroncalTrack"
+              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Sugerencias
+            </a>
           </div>
         </div>
       </footer>
