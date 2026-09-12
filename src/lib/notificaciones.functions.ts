@@ -1,39 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type Destinatario = { email: string; nombre: string };
-
-/** Envía un correo si el servicio de correo está configurado. Nunca lanza error. */
+/** Envía un correo con una plantilla registrada. Nunca lanza error. */
 async function enviarCorreo(params: {
-  para: Destinatario;
-  asunto: string;
-  titulo: string;
-  cuerpo: string;
+  plantilla: "postulacion" | "coincidencia-carga";
+  para: string;
+  datos: Record<string, unknown>;
+  idempotencyKey: string;
 }): Promise<boolean> {
-  const apiKey = process.env["RESEND_API_KEY"];
-  if (!apiKey || !params.para.email) return false;
-  const remitente = process.env["TRONCALTRACK_EMAIL_FROM"] ?? "TroncalTrack <onboarding@resend.dev>";
+  if (!params.para) return false;
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: remitente,
-        to: [params.para.email],
-        subject: params.asunto,
-        html: `<div style="font-family:Arial,Helvetica,sans-serif;color:#111">
-          <h2 style="color:#c1121f;margin:0 0 12px">${params.titulo}</h2>
-          <div style="font-size:15px;line-height:1.6">${params.cuerpo}</div>
-          <p style="margin-top:24px;font-size:12px;color:#666">
-            TroncalTrack — Plataforma de cargas y transporte. Este es un aviso automático.
-          </p>
-        </div>`,
-      }),
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    const r = await sendTemplateEmail(params.plantilla, params.para, {
+      templateData: params.datos,
+      idempotencyKey: params.idempotencyKey,
     });
-    return res.ok;
+    return r.sent;
   } catch {
     return false;
   }
