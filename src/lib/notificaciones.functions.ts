@@ -1,39 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type Destinatario = { email: string; nombre: string };
-
-/** Envía un correo si el servicio de correo está configurado. Nunca lanza error. */
+/** Envía un correo con una plantilla registrada. Nunca lanza error. */
 async function enviarCorreo(params: {
-  para: Destinatario;
-  asunto: string;
-  titulo: string;
-  cuerpo: string;
+  plantilla: "postulacion" | "coincidencia-carga";
+  para: string;
+  datos: Record<string, unknown>;
+  idempotencyKey: string;
 }): Promise<boolean> {
-  const apiKey = process.env["RESEND_API_KEY"];
-  if (!apiKey || !params.para.email) return false;
-  const remitente = process.env["TRONCALTRACK_EMAIL_FROM"] ?? "TroncalTrack <onboarding@resend.dev>";
+  if (!params.para) return false;
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: remitente,
-        to: [params.para.email],
-        subject: params.asunto,
-        html: `<div style="font-family:Arial,Helvetica,sans-serif;color:#111">
-          <h2 style="color:#c1121f;margin:0 0 12px">${params.titulo}</h2>
-          <div style="font-size:15px;line-height:1.6">${params.cuerpo}</div>
-          <p style="margin-top:24px;font-size:12px;color:#666">
-            TroncalTrack — Plataforma de cargas y transporte. Este es un aviso automático.
-          </p>
-        </div>`,
-      }),
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    const r = await sendTemplateEmail(params.plantilla, params.para, {
+      templateData: params.datos,
+      idempotencyKey: params.idempotencyKey,
     });
-    return res.ok;
+    return r.sent;
   } catch {
     return false;
   }
@@ -89,15 +71,18 @@ export const avisarPostulacion = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const correo = await enviarCorreo({
-      para: { email: dueno?.email ?? "", nombre: dueno?.nombre ?? "" },
-      asunto: `Nueva postulación: ${ruta}`,
-      titulo: "Recibiste una postulación en TroncalTrack",
-      cuerpo: `
-        <p><strong>${nombre}</strong> postuló a tu carga <strong>${carga.titulo}</strong> (${ruta}).</p>
-        <p><strong>Sello de confianza:</strong> ${sello}<br/>
-        <strong>Teléfono de contacto:</strong> ${telefono}<br/>
-        <strong>Correo:</strong> ${postulante?.email ?? "No informado"}</p>
-        <p>Ingresa a tu panel para revisar el perfil completo y confirmar el viaje.</p>`,
+      plantilla: "postulacion",
+      para: dueno?.email ?? "",
+      idempotencyKey: `postulacion-${carga.id}-${userId}`,
+      datos: {
+        empresa: dueno?.nombre ?? "",
+        camionero: nombre,
+        sello,
+        telefono,
+        correo: postulante?.email ?? "No informado",
+        carga: carga.titulo,
+        ruta,
+      },
     });
 
     return { ok: true, correo };
@@ -156,15 +141,16 @@ export const avisarCoincidencias = createServerFn({ method: "POST" })
 
       if (p.alertas_email) {
         await enviarCorreo({
-          para: { email: (p.email as string) ?? "", nombre: (p.nombre as string) ?? "" },
-          asunto: `Carga disponible: ${ruta}`,
-          titulo: "Una carga nueva calza con tus rutas frecuentes",
-          cuerpo: `
-            <p><strong>${carga.titulo}</strong></p>
-            <p><strong>Ruta:</strong> ${ruta}<br/>
-            <strong>Carrocería:</strong> ${carga.tipo_camion}<br/>
-            <strong>Kilómetros:</strong> ${carga.km}</p>
-            <p>Ingresa a tu tablero para postular con un clic antes que otro transportista.</p>`,
+          plantilla: "coincidencia-carga",
+          para: (p.email as string) ?? "",
+          idempotencyKey: `coincidencia-${carga.id}-${p.user_id}`,
+          datos: {
+            nombre: (p.nombre as string) ?? "",
+            carga: carga.titulo,
+            ruta,
+            carroceria: carga.tipo_camion,
+            km: carga.km,
+          },
         });
       }
     }
