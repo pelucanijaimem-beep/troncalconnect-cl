@@ -12,7 +12,7 @@ export function TopSupportBar() {
         </span>
 
         <span className="inline-flex items-center gap-1.5">
-          <Mail className="h-3.5 w-3.5 text-primary" /> soporte@troncaltrack.cl
+          <Mail className="h-3.5 w-3.5 text-primary" /> soporte@troncaltrack.com
         </span>
         <span className="ml-auto font-semibold text-foreground">
           Atención en Chile, Argentina, Perú y Bolivia
