@@ -141,15 +141,16 @@ export const avisarCoincidencias = createServerFn({ method: "POST" })
 
       if (p.alertas_email) {
         await enviarCorreo({
-          para: { email: (p.email as string) ?? "", nombre: (p.nombre as string) ?? "" },
-          asunto: `Carga disponible: ${ruta}`,
-          titulo: "Una carga nueva calza con tus rutas frecuentes",
-          cuerpo: `
-            <p><strong>${carga.titulo}</strong></p>
-            <p><strong>Ruta:</strong> ${ruta}<br/>
-            <strong>Carrocería:</strong> ${carga.tipo_camion}<br/>
-            <strong>Kilómetros:</strong> ${carga.km}</p>
-            <p>Ingresa a tu tablero para postular con un clic antes que otro transportista.</p>`,
+          plantilla: "coincidencia-carga",
+          para: (p.email as string) ?? "",
+          idempotencyKey: `coincidencia-${carga.id}-${p.user_id}`,
+          datos: {
+            nombre: (p.nombre as string) ?? "",
+            carga: carga.titulo,
+            ruta,
+            carroceria: carga.tipo_camion,
+            km: carga.km,
+          },
         });
       }
     }
