@@ -1,4 +1,6 @@
 import type { ComponentType } from 'react'
+import { template as postulacionTemplate } from './postulacion'
+import { template as coincidenciaTemplate } from './coincidencia-carga'
 
 export interface TemplateEntry {
   component: ComponentType<any>
