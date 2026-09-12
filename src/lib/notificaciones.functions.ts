@@ -71,15 +71,18 @@ export const avisarPostulacion = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const correo = await enviarCorreo({
-      para: { email: dueno?.email ?? "", nombre: dueno?.nombre ?? "" },
-      asunto: `Nueva postulación: ${ruta}`,
-      titulo: "Recibiste una postulación en TroncalTrack",
-      cuerpo: `
-        <p><strong>${nombre}</strong> postuló a tu carga <strong>${carga.titulo}</strong> (${ruta}).</p>
-        <p><strong>Sello de confianza:</strong> ${sello}<br/>
-        <strong>Teléfono de contacto:</strong> ${telefono}<br/>
-        <strong>Correo:</strong> ${postulante?.email ?? "No informado"}</p>
-        <p>Ingresa a tu panel para revisar el perfil completo y confirmar el viaje.</p>`,
+      plantilla: "postulacion",
+      para: dueno?.email ?? "",
+      idempotencyKey: `postulacion-${carga.id}-${userId}`,
+      datos: {
+        empresa: dueno?.nombre ?? "",
+        camionero: nombre,
+        sello,
+        telefono,
+        correo: postulante?.email ?? "No informado",
+        carga: carga.titulo,
+        ruta,
+      },
     });
 
     return { ok: true, correo };
