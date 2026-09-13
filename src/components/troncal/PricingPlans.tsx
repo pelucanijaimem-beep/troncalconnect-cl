@@ -1,4 +1,8 @@
+import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { crearPagoPlan } from "@/lib/pagos.functions";
 import { BadgeCheck, Building2, Check, Gift, Search, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -29,8 +33,8 @@ const PLANES = [
     descripcion: "El más elegido por choferes y dueños de camión.",
     icono: Truck,
     cta: "Suscribirme como Transportista",
-    href: "https://mpago.la/25CXadN",
-    externo: true,
+    href: "/registro",
+    plan: "transportista" as const,
     features: [
       "Sello azul de verificación «TroncalCheck» (tras validar RUT y documentos)",
       "Acceso instantáneo a datos de contacto directo (Teléfono / WhatsApp de la carga)",
@@ -46,8 +50,8 @@ const PLANES = [
     descripcion: "Para generadores de carga y empresas logísticas.",
     icono: Building2,
     cta: "Suscribirme como Empresa",
-    href: "https://mpago.la/1zS5CuL",
-    externo: true,
+    href: "/registro",
+    plan: "empresa" as const,
     features: [
       "Publicación ilimitada de fletes y cargas",
       "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
@@ -59,14 +63,37 @@ const PLANES = [
 
 export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
   const navigate = useNavigate();
+  const iniciarPago = useServerFn(crearPagoPlan);
+  const [procesando, setProcesando] = useState<string | null>(null);
 
-  const handleClick = (p: (typeof PLANES)[number]) => {
-    if (p.externo) {
-      window.open(p.href, "_blank", "noopener,noreferrer");
+  const handleClick = async (p: (typeof PLANES)[number]) => {
+    if (!("plan" in p) || !p.plan) {
+      navigate({ to: p.href });
+      onRegistro();
       return;
     }
-    navigate({ to: p.href });
-    onRegistro();
+    setProcesando(p.id);
+    try {
+      const res = await iniciarPago({
+        data: { plan: p.plan, origen: window.location.origin },
+      });
+      if (res.ok) {
+        window.location.href = res.url;
+        return;
+      }
+      if (res.motivo === "sin_credenciales") {
+        toast.info("El cobro en línea se habilita muy pronto", {
+          description:
+            "Crea tu cuenta ahora y te avisamos por correo apenas puedas activar tu plan.",
+        });
+        navigate({ to: "/registro" });
+        onRegistro();
+        return;
+      }
+      toast.error(res.mensaje);
+    } finally {
+      setProcesando(null);
+    }
   };
 
   return (
@@ -76,8 +103,8 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
           Planes y Membresías
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Precios transparentes en pesos chilenos (CLP), sin permanencia mínima. Paga con tarjeta,
-          Mercado Pago o Webpay (Flow).
+          Precios transparentes en pesos chilenos (CLP), sin permanencia mínima. Estamos habilitando
+          el pago en línea; mientras tanto coordinamos la activación de tu plan por WhatsApp.
         </p>
 
         <div className="mt-5 flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-bold text-primary sm:text-base">
@@ -136,9 +163,10 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
               <Button
                 className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                 variant={p.destacado ? "default" : "outline"}
-                onClick={() => handleClick(p)}
+                disabled={procesando === p.id}
+                onClick={() => void handleClick(p)}
               >
-                {p.cta}
+                {procesando === p.id ? "Preparando el pago..." : p.cta}
               </Button>
             </article>
           ))}
