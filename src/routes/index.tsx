@@ -345,7 +345,7 @@ function Index() {
       />
       <LaunchBanner />
 
-      <Hero onRegistro={() => abrirAuth("registro")} onDemo={solicitarDemo} />
+      <Hero onRegistro={() => abrirAuth("registro")} />
 
       <LiveStatsBanner
         cargasHoy={cargasHoy}
@@ -622,6 +622,12 @@ function Index() {
             >
               Términos y Condiciones
             </button>
+            <Link
+              to="/privacidad"
+              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Política de Privacidad
+            </Link>
             <a
               href="#faq"
               className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
