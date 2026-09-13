@@ -1,13 +1,7 @@
-import { CalendarCheck, Gift, Rocket } from "lucide-react";
+import { Rocket, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function Hero({
-  onRegistro,
-  onDemo,
-}: {
-  onRegistro: () => void;
-  onDemo: () => void;
-}) {
+export function Hero({ onRegistro }: { onRegistro: () => void }) {
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-4xl px-4 py-14 text-center lg:py-20">
@@ -22,21 +16,14 @@ export function Hero({
           todo Chile.
         </p>
 
-        <button
-          type="button"
-          onClick={onRegistro}
-          className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary/10"
-        >
-          <Gift className="h-4 w-4" />
-          90 días de prueba gratis · Sin tarjeta de crédito
-        </button>
-
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button size="lg" onClick={onRegistro}>
             <Rocket className="h-4 w-4" /> Comenzar Ahora
           </Button>
-          <Button size="lg" variant="outline" onClick={onDemo}>
-            <CalendarCheck className="h-4 w-4" /> Solicitar Demo
+          <Button size="lg" variant="outline" asChild>
+            <a href="#cargas">
+              <Truck className="h-4 w-4" /> Ver el tablero de cargas
+            </a>
           </Button>
         </div>
       </div>
