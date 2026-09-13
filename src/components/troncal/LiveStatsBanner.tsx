@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, MapPin, TrendingUp } from "lucide-react";
+import { Activity, Award, MapPin, Rocket, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const EQUIPOS = [
@@ -11,13 +11,22 @@ const EQUIPOS = [
   { label: "Flete / Carga Parcial (LTL)", value: "Furgón" },
 ];
 
-const RUTAS = [
-  "Santiago → Concepción",
-  "Antofagasta → Santiago",
-  "Los Ángeles → Santiago",
-  "Valparaíso → Los Ángeles",
-  "Puerto Montt → Temuco",
-  "Iquique → Antofagasta",
+const VENTAJAS_FUNDADOR = [
+  {
+    icono: Award,
+    titulo: "Sello de Fundador",
+    texto: "Distintivo permanente en tu perfil por ser de los primeros en operar aquí.",
+  },
+  {
+    icono: TrendingUp,
+    titulo: "Posicionamiento prioritario",
+    texto: "Tus cargas y tu camión aparecen primero mientras la red crece.",
+  },
+  {
+    icono: MapPin,
+    titulo: "Tus rutas, primero",
+    texto: "Definimos la cobertura inicial según los corredores que tú operas.",
+  },
 ];
 
 function useContador(objetivo: number) {
@@ -51,6 +60,7 @@ export function LiveStatsBanner({
   const c = useContador(cargasHoy);
   const t = useContador(tarifaKm);
   const r = useContador(rutasActivas);
+  const etapaInicial = cargasHoy < 5;
 
   return (
     <section className="border-b border-border bg-surface">
@@ -68,37 +78,57 @@ export function LiveStatsBanner({
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <Activity className="h-4 w-4 text-primary" /> Cargas publicadas hoy
             </p>
-            <p className="mt-2 text-3xl font-extrabold text-foreground">{c.toLocaleString("es-CL")}</p>
+            <p className="mt-2 text-3xl font-extrabold text-foreground">
+              {c.toLocaleString("es-CL")}
+            </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 shadow-card">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <TrendingUp className="h-4 w-4 text-primary" /> Promedio tarifa por km
             </p>
             <p className="mt-2 text-3xl font-extrabold text-foreground">
-              ${t.toLocaleString("es-CL")}<span className="text-base font-bold text-muted-foreground">/km</span>
+              {tarifaKm > 0 ? (
+                <>
+                  ${t.toLocaleString("es-CL")}
+                  <span className="text-base font-bold text-muted-foreground">/km</span>
+                </>
+              ) : (
+                <span className="text-2xl text-muted-foreground">Sin datos aún</span>
+              )}
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4 shadow-card">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <MapPin className="h-4 w-4 text-primary" /> Rutas activas
             </p>
-            <p className="mt-2 text-3xl font-extrabold text-foreground">{r.toLocaleString("es-CL")}</p>
-            <p className="mt-1 truncate text-xs text-muted-foreground">
-              Santiago · Concepción · Antofagasta · Los Ángeles
+            <p className="mt-2 text-3xl font-extrabold text-foreground">
+              {r.toLocaleString("es-CL")}
             </p>
           </div>
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card">
-          <div className="flex gap-6 whitespace-nowrap px-4 py-2 text-xs font-medium text-muted-foreground">
-            {RUTAS.map((ruta) => (
-              <span key={ruta} className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                {ruta}
-              </span>
-            ))}
+        {etapaInicial && (
+          <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-5">
+            <p className="flex items-center gap-2 text-sm font-extrabold text-primary">
+              <Rocket className="h-4 w-4" />
+              Plataforma recién abierta en Chile
+            </p>
+            <p className="mt-1.5 max-w-3xl text-sm text-muted-foreground">
+              Estamos partiendo y los números que ves son reales, sin cifras infladas. Las primeras
+              empresas y transportistas en sumarse construyen el mercado y se quedan con las
+              ventajas de fundador.
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {VENTAJAS_FUNDADOR.map((v) => (
+                <div key={v.titulo} className="rounded-lg border border-border bg-card p-3">
+                  <v.icono className="h-4 w-4 text-primary" />
+                  <p className="mt-1.5 text-sm font-bold text-foreground">{v.titulo}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{v.texto}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-5">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">

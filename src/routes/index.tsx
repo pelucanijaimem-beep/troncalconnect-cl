@@ -311,21 +311,16 @@ function Index() {
     setRastreo(c);
   };
 
-  const cargasHoy = Math.max(CARGAS.filter((c) => c.pais === pais).length, 128);
+  const cargasHoy = CARGAS.filter((c) => c.pais === pais).length;
   const tarifaPromedioKm = (() => {
     const lista = CARGAS.filter((c) => c.pais === pais && c.km > 0);
-    if (!lista.length) return 1180;
+    if (!lista.length) return 0;
     return Math.round(lista.reduce((a, c) => a + c.valorKm, 0) / lista.length);
   })();
   const rutasActivas = new Set(
     CARGAS.filter((c) => c.pais === pais).map((c) => `${c.origen}-${c.destino}`),
-  ).size || 24;
+  ).size;
 
-  const solicitarDemo = () => {
-    toast.success("Solicitud de demo enviada", {
-      description: "Te contactaremos al +569 4792 6230 o escríbenos a soporte@troncaltrack.com.",
-    });
-  };
 
   const viajeRastreo = rastreo ? getViaje(rastreo.id) : null;
   const viajeChofer = viajeActivo ? getViaje(viajeActivo.id) : null;
