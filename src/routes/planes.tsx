@@ -13,6 +13,9 @@ import {
   Star,
   Truck,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { crearPagoPlan } from "@/lib/pagos.functions";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -55,7 +58,7 @@ type Plan = {
   destacado?: boolean;
   cta: string;
   href: string;
-  externo?: boolean;
+  plan?: "transportista" | "empresa";
   icono: typeof Truck;
   features: Feature[];
 };
@@ -82,8 +85,8 @@ const PLANES: Plan[] = [
     precioMensual: 14990,
     destacado: true,
     cta: "Suscribirme como Transportista",
-    href: "https://mpago.la/25CXadN",
-    externo: true,
+    href: "/registro",
+    plan: "transportista",
     icono: Truck,
     features: [
       {
@@ -110,8 +113,8 @@ const PLANES: Plan[] = [
     subtitulo: "Para generadores de carga y empresas logísticas.",
     precioMensual: 29990,
     cta: "Suscribirme como Empresa",
-    href: "https://mpago.la/1zS5CuL",
-    externo: true,
+    href: "/registro",
+    plan: "empresa",
     icono: Building2,
     features: [
       { texto: "Publicación ilimitada de fletes y cargas", icono: "especial" },
@@ -131,7 +134,7 @@ const PLANES: Plan[] = [
 const FAQ_SUSCRIPCION = [
   {
     q: "¿Cómo puedo pagar mi suscripción?",
-    a: "Aceptamos tarjetas de crédito y débito (Visa, Mastercard, American Express) y pagos a través de Mercado Pago y Webpay (Flow). Todos los precios se cobran en pesos chilenos (CLP).",
+    a: "Estamos habilitando el pago con tarjeta en línea. Mientras tanto, coordinamos la activación de tu plan por transferencia electrónica escribiéndonos al +569 4792 6230. Todos los precios se cobran en pesos chilenos (CLP).",
   },
   {
     q: "¿Cómo funciona el descuento anual del 20%?",
@@ -168,12 +171,35 @@ function PlanesPage() {
   const [anual, setAnual] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = (plan: Plan) => {
-    if (plan.externo) {
-      window.open(plan.href, "_blank", "noopener,noreferrer");
+  const iniciarPago = useServerFn(crearPagoPlan);
+  const [procesando, setProcesando] = useState<string | null>(null);
+
+  const handleClick = async (plan: Plan) => {
+    if (!plan.plan) {
+      navigate({ to: plan.href });
       return;
     }
-    navigate({ to: plan.href });
+    setProcesando(plan.id);
+    try {
+      const res = await iniciarPago({
+        data: { plan: plan.plan, origen: window.location.origin },
+      });
+      if (res.ok) {
+        window.location.href = res.url;
+        return;
+      }
+      if (res.motivo === "sin_credenciales") {
+        toast.info("El cobro en línea se habilita muy pronto", {
+          description:
+            "Crea tu cuenta ahora y te avisamos por correo apenas puedas activar tu plan.",
+        });
+        navigate({ to: "/registro" });
+        return;
+      }
+      toast.error(res.mensaje);
+    } finally {
+      setProcesando(null);
+    }
   };
 
   return (
@@ -301,9 +327,10 @@ function PlanesPage() {
                     className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                     variant={plan.destacado ? "default" : "outline"}
                     size="lg"
-                    onClick={() => handleClick(plan)}
+                    disabled={procesando === plan.id}
+                    onClick={() => void handleClick(plan)}
                   >
-                    {plan.cta}
+                    {procesando === plan.id ? "Preparando el pago..." : plan.cta}
                   </Button>
                 </article>
               );
@@ -314,15 +341,11 @@ function PlanesPage() {
           <div className="mt-10 flex flex-col items-center gap-3">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-success" />
-              Pagos 100% seguros y cifrados. Aceptamos:
+              Pagos cifrados. Medios de pago en proceso de habilitación:
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <LogoPago texto="VISA" />
-              <LogoPago texto="Mastercard" />
-              <LogoPago texto="AMEX" />
-              <LogoPago texto="Mercado Pago" />
-              <LogoPago texto="Webpay" sub="by Flow" />
-              <LogoPago texto="Redcompra" sub="Débito" />
+              <LogoPago texto="Tarjetas" sub="Próximamente" />
+              <LogoPago texto="Transferencia" sub="Disponible" />
             </div>
           </div>
         </div>
