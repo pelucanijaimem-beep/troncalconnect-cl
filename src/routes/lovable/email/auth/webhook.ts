@@ -10,9 +10,9 @@ import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
 const SITE_NAME = "TroncalTrack"
-const SENDER_DOMAIN = "notify.troncaltrack.com"
+const SENDER_DOMAIN = "avisos.troncaltrack.com"
 const ROOT_DOMAIN = "troncaltrack.com"
-const FROM_DOMAIN = "notify.troncaltrack.com"
+const FROM_DOMAIN = "avisos.troncaltrack.com"
 const SITE_URL = `https://${ROOT_DOMAIN}`
 
 // The SDK handler owns verification, dispatch, and retry semantics; this file
