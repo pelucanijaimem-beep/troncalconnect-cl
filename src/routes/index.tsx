@@ -397,6 +397,8 @@ function Index() {
 
       <ComparisonTable />
 
+      <PortAccessNotice />
+
       <FaqSection onRegistro={() => abrirAuth("registro")} />
 
       {!sesion && (
