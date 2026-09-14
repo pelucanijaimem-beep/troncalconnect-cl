@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { PortAccessNotice } from "@/components/troncal/PortAccessNotice";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing } from "lucide-react";
@@ -395,6 +396,8 @@ function Index() {
       <PricingPlans onRegistro={() => abrirAuth("registro")} />
 
       <ComparisonTable />
+
+      <PortAccessNotice />
 
       <FaqSection onRegistro={() => abrirAuth("registro")} />
 

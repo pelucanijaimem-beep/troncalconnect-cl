@@ -51,6 +51,13 @@ const SECCIONES = [
       "Para todos los efectos legales, estos términos se rigen por las leyes de la República de Chile. Cualquier controversia será sometida a los tribunales ordinarios de justicia de la ciudad de Concepción o Santiago de Chile.",
     ],
   },
+  {
+    numero: "6",
+    titulo: "Acceso a Puertos y Terminales",
+    contenido: [
+      "El enrolamiento, agendamiento y cumplimiento de los requisitos de ingreso a puertos, terminales portuarios y antepuertos (incluyendo sistemas de registro, aplicaciones de agendamiento y documentación exigida por la autoridad portuaria o el terminal concesionario) es responsabilidad exclusiva del Transportista. TroncalTrack.cl no gestiona, controla, garantiza ni se hace responsable por el acceso, rechazo de ingreso, atrasos, multas, costos o pérdidas derivadas de un enrolamiento o agendamiento incompleto, vencido, mal realizado o de cualquier falla de los sistemas operados por terceros (autoridades portuarias, terminales o sus proveedores tecnológicos).",
+    ],
+  },
 ];
 
 export function TermsDialog({
