@@ -16,6 +16,7 @@ import {
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { crearPagoPlan } from "@/lib/pagos.functions";
+import { useCuposFundador, reservarCupoFundador } from "@/lib/use-fundadores";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -127,6 +128,11 @@ const PLANES: Plan[] = [
         icono: "especial",
       },
       { texto: "Soporte prioritario", icono: "especial" },
+      {
+        texto:
+          "Cupo Empresa Fundadora (primeras 20 empresas): precio congelado de por vida, posicionamiento prioritario permanente e insignia «Empresa Fundadora» en tu perfil corporativo",
+        icono: "especial",
+      },
     ],
   },
 ];
@@ -147,6 +153,14 @@ const FAQ_SUSCRIPCION = [
   {
     q: "¿Cuándo se activa mi sello TroncalCheck?",
     a: "Al suscribirte como Transportista Pro podrás enviar tu documentación (RUT, licencia, padrón y póliza). Una vez aprobada la validación documental, el sello azul se activa en tu perfil y publicaciones.",
+  },
+  {
+    q: "¿En qué consiste el cupo Empresa Fundadora?",
+    a: "Las primeras 20 empresas que contraten un plan pago quedan como Empresa Fundadora: mantienen de por vida el valor actual de Empresa Pro ($29.990 CLP/mes), obtienen posicionamiento prioritario permanente en las búsquedas de camioneros y una insignia «Empresa Fundadora» visible en su perfil corporativo.",
+  },
+  {
+    q: "¿El Plan Inicial gratuito tiene vencimiento?",
+    a: "No. Durante la fase de lanzamiento el acceso gratuito se mantiene activo de forma indefinida y no se bloquea automáticamente por fecha.",
   },
   {
     q: "¿Puedo cambiar de plan más adelante?",
@@ -173,6 +187,7 @@ function PlanesPage() {
 
   const iniciarPago = useServerFn(crearPagoPlan);
   const [procesando, setProcesando] = useState<string | null>(null);
+  const { quedan, total } = useCuposFundador();
 
   const handleClick = async (plan: Plan) => {
     if (!plan.plan) {
@@ -181,6 +196,7 @@ function PlanesPage() {
     }
     setProcesando(plan.id);
     try {
+      if (plan.plan === "empresa") await reservarCupoFundador();
       const res = await iniciarPago({
         data: { plan: plan.plan, origen: window.location.origin },
       });
@@ -246,6 +262,12 @@ function PlanesPage() {
               </span>
             </button>
           </div>
+          {quedan !== null && quedan > 0 && (
+            <div className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-bold text-primary">
+              <Crown className="h-5 w-5 shrink-0" />
+              Empresa Fundadora: quedan {quedan} de {total} cupos de lanzamiento.
+            </div>
+          )}
           {anual && (
             <p className="mt-2 text-xs font-semibold text-success">
               Ahorras un 20% pagando el año completo por adelantado.
@@ -286,6 +308,11 @@ function PlanesPage() {
                       <Icono className="h-5 w-5" />
                     </span>
                     <h2 className="text-lg font-extrabold text-foreground">{plan.nombre}</h2>
+                    {plan.id === "empresa" && quedan !== null && quedan > 0 && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                        <Crown className="h-3 w-3" /> {quedan} cupos fundador
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1.5 text-sm text-muted-foreground">{plan.subtitulo}</p>
 
