@@ -89,6 +89,7 @@ export type Database = {
           precio: number
           solo_verificados: boolean
           tipo_camion: string
+          tipo_publicador: string
           titulo: string
           toneladas: number
           user_id: string
@@ -112,6 +113,7 @@ export type Database = {
           precio?: number
           solo_verificados?: boolean
           tipo_camion: string
+          tipo_publicador?: string
           titulo: string
           toneladas?: number
           user_id: string
@@ -135,6 +137,7 @@ export type Database = {
           precio?: number
           solo_verificados?: boolean
           tipo_camion?: string
+          tipo_publicador?: string
           titulo?: string
           toneladas?: number
           user_id?: string
@@ -180,36 +183,45 @@ export type Database = {
           bloqueado: boolean
           created_at: string
           email: string
+          fundador: boolean
+          fundador_numero: number | null
           id: string
           nombre: string
           plan_activo: boolean
           rol: Database["public"]["Enums"]["rol_usuario"]
           rut: string | null
           telefono: string | null
+          tipo_publicador: string
           verificado: boolean
         }
         Insert: {
           bloqueado?: boolean
           created_at?: string
           email?: string
+          fundador?: boolean
+          fundador_numero?: number | null
           id: string
           nombre?: string
           plan_activo?: boolean
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
           telefono?: string | null
+          tipo_publicador?: string
           verificado?: boolean
         }
         Update: {
           bloqueado?: boolean
           created_at?: string
           email?: string
+          fundador?: boolean
+          fundador_numero?: number | null
           id?: string
           nombre?: string
           plan_activo?: boolean
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
           telefono?: string | null
+          tipo_publicador?: string
           verificado?: boolean
         }
         Relationships: []
@@ -356,6 +368,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cupos_fundador: { Args: never; Returns: number }
+      reservar_cupo_fundador: { Args: never; Returns: number }
+      tarifa_ruta: {
+        Args: { _destino: string; _origen: string }
+        Returns: {
+          promedio: number
+          registros: number
+        }[]
+      }
       tiene_plan_activo: { Args: { _user_id: string }; Returns: boolean }
       tiene_rol: {
         Args: {
