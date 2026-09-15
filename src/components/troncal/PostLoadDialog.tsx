@@ -42,6 +42,7 @@ export function PostLoadDialog({
   pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const [tipoPublicador, setTipoPublicador] = useState<"generador" | "intermediario">("generador");
   const [diasPago, setDiasPago] = useState<string>("Pago a 30 días");
   const [enviando, setEnviando] = useState(false);
   const moneda = getPais(pais).moneda;
@@ -79,6 +80,7 @@ export function PostLoadDialog({
       detalle: String(d.get("detalle") ?? "") || "Sin comentarios adicionales.",
       soloVerificados: d.get("soloVerificados") === "on",
       diasPago,
+      tipoPublicador,
     });
     setEnviando(false);
 
@@ -88,6 +90,7 @@ export function PostLoadDialog({
     }
 
     setCarroceria("");
+    setTipoPublicador("generador");
     setDiasPago("Pago a 30 días");
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
@@ -178,6 +181,29 @@ export function PostLoadDialog({
               <Label htmlFor="l-tel">Teléfono de contacto</Label>
               <Input id="l-tel" name="telefono" type="tel" placeholder="+56 9 1234 5678" required />
             </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label>¿Cómo publicas esta carga?</Label>
+            <Select
+              value={tipoPublicador}
+              onValueChange={(v) => setTipoPublicador(v as "generador" | "intermediario")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="generador">
+                  Generador de Carga Directo (carga propia)
+                </SelectItem>
+                <SelectItem value="intermediario">
+                  Intermediario / Comisionista (carga de un tercero)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Esta declaración se muestra al camionero en la publicación para que decida
+              informado.
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="l-detalle">Descripción de la carga</Label>

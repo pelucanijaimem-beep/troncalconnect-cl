@@ -141,6 +141,8 @@ export type Carga = {
   soloVerificados?: boolean;
   /** Condición de pago informada por el generador de carga. */
   diasPago?: string;
+  /** Declaración de quién publica: carga propia o gestionada para un tercero. */
+  tipoPublicador?: "generador" | "intermediario";
 };
 
 export type Camion = {

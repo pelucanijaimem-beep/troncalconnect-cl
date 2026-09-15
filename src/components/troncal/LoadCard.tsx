@@ -30,6 +30,7 @@ import { VerificationBadge } from "./VerificationBadge";
 import { RatingSummary } from "./StarRating";
 import { useVerificacion } from "@/lib/use-verificacion";
 import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
+import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
 
 export function LoadCard({
   carga,
@@ -123,6 +124,7 @@ export function LoadCard({
         <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-muted-foreground">
           <Fuel className="h-3.5 w-3.5" /> Diésel estimado: {money(diesel.costo, carga.pais)}
         </span>
+        <RouteRateInfo origen={carga.origen} destino={carga.destino} pais={carga.pais} />
       </div>
 
       {(enRuta || entregada) && (
@@ -154,6 +156,7 @@ export function LoadCard({
           )}
         </span>
         <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
+        <PublisherBadge tipo={carga.tipoPublicador} />
         <RatingSummary promedio={promedio} total={totalEval} />
         {carga.soloVerificados && (
           <span className="inline-flex items-center gap-1 rounded-full bg-trust-soft px-2 py-0.5 text-xs font-semibold text-trust">
