@@ -18,6 +18,7 @@ import {
   money,
   type Carga,
 } from "@/lib/troncal-data";
+import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
 
 export function LoadDetailsDialog({
   carga,
@@ -45,6 +46,11 @@ export function LoadDetailsDialog({
               </DialogTitle>
               <DialogDescription>{carga.detalle}</DialogDescription>
             </DialogHeader>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <PublisherBadge tipo={carga.tipoPublicador} />
+              <RouteRateInfo origen={carga.origen} destino={carga.destino} pais={carga.pais} />
+            </div>
 
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg border border-border bg-surface p-3">
