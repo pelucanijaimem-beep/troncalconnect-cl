@@ -12,7 +12,7 @@ export function RouteRateInfo({
   origen: string;
   destino: string;
   pais: PaisCodigo;
-  className?: string;
+  className?: string | undefined;
 }) {
   const { promedio, registros, cargando } = useTarifaRuta(origen, destino);
 
@@ -38,8 +38,8 @@ export function PublisherBadge({
   tipo,
   className = "",
 }: {
-  tipo?: "generador" | "intermediario";
-  className?: string;
+  tipo?: "generador" | "intermediario" | undefined;
+  className?: string | undefined;
 }) {
   const esGenerador = (tipo ?? "generador") === "generador";
   return (
