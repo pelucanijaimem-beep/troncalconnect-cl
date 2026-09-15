@@ -3,7 +3,8 @@ import { useNavigate, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { crearPagoPlan } from "@/lib/pagos.functions";
-import { BadgeCheck, Building2, Check, Gift, Search, Truck } from "lucide-react";
+import { BadgeCheck, Building2, Check, Crown, Search, Truck } from "lucide-react";
+import { useCuposFundador, reservarCupoFundador } from "@/lib/use-fundadores";
 import { Button } from "@/components/ui/button";
 
 const PLANES = [
@@ -18,7 +19,7 @@ const PLANES = [
     cta: "Comenzar Gratis",
     href: "/registro",
     features: [
-      "90 días de prueba gratis, sin tarjeta de crédito",
+      "Acceso gratuito sin vencimiento durante la fase de lanzamiento",
       "Ver el tablero de cargas con actualización diferida",
       "Perfil básico sin verificar",
       "Hasta 2 publicaciones de carga al mes",
@@ -57,6 +58,7 @@ const PLANES = [
       "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
       "Perfil corporativo verificado con logo y contacto de logística",
       "Soporte prioritario",
+      "Cupo Empresa Fundadora: precio congelado de por vida y posicionamiento prioritario permanente",
     ],
   },
 ];
@@ -65,6 +67,7 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
   const navigate = useNavigate();
   const iniciarPago = useServerFn(crearPagoPlan);
   const [procesando, setProcesando] = useState<string | null>(null);
+  const { quedan, total } = useCuposFundador();
 
   const handleClick = async (p: (typeof PLANES)[number]) => {
     if (!("plan" in p) || !p.plan) {
@@ -74,6 +77,7 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
     }
     setProcesando(p.id);
     try {
+      if (p.plan === "empresa") await reservarCupoFundador();
       const res = await iniciarPago({
         data: { plan: p.plan, origen: window.location.origin },
       });
@@ -107,10 +111,13 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
           el pago en línea; mientras tanto coordinamos la activación de tu plan por WhatsApp.
         </p>
 
-        <div className="mt-5 flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-bold text-primary sm:text-base">
-          <Gift className="h-5 w-5 shrink-0" />
-          Regístrate hoy y prueba TroncalTrack gratis por 90 días, sin tarjeta de crédito.
-        </div>
+        {quedan !== null && quedan > 0 && (
+          <div className="mt-5 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-bold text-primary sm:text-base">
+            <Crown className="h-5 w-5 shrink-0" />
+            Empresa Fundadora: quedan {quedan} de {total} cupos. Precio congelado de por vida,
+            posicionamiento prioritario permanente e insignia en tu perfil corporativo.
+          </div>
+        )}
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {PLANES.map((p) => (
@@ -136,7 +143,12 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
                 )}
                 {p.destacadoGratis && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-bold text-success">
-                    <Gift className="h-3 w-3" /> 90 días gratis
+                    Gratis sin vencimiento
+                  </span>
+                )}
+                {p.id === "empresa" && quedan !== null && quedan > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                    <Crown className="h-3 w-3" /> {quedan} cupos fundador
                   </span>
                 )}
               </div>
