@@ -28,6 +28,7 @@ type Fila = {
   detalle: string;
   solo_verificados: boolean;
   dias_pago: string | null;
+  tipo_publicador: string | null;
 };
 
 const aCarga = (f: Fila): CargaDB => ({
@@ -49,6 +50,7 @@ const aCarga = (f: Fila): CargaDB => ({
   telefono: f.empresa_telefono,
   soloVerificados: f.solo_verificados,
   diasPago: f.dias_pago ?? "Pago a 30 días",
+  tipoPublicador: f.tipo_publicador === "intermediario" ? "intermediario" : "generador",
 });
 
 /** Cargas guardadas en la base de datos, con actualización en tiempo real. */
@@ -110,6 +112,7 @@ export async function publicarCargaDB(entrada: {
   detalle: string;
   soloVerificados: boolean;
   diasPago?: string;
+  tipoPublicador?: "generador" | "intermediario";
 }) {
   const { data, error } = await supabase
     .from("cargas")
@@ -131,6 +134,7 @@ export async function publicarCargaDB(entrada: {
       detalle: entrada.detalle,
       solo_verificados: entrada.soloVerificados,
       dias_pago: entrada.diasPago ?? "Pago a 30 días",
+      tipo_publicador: entrada.tipoPublicador ?? "generador",
     })
     .select("id")
     .single();
