@@ -123,6 +123,9 @@ export const money = (valor: number, codigo: PaisCodigo = "CL") => {
 /** Compatibilidad: formato pesos chilenos. */
 export const clp = (valor: number) => money(valor, "CL");
 
+/** Quién puede ver una publicación: todo el tablero o solo invitados. */
+export type Visibilidad = "publica" | "privada";
+
 export type Carga = {
   id: string;
   pais: PaisCodigo;
@@ -143,6 +146,10 @@ export type Carga = {
   diasPago?: string;
   /** Declaración de quién publica: carga propia o gestionada para un tercero. */
   tipoPublicador?: "generador" | "intermediario";
+  /** "publica" aparece en el tablero; "privada" solo por invitación o enlace directo. */
+  visibilidad?: Visibilidad;
+  /** Dueño de la publicación (cuando viene de la base de datos). */
+  userId?: string;
 };
 
 export type Camion = {
@@ -159,6 +166,10 @@ export type Camion = {
   detalle: string;
   /** "buscando" (buscando carga) o "en_ruta". */
   estado?: "buscando" | "en_ruta";
+  /** "publica" aparece en el tablero; "privada" solo por invitación o enlace directo. */
+  visibilidad?: Visibilidad;
+  /** Dueño de la publicación, para que vea siempre su propio camión privado. */
+  userId?: string;
 };
 
 export const CARGAS: Carga[] = [

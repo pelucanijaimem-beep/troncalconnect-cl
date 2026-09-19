@@ -1,5 +1,15 @@
-import { BadgeCheck, Fuel, Lock, MessageCircle, Phone, ShieldCheck, Wallet } from "lucide-react";
+import {
+  BadgeCheck,
+  Fuel,
+  Lock,
+  MessageCircle,
+  Phone,
+  Share2,
+  ShieldCheck,
+  Wallet,
+} from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@tanstack/react-router";
@@ -18,19 +28,90 @@ import {
   money,
   type Carga,
 } from "@/lib/troncal-data";
+import { invitarACarga } from "@/lib/use-cargas";
 import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
+
+/** Panel del dueño: enlace directo e invitaciones para una publicación privada. */
+function SharePanel({ carga }: { carga: Carga }) {
+  const [email, setEmail] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const enlace =
+    typeof window === "undefined" ? "" : `${window.location.origin}/carga/${carga.id}`;
+
+  const invitar = async () => {
+    if (!email.trim()) return;
+    setEnviando(true);
+    const error = await invitarACarga(carga.id, email);
+    setEnviando(false);
+    if (error) {
+      toast.error("No pudimos enviar la invitación", { description: error });
+      return;
+    }
+    setEmail("");
+    toast.success("Invitación registrada", {
+      description: "Esa persona ya puede abrir la publicación con el enlace directo.",
+    });
+  };
+
+  return (
+    <div className="space-y-2 rounded-xl border border-border bg-surface p-3">
+      <p className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+        <Share2 className="h-4 w-4 text-primary" />
+        {carga.visibilidad === "privada"
+          ? "Publicación privada — compartir con invitados"
+          : "Compartir esta publicación"}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Input readOnly value={enlace} className="min-w-0 flex-1" />
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            void navigator.clipboard?.writeText(enlace);
+            toast.success("Enlace copiado");
+          }}
+        >
+          Copiar enlace
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Input
+          type="email"
+          placeholder="correo@empresa.cl"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="min-w-0 flex-1"
+        />
+        <Button type="button" disabled={enviando} onClick={() => void invitar()}>
+          {enviando ? "Invitando…" : "Invitar"}
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Solo las personas invitadas (y tú) pueden abrir una publicación privada, aunque conozcan
+        el enlace.
+      </p>
+    </div>
+  );
+}
 
 export function LoadDetailsDialog({
   carga,
   onOpenChange,
   accesoContacto = false,
+  contactoVerificado = false,
+  esDueno = false,
 }: {
   carga: Carga | null;
   onOpenChange: (o: boolean) => void;
-  /** true solo con plan Pro activo: muestra teléfono, WhatsApp y empresa. */
+  /** true solo con plan Pro activo: muestra el nombre de la empresa. */
   accesoContacto?: boolean;
+  /** true solo con sesión iniciada y verificación de RUT aprobada: revela el teléfono. */
+  contactoVerificado?: boolean;
+  /** true si quien mira es el dueño de la publicación. */
+  esDueno?: boolean;
 }) {
   const [rendimiento, setRendimiento] = useState(RENDIMIENTO_KM_L);
+  const puedeVerTelefono = (accesoContacto && contactoVerificado) || esDueno;
   const diesel = carga
     ? costoCombustible(carga.km, carga.pais, rendimiento || RENDIMIENTO_KM_L)
     : null;
@@ -153,8 +234,10 @@ export function LoadDetailsDialog({
               )}
             </p>
 
+            {esDueno && <SharePanel carga={carga} />}
+
             <DialogFooter className="gap-2">
-              {accesoContacto ? (
+              {puedeVerTelefono ? (
                 <>
                   <Button asChild className="w-full sm:w-auto">
                     <a href={`tel:${carga.telefono.replace(/\s/g, "")}`}>
@@ -171,6 +254,16 @@ export function LoadDetailsDialog({
                     </a>
                   </Button>
                 </>
+              ) : accesoContacto ? (
+                <div className="w-full rounded-lg border border-border bg-surface p-3 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                    <Lock className="h-4 w-4" /> Teléfono reservado
+                  </span>
+                  <p className="mt-1">
+                    Para ver el teléfono necesitas tu sello TroncalCheck aprobado (verificación de
+                    RUT). Mientras tanto puedes enviar un mensaje al cargador.
+                  </p>
+                </div>
               ) : (
                 <Button asChild className="w-full sm:w-auto">
                   <Link to="/planes" onClick={() => onOpenChange(false)}>

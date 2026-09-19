@@ -94,6 +94,7 @@ export type Database = {
           toneladas: number
           user_id: string
           valor_km: number
+          visibilidad: string
         }
         Insert: {
           completada_at?: string | null
@@ -118,6 +119,7 @@ export type Database = {
           toneladas?: number
           user_id: string
           valor_km?: number
+          visibilidad?: string
         }
         Update: {
           completada_at?: string | null
@@ -142,8 +144,38 @@ export type Database = {
           toneladas?: number
           user_id?: string
           valor_km?: number
+          visibilidad?: string
         }
         Relationships: []
+      }
+      invitaciones_carga: {
+        Row: {
+          carga_id: string
+          created_at: string
+          id: string
+          invitado_id: string
+        }
+        Insert: {
+          carga_id: string
+          created_at?: string
+          id?: string
+          invitado_id: string
+        }
+        Update: {
+          carga_id?: string
+          created_at?: string
+          id?: string
+          invitado_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitaciones_carga_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notificaciones: {
         Row: {
@@ -368,6 +400,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      carga_es_mia: {
+        Args: { _carga_id: string; _user_id: string }
+        Returns: boolean
+      }
+      carga_invitado: {
+        Args: { _carga_id: string; _user_id: string }
+        Returns: boolean
+      }
       cupos_fundador: { Args: never; Returns: number }
       reservar_cupo_fundador: { Args: never; Returns: number }
       tarifa_ruta: {

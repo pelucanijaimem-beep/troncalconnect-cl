@@ -175,6 +175,9 @@ function Index() {
       CAMIONES.filter(
         (t) =>
           t.pais === pais &&
+          // Las publicaciones privadas no aparecen en el tablero general.
+          (t.visibilidad !== "privada" ||
+            (!!sesion && (t.userId === sesion.id || t.conductor === sesion.nombre))) &&
           coincide(t.origen, filtros.origen) &&
           coincide(t.destino, filtros.destino) &&
           enRegion(t.origen, filtros.regionOrigen) &&
@@ -185,7 +188,7 @@ function Index() {
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, t.conductor).estado === "verificado"),
       ),
-    [filtros, pais, CAMIONES, verificaciones],
+    [filtros, pais, CAMIONES, verificaciones, sesion],
   );
 
 
@@ -670,8 +673,18 @@ function Index() {
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
-      <LoadDetailsDialog accesoContacto={accesoContacto} carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
-      <ContactDialog contacto={contacto} onOpenChange={(o) => !o && setContacto(null)} />
+      <LoadDetailsDialog
+        accesoContacto={accesoContacto}
+        contactoVerificado={soyVerificado}
+        esDueno={Boolean(detalle?.userId && detalle.userId === sesion?.id)}
+        carga={detalle}
+        onOpenChange={(o) => !o && setDetalle(null)}
+      />
+      <ContactDialog
+        contacto={contacto}
+        mostrarTelefono={accesoContacto && soyVerificado}
+        onOpenChange={(o) => !o && setContacto(null)}
+      />
       <DriverTripDialog
         carga={viajeActivo}
         viaje={viajeChofer}

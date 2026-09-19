@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, Phone, Truck } from "lucide-react";
+import { ArrowRight, CalendarDays, EyeOff, MessageCircle, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Camion } from "@/lib/troncal-data";
 import { VerificationBadge } from "./VerificationBadge";
@@ -44,8 +44,13 @@ export function TruckCard({
         <span className="text-sm font-medium text-foreground">{camion.conductor}</span>
         <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
         <RatingSummary promedio={promedio} total={total} />
+        {camion.visibilidad === "privada" && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+            <EyeOff className="h-3.5 w-3.5" /> Solo por invitación
+          </span>
+        )}
         <Button className="ml-auto w-full sm:w-auto" onClick={() => onContactar(camion)}>
-          <Phone className="h-4 w-4" /> Contactar / Llamar
+          <MessageCircle className="h-4 w-4" /> Contactar
         </Button>
       </div>
     </article>

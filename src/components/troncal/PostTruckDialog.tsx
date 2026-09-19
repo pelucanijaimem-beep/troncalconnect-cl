@@ -29,6 +29,7 @@ import {
 } from "@/lib/troncal-data";
 import { nuevoId, publicarCamion } from "@/lib/use-publicaciones";
 import { useSesion } from "@/lib/use-session";
+import { VisibilitySwitch } from "./VisibilitySwitch";
 
 export function PostTruckDialog({
   open,
@@ -41,6 +42,7 @@ export function PostTruckDialog({
 }) {
   const [carroceria, setCarroceria] = useState("");
   const [estado, setEstado] = useState<EstadoCamion>("buscando");
+  const [visible, setVisible] = useState(true);
   const sesion = useSesion();
 
   const enviar = (e: FormEvent<HTMLFormElement>) => {
@@ -59,13 +61,18 @@ export function PostTruckDialog({
       telefono: String(d.get("telefono") ?? ""),
       detalle: String(d.get("detalle") ?? "") || "Disponibilidad confirmada.",
       estado,
+      visibilidad: visible ? "publica" : "privada",
+      ...(sesion?.id ? { userId: sesion.id } : {}),
     };
     publicarCamion(camion);
     setCarroceria("");
     setEstado("buscando");
+    setVisible(true);
     onOpenChange(false);
     toast.success("¡Camión publicado!", {
-      description: "Tu disponibilidad ya es visible para las empresas cargadoras.",
+      description: visible
+        ? "Tu disponibilidad ya es visible para las empresas cargadoras."
+        : "Quedó como publicación privada: solo la verán las empresas que invites.",
     });
   };
 
@@ -141,6 +148,7 @@ export function PostTruckDialog({
               placeholder="Detalles del camión, retornos, restricciones…"
             />
           </div>
+          <VisibilitySwitch id="t-visibilidad" visible={visible} onChange={setVisible} />
           <DialogFooter>
             <Button type="submit" className="w-full sm:w-auto">
               Publicar mi Camión

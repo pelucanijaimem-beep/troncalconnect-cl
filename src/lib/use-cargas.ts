@@ -29,6 +29,7 @@ type Fila = {
   solo_verificados: boolean;
   dias_pago: string | null;
   tipo_publicador: string | null;
+  visibilidad: string | null;
 };
 
 const aCarga = (f: Fila): CargaDB => ({
@@ -51,7 +52,29 @@ const aCarga = (f: Fila): CargaDB => ({
   soloVerificados: f.solo_verificados,
   diasPago: f.dias_pago ?? "Pago a 30 días",
   tipoPublicador: f.tipo_publicador === "intermediario" ? "intermediario" : "generador",
+  visibilidad: f.visibilidad === "privada" ? "privada" : "publica",
 });
+
+/** Una carga suelta por su identificador (la base de datos bloquea las privadas ajenas). */
+export async function cargaPorId(id: string): Promise<CargaDB | null> {
+  const { data } = await supabase.from("cargas").select("*").eq("id", id).maybeSingle();
+  return data ? aCarga(data as Fila) : null;
+}
+
+/** Invita por correo a un usuario registrado a ver una carga privada. */
+export async function invitarACarga(cargaId: string, email: string) {
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("id")
+    .eq("email", email.trim().toLowerCase())
+    .maybeSingle();
+  if (!perfil) return "No encontramos una cuenta registrada con ese correo.";
+  const { error } = await supabase
+    .from("invitaciones_carga")
+    .insert({ carga_id: cargaId, invitado_id: perfil.id as string });
+  if (error && !error.message.includes("duplicate")) return error.message;
+  return null;
+}
 
 /** Cargas guardadas en la base de datos, con actualización en tiempo real. */
 export function useCargas(activo: boolean) {
@@ -125,6 +148,7 @@ export async function publicarCargaDB(entrada: {
   soloVerificados: boolean;
   diasPago?: string;
   tipoPublicador?: "generador" | "intermediario";
+  visibilidad?: "publica" | "privada";
 }) {
   const { data, error } = await supabase
     .from("cargas")
@@ -147,6 +171,7 @@ export async function publicarCargaDB(entrada: {
       solo_verificados: entrada.soloVerificados,
       dias_pago: entrada.diasPago ?? "Pago a 30 días",
       tipo_publicador: entrada.tipoPublicador ?? "generador",
+      visibilidad: entrada.visibilidad ?? "publica",
     })
     .select("id")
     .single();

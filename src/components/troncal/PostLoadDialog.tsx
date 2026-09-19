@@ -30,6 +30,7 @@ import {
 import { publicarCargaDB } from "@/lib/use-cargas";
 import { avisarCoincidencias } from "@/lib/notificaciones.functions";
 import { useSesion } from "@/lib/use-session";
+import { VisibilitySwitch } from "./VisibilitySwitch";
 
 
 export function PostLoadDialog({
@@ -44,6 +45,7 @@ export function PostLoadDialog({
   const [carroceria, setCarroceria] = useState("");
   const [tipoPublicador, setTipoPublicador] = useState<"generador" | "intermediario">("generador");
   const [diasPago, setDiasPago] = useState<string>("Pago a 30 días");
+  const [visible, setVisible] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
@@ -81,6 +83,7 @@ export function PostLoadDialog({
       soloVerificados: d.get("soloVerificados") === "on",
       diasPago,
       tipoPublicador,
+      visibilidad: visible ? "publica" : "privada",
     });
     setEnviando(false);
 
@@ -92,10 +95,14 @@ export function PostLoadDialog({
     setCarroceria("");
     setTipoPublicador("generador");
     setDiasPago("Pago a 30 días");
+    setVisible(true);
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
-      description: "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real.",
+      description: visible
+        ? "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real."
+        : "Quedó como publicación privada: solo la verán las personas que invites.",
     });
+
 
     if (id) {
       try {
@@ -228,6 +235,7 @@ export function PostLoadDialog({
               </span>
             </span>
           </label>
+          <VisibilitySwitch id="l-visibilidad" visible={visible} onChange={setVisible} />
           <DialogFooter>
             <Button type="submit" disabled={enviando} className="w-full sm:w-auto">
               {enviando ? "Publicando…" : "Publicar Flete"}
