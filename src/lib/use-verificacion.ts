@@ -153,6 +153,8 @@ function subscribe(f: () => void) {
 }
 
 const getSnapshot = () => mapa;
+const MAPA_VACIO: Mapa = {};
+const getSnapshotServidor = () => MAPA_VACIO;
 
 export function claveUsuario(nombreOEmail: string) {
   return nombreOEmail.trim().toLowerCase();
@@ -196,7 +198,7 @@ export async function enviarDocumentos(params: {
 }
 
 export function useVerificaciones() {
-  const m = useSyncExternalStore(subscribe, getSnapshot, () => ({}) as Mapa);
+  const m = useSyncExternalStore(subscribe, getSnapshot, getSnapshotServidor);
   useEffect(() => {
     void recargarVerificaciones();
   }, []);
