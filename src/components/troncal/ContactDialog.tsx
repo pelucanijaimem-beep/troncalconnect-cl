@@ -24,9 +24,12 @@ export type Contacto = {
 export function ContactDialog({
   contacto,
   onOpenChange,
+  mostrarTelefono = false,
 }: {
   contacto: Contacto | null;
   onOpenChange: (o: boolean) => void;
+  /** Solo se revela el teléfono a usuarios con sesión, sello TroncalCheck y plan activo. */
+  mostrarTelefono?: boolean;
 }) {
   const [mensaje, setMensaje] = useState("");
 
@@ -59,25 +62,35 @@ export function ContactDialog({
 
             <div className="rounded-lg border border-border bg-surface p-3 text-sm">
               <p className="font-semibold text-foreground">{contacto.nombre}</p>
-              <p className="text-muted-foreground">{contacto.telefono}</p>
+              {mostrarTelefono ? (
+                <p className="text-muted-foreground">{contacto.telefono}</p>
+              ) : (
+                <p className="inline-flex items-center gap-1 text-muted-foreground">
+                  <Lock className="h-3.5 w-3.5" /> Teléfono reservado. Envía tu mensaje: el
+                  teléfono se revela cuando la otra parte acepta el contacto.
+                </p>
+              )}
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button asChild className="flex-1">
-                <a href={`tel:${tel}`}>
-                  <Phone className="h-4 w-4" /> Llamar ahora
-                </a>
-              </Button>
-              <Button asChild variant="outline" className="flex-1">
-                <a
-                  href={`https://wa.me/${tel.replace(/\D/g, "")}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <MessageCircle className="h-4 w-4" /> WhatsApp
-                </a>
-              </Button>
-            </div>
+            {mostrarTelefono && (
+              <div className="flex flex-wrap gap-2">
+                <Button asChild className="flex-1">
+                  <a href={`tel:${tel}`}>
+                    <Phone className="h-4 w-4" /> Llamar ahora
+                  </a>
+                </Button>
+                <Button asChild variant="outline" className="flex-1">
+                  <a
+                    href={`https://wa.me/${tel.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <MessageCircle className="h-4 w-4" /> WhatsApp
+                  </a>
+                </Button>
+              </div>
+            )}
+
 
             <form onSubmit={enviar} className="space-y-3">
               <div className="space-y-1.5">

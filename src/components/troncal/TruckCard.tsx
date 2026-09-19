@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, Phone, Truck } from "lucide-react";
+import { ArrowRight, CalendarDays, EyeOff, MessageCircle, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Camion } from "@/lib/troncal-data";
 import { VerificationBadge } from "./VerificationBadge";
