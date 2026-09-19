@@ -48,7 +48,7 @@ async function cargarPerfil(userId: string, email: string) {
     try {
       const res = await supabase.rpc("mi_perfil");
       if (!res.error) {
-        data = res.data;
+        data = (res.data ?? null) as typeof data;
         break;
       }
     } catch {
