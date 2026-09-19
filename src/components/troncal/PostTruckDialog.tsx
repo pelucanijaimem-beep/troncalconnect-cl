@@ -29,6 +29,7 @@ import {
 } from "@/lib/troncal-data";
 import { nuevoId, publicarCamion } from "@/lib/use-publicaciones";
 import { useSesion } from "@/lib/use-session";
+import { VisibilitySwitch } from "./VisibilitySwitch";
 
 export function PostTruckDialog({
   open,

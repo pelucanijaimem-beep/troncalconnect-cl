@@ -30,6 +30,7 @@ import {
 import { publicarCargaDB } from "@/lib/use-cargas";
 import { avisarCoincidencias } from "@/lib/notificaciones.functions";
 import { useSesion } from "@/lib/use-session";
+import { VisibilitySwitch } from "./VisibilitySwitch";
 
 
 export function PostLoadDialog({
