@@ -35,20 +35,22 @@ async function cargarPerfil(userId: string, email: string) {
     emitir();
   }
 
-  let data: {
+  type Perfil = {
     nombre?: string | null;
     email?: string | null;
     telefono?: string | null;
     rol?: string | null;
     plan_activo?: boolean | null;
     bloqueado?: boolean | null;
-  } | null = null;
+  } | null;
+
+  let data: Perfil = null;
 
   for (let intento = 0; intento < 2; intento += 1) {
     try {
       const res = await supabase.rpc("mi_perfil");
       if (!res.error) {
-        data = (res.data ?? null) as typeof data;
+        data = (res.data ?? null) as Perfil;
         break;
       }
     } catch {
