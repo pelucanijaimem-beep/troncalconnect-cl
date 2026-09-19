@@ -175,6 +175,9 @@ function Index() {
       CAMIONES.filter(
         (t) =>
           t.pais === pais &&
+          // Las publicaciones privadas no aparecen en el tablero general.
+          (t.visibilidad !== "privada" ||
+            (!!sesion && (t.userId === sesion.id || t.conductor === sesion.nombre))) &&
           coincide(t.origen, filtros.origen) &&
           coincide(t.destino, filtros.destino) &&
           enRegion(t.origen, filtros.regionOrigen) &&
@@ -185,7 +188,7 @@ function Index() {
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, t.conductor).estado === "verificado"),
       ),
-    [filtros, pais, CAMIONES, verificaciones],
+    [filtros, pais, CAMIONES, verificaciones, sesion],
   );
 
 
