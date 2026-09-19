@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 const PERFILES = [
   {
     icon: Truck,
-    titulo: "Transportistas / Camioneros",
+    titulo: "Transportistas / Operadores de Flota",
     texto:
       "Encuentra cargas de retorno, elimina viajes en vacío y asegura el pago de tus fletes.",
     cta: "Publicar mi Camión",

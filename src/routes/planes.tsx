@@ -161,7 +161,7 @@ const FAQ_SUSCRIPCION = [
   },
   {
     q: "¿En qué consiste el cupo Empresa Fundadora?",
-    a: "Las primeras 20 empresas que contraten un plan pago quedan como Empresa Fundadora: mantienen de por vida el valor actual de Empresa Pro ($29.990 CLP/mes), obtienen posicionamiento prioritario permanente en las búsquedas de camioneros y una insignia «Empresa Fundadora» visible en su perfil corporativo.",
+    a: "Las primeras 20 empresas que contraten un plan pago quedan como Empresa Fundadora: mantienen de por vida el valor actual de Empresa Pro ($29.990 CLP/mes), obtienen posicionamiento prioritario permanente en las búsquedas de transportistas y una insignia «Empresa Fundadora» visible en su perfil corporativo.",
   },
   {
     q: "¿El Plan Inicial gratuito tiene vencimiento?",

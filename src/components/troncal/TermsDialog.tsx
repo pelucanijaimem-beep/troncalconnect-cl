@@ -83,8 +83,9 @@ export function TermsDialog({
         <div className="overflow-y-auto px-6 py-4">
           <p className="text-sm leading-relaxed text-muted-foreground">
             Bienvenido a TroncalTrack.cl. Al acceder, navegar o utilizar nuestra plataforma web y sus
-            servicios, el usuario (ya sea en rol de Empresa/Generador de Carga o
-            Transportista/Camionero) acepta de manera íntegra y sin reservas los términos descritos a
+            servicios, el usuario (ya sea en rol de Dador de Carga / Generador o
+            Transportista / Operador de Flota) acepta de manera íntegra y sin reservas los términos
+            descritos a
             continuación.
           </p>
 

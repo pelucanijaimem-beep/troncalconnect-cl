@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 const PREGUNTAS = [
   {
     q: "¿Cómo publico un flete si soy empresa?",
-    a: "Crea tu cuenta, entra al panel privado y pulsa «Publicar Flete». Indica origen, destino, fecha de carguío, tipo de carrocería, toneladas y tarifa ofrecida. Tu publicación queda visible al instante para los camioneros disponibles en esa ruta.",
+    a: "Crea tu cuenta, entra al panel privado y pulsa «Publicar Flete». Indica origen, destino, fecha de carguío, tipo de carrocería, toneladas y tarifa ofrecida. Tu publicación queda visible al instante para los transportistas disponibles en esa ruta.",
   },
   {
     q: "¿Cómo busco cargas de retorno para no viajar en vacío?",

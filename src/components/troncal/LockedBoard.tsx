@@ -20,7 +20,7 @@ export function LockedBoard({
           Las cargas en vivo son solo para usuarios registrados
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-          Protegemos los datos de contacto de empresas y camioneros. Crea tu cuenta para
+          Protegemos los datos de contacto de dadores de carga y transportistas. Crea tu cuenta para
           ver los fletes disponibles, las tarifas por kilómetro y contactar directamente.
         </p>
 
