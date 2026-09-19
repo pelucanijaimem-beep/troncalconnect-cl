@@ -13,11 +13,11 @@ import {
   Star,
   Truck,
 } from "lucide-react";
-import { useServerFn } from "@tanstack/react-start";
-import { toast } from "sonner";
-import { crearPagoPlan } from "@/lib/pagos.functions";
-import { useCuposFundador, reservarCupoFundador } from "@/lib/use-fundadores";
+import { useCuposFundador } from "@/lib/use-fundadores";
 import { Button } from "@/components/ui/button";
+
+/** Número de WhatsApp de contacto del sitio (+569 4792 6230). */
+const WHATSAPP_NUMERO = "56947926230";
 import {
   Accordion,
   AccordionContent,
@@ -60,6 +60,7 @@ type Plan = {
   cta: string;
   href: string;
   plan?: "transportista" | "empresa";
+  whatsapp?: string;
   icono: typeof Truck;
   features: Feature[];
 };
@@ -88,6 +89,8 @@ const PLANES: Plan[] = [
     cta: "Suscribirme como Transportista",
     href: "/registro",
     plan: "transportista",
+    whatsapp:
+      "Hola, quiero activar el plan Transportista Pro de TroncalTrack ($14.990/mes).",
     icono: Truck,
     features: [
       {
@@ -116,6 +119,8 @@ const PLANES: Plan[] = [
     cta: "Suscribirme como Empresa",
     href: "/registro",
     plan: "empresa",
+    whatsapp:
+      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($29.990/mes).",
     icono: Building2,
     features: [
       { texto: "Publicación ilimitada de fletes y cargas", icono: "especial" },
@@ -140,7 +145,7 @@ const PLANES: Plan[] = [
 const FAQ_SUSCRIPCION = [
   {
     q: "¿Cómo puedo pagar mi suscripción?",
-    a: "Estamos habilitando el pago con tarjeta en línea. Mientras tanto, coordinamos la activación de tu plan por transferencia electrónica escribiéndonos al +569 4792 6230. Todos los precios se cobran en pesos chilenos (CLP).",
+    a: "Al presionar el botón de suscripción se abre WhatsApp con un mensaje listo para enviarnos; te respondemos con los datos de transferencia para activar tu plan. Todos los precios se cobran en pesos chilenos (CLP).",
   },
   {
     q: "¿Cómo funciona el descuento anual del 20%?",
@@ -184,38 +189,18 @@ function LogoPago({ texto, sub }: { texto: string; sub?: string }) {
 function PlanesPage() {
   const [anual, setAnual] = useState(false);
   const navigate = useNavigate();
-
-  const iniciarPago = useServerFn(crearPagoPlan);
-  const [procesando, setProcesando] = useState<string | null>(null);
   const { quedan, total } = useCuposFundador();
 
-  const handleClick = async (plan: Plan) => {
-    if (!plan.plan) {
-      navigate({ to: plan.href });
+  const handleClick = (plan: Plan) => {
+    if (plan.whatsapp) {
+      window.open(
+        `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(plan.whatsapp)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
       return;
     }
-    setProcesando(plan.id);
-    try {
-      if (plan.plan === "empresa") await reservarCupoFundador();
-      const res = await iniciarPago({
-        data: { plan: plan.plan, origen: window.location.origin },
-      });
-      if (res.ok) {
-        window.location.href = res.url;
-        return;
-      }
-      if (res.motivo === "sin_credenciales") {
-        toast.info("El cobro en línea se habilita muy pronto", {
-          description:
-            "Crea tu cuenta ahora y te avisamos por correo apenas puedas activar tu plan.",
-        });
-        navigate({ to: "/registro" });
-        return;
-      }
-      toast.error(res.mensaje);
-    } finally {
-      setProcesando(null);
-    }
+    navigate({ to: plan.href });
   };
 
   return (
@@ -354,10 +339,9 @@ function PlanesPage() {
                     className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                     variant={plan.destacado ? "default" : "outline"}
                     size="lg"
-                    disabled={procesando === plan.id}
-                    onClick={() => void handleClick(plan)}
+                    onClick={() => handleClick(plan)}
                   >
-                    {procesando === plan.id ? "Preparando el pago..." : plan.cta}
+                    {plan.cta}
                   </Button>
                 </article>
               );

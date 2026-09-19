@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { useNavigate, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { toast } from "sonner";
-import { crearPagoPlan } from "@/lib/pagos.functions";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, Building2, Check, Crown, Search, Truck } from "lucide-react";
-import { useCuposFundador, reservarCupoFundador } from "@/lib/use-fundadores";
+import { useCuposFundador } from "@/lib/use-fundadores";
 import { Button } from "@/components/ui/button";
+
+/** Número de WhatsApp de contacto del sitio (+569 4792 6230). */
+const WHATSAPP_NUMERO = "56947926230";
 
 const PLANES = [
   {
@@ -36,6 +35,8 @@ const PLANES = [
     cta: "Suscribirme como Transportista",
     href: "/registro",
     plan: "transportista" as const,
+    whatsapp:
+      "Hola, quiero activar el plan Transportista Pro de TroncalTrack ($14.990/mes).",
     features: [
       "Sello azul de verificación «TroncalCheck» (tras validar RUT y documentos)",
       "Acceso instantáneo a datos de contacto directo (Teléfono / WhatsApp de la carga)",
@@ -53,6 +54,8 @@ const PLANES = [
     cta: "Suscribirme como Empresa",
     href: "/registro",
     plan: "empresa" as const,
+    whatsapp:
+      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($29.990/mes).",
     features: [
       "Publicación ilimitada de fletes y cargas",
       "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
@@ -65,39 +68,19 @@ const PLANES = [
 
 export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
   const navigate = useNavigate();
-  const iniciarPago = useServerFn(crearPagoPlan);
-  const [procesando, setProcesando] = useState<string | null>(null);
   const { quedan, total } = useCuposFundador();
 
-  const handleClick = async (p: (typeof PLANES)[number]) => {
-    if (!("plan" in p) || !p.plan) {
-      navigate({ to: p.href });
-      onRegistro();
+  const handleClick = (p: (typeof PLANES)[number]) => {
+    if (p.whatsapp) {
+      window.open(
+        `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(p.whatsapp)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
       return;
     }
-    setProcesando(p.id);
-    try {
-      if (p.plan === "empresa") await reservarCupoFundador();
-      const res = await iniciarPago({
-        data: { plan: p.plan, origen: window.location.origin },
-      });
-      if (res.ok) {
-        window.location.href = res.url;
-        return;
-      }
-      if (res.motivo === "sin_credenciales") {
-        toast.info("El cobro en línea se habilita muy pronto", {
-          description:
-            "Crea tu cuenta ahora y te avisamos por correo apenas puedas activar tu plan.",
-        });
-        navigate({ to: "/registro" });
-        onRegistro();
-        return;
-      }
-      toast.error(res.mensaje);
-    } finally {
-      setProcesando(null);
-    }
+    navigate({ to: p.href });
+    onRegistro();
   };
 
   return (
@@ -175,10 +158,9 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
               <Button
                 className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                 variant={p.destacado ? "default" : "outline"}
-                disabled={procesando === p.id}
-                onClick={() => void handleClick(p)}
+                onClick={() => handleClick(p)}
               >
-                {procesando === p.id ? "Preparando el pago..." : p.cta}
+                {p.cta}
               </Button>
             </article>
           ))}
