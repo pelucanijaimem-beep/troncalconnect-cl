@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { MessageCircle, Phone } from "lucide-react";
+import { Lock, MessageCircle, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
