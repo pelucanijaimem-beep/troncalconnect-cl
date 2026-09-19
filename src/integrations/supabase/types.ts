@@ -385,6 +385,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      verificaciones_publicas: {
+        Args: never
+        Returns: {
+          asegurado: boolean
+          estado: string
+          nombre: string
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "usuario"

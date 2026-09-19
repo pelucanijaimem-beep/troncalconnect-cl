@@ -164,23 +164,44 @@ export function normalizarChecklist(valor: unknown): Checklist {
   return salida;
 }
 
-/** Recarga todas las verificaciones desde la base de datos. */
+/**
+ * Recarga el estado público del sello de confianza (sin documentos ni notas)
+ * y agrega los datos completos únicamente de la cuenta con sesión iniciada.
+ */
 export async function recargarVerificaciones() {
-  const { data } = await supabase
-    .from("verificaciones")
-    .select("nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at");
-  if (!data) return;
+  const { data } = await supabase.rpc("verificaciones_publicas");
   const nuevo: Mapa = {};
-  for (const fila of data) {
+  for (const fila of data ?? []) {
     nuevo[claveUsuario(fila.nombre ?? "")] = {
       estado: estadoDesdeDB(fila.estado),
       asegurado: Boolean(fila.asegurado),
-      documentos: (fila.documentos ?? {}) as Documentos,
-      checklist: normalizarChecklist(fila.checklist),
+      documentos: {},
+      checklist: CHECKLIST_VACIO,
       actualizado: fila.updated_at ?? "",
-      nota: fila.nota_admin ?? "",
+      nota: "",
     };
   }
+
+  const { data: sesion } = await supabase.auth.getUser();
+  const userId = sesion.user?.id;
+  if (userId) {
+    const { data: propia } = await supabase
+      .from("verificaciones")
+      .select("nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (propia) {
+      nuevo[claveUsuario(propia.nombre ?? "")] = {
+        estado: estadoDesdeDB(propia.estado),
+        asegurado: Boolean(propia.asegurado),
+        documentos: (propia.documentos ?? {}) as Documentos,
+        checklist: normalizarChecklist(propia.checklist),
+        actualizado: propia.updated_at ?? "",
+        nota: propia.nota_admin ?? "",
+      };
+    }
+  }
+
   mapa = nuevo;
   emitir();
 }
