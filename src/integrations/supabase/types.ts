@@ -409,6 +409,10 @@ export type Database = {
         Returns: boolean
       }
       cupos_fundador: { Args: never; Returns: number }
+      mi_perfil: { Args: never; Returns: Json }
+      perfil_id_por_email: { Args: { p_email: string }; Returns: string }
+      perfil_publico: { Args: { p_id: string }; Returns: Json }
+      perfiles_admin: { Args: never; Returns: Json }
       reservar_cupo_fundador: { Args: never; Returns: number }
       tarifa_ruta: {
         Args: { _destino: string; _origen: string }
