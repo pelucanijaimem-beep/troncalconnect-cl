@@ -83,20 +83,31 @@ export function useNotificaciones(userId: string | undefined | null) {
     };
     void traer();
 
-    const canal = supabase
-      .channel(`notificaciones-${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notificaciones", filter: `user_id=eq.${userId}` },
-        () => void traer(),
-      )
-      .subscribe();
+    let canal: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      canal = supabase
+        .channel(`notificaciones-${userId}-${canalId}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "notificaciones", filter: `user_id=eq.${userId}` },
+          () => void traer(),
+        )
+        .subscribe();
+    } catch {
+      canal = null;
+    }
 
     return () => {
       vivo = false;
-      void supabase.removeChannel(canal);
+      if (canal) {
+        try {
+          void supabase.removeChannel(canal);
+        } catch {
+          /* no bloquea la app */
+        }
+      }
     };
-  }, [userId]);
+  }, [userId, canalId]);
 
   return { notificaciones: lista, sinLeer: lista.filter((n) => !n.leida).length };
 }

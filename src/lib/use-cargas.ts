@@ -78,18 +78,29 @@ export function useCargas(activo: boolean) {
 
     void traer();
 
-    const canal = supabase
-      .channel("cargas-tablero")
-      .on("postgres_changes", { event: "*", schema: "public", table: "cargas" }, () => {
-        void traer();
-      })
-      .subscribe();
+    let canal: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      canal = supabase
+        .channel(`cargas-tablero-${canalId}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "cargas" }, () => {
+          void traer();
+        })
+        .subscribe();
+    } catch {
+      canal = null;
+    }
 
     return () => {
       vivo = false;
-      void supabase.removeChannel(canal);
+      if (canal) {
+        try {
+          void supabase.removeChannel(canal);
+        } catch {
+          /* no bloquea la app */
+        }
+      }
     };
-  }, [activo]);
+  }, [activo, canalId]);
 
   return { cargas, cargando };
 }
