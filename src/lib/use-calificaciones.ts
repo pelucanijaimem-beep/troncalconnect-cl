@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type TipoCalificacion = "a_empresa" | "a_camionero";
@@ -82,6 +82,7 @@ export async function calificar(entrada: {
 /** Todas las calificaciones visibles, en tiempo real. */
 export function useCalificaciones() {
   const [lista, setLista] = useState<Calificacion[]>([]);
+  const canalId = useId();
 
   useEffect(() => {
     let vivo = true;
@@ -97,20 +98,34 @@ export function useCalificaciones() {
     };
     void traer();
 
-    const canal = supabase
-      .channel("calificaciones-live")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "calificaciones" },
-        () => void traer(),
-      )
-      .subscribe();
+    // Nombre único por instancia: varios componentes usan este hook a la vez y
+    // reutilizar el mismo nombre de canal rompe la suscripción en vivo.
+    let canal: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      canal = supabase
+        .channel(`calificaciones-live-${canalId}`)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "calificaciones" },
+          () => void traer(),
+        )
+        .subscribe();
+    } catch {
+      // Si la conexión en vivo falla, los datos siguen mostrándose sin tiempo real.
+      canal = null;
+    }
 
     return () => {
       vivo = false;
-      void supabase.removeChannel(canal);
+      if (canal) {
+        try {
+          void supabase.removeChannel(canal);
+        } catch {
+          /* no bloquea la app */
+        }
+      }
     };
-  }, []);
+  }, [canalId]);
 
   return lista;
 }

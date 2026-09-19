@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Carga, Carroceria, PaisCodigo } from "@/lib/troncal-data";
 
@@ -57,6 +57,7 @@ const aCarga = (f: Fila): CargaDB => ({
 export function useCargas(activo: boolean) {
   const [cargas, setCargas] = useState<CargaDB[]>([]);
   const [cargando, setCargando] = useState(false);
+  const canalId = useId();
 
   useEffect(() => {
     if (!activo) {
@@ -78,18 +79,29 @@ export function useCargas(activo: boolean) {
 
     void traer();
 
-    const canal = supabase
-      .channel("cargas-tablero")
-      .on("postgres_changes", { event: "*", schema: "public", table: "cargas" }, () => {
-        void traer();
-      })
-      .subscribe();
+    let canal: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      canal = supabase
+        .channel(`cargas-tablero-${canalId}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "cargas" }, () => {
+          void traer();
+        })
+        .subscribe();
+    } catch {
+      canal = null;
+    }
 
     return () => {
       vivo = false;
-      void supabase.removeChannel(canal);
+      if (canal) {
+        try {
+          void supabase.removeChannel(canal);
+        } catch {
+          /* no bloquea la app */
+        }
+      }
     };
-  }, [activo]);
+  }, [activo, canalId]);
 
   return { cargas, cargando };
 }
