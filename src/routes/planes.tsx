@@ -145,7 +145,7 @@ const PLANES: Plan[] = [
 const FAQ_SUSCRIPCION = [
   {
     q: "¿Cómo puedo pagar mi suscripción?",
-    a: "Al suscribirte, te llega un mensaje por WhatsApp con los datos para activar tu plan. Mientras tanto, coordinamos la activación de tu plan por transferencia electrónica escribiéndonos al +569 4792 6230. Todos los precios se cobran en pesos chilenos (CLP).",
+    a: "Al presionar el botón de suscripción se abre WhatsApp con un mensaje listo para enviarnos; te respondemos con los datos de transferencia para activar tu plan. Todos los precios se cobran en pesos chilenos (CLP).",
   },
   {
     q: "¿Cómo funciona el descuento anual del 20%?",
