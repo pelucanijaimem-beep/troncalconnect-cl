@@ -24,7 +24,7 @@ interface Props {
 
 const Email = ({
   empresa,
-  camionero = 'Un camionero',
+  camionero = 'Un transportista',
   sello = 'Sin verificación TroncalCheck',
   telefono = 'No informado',
   correo = 'No informado',

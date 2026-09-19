@@ -229,7 +229,7 @@ function Index() {
 
   const contactarCamion = (t: Camion) =>
     setContacto({
-      titulo: "Contactar al camionero",
+      titulo: "Contactar al transportista",
       nombre: t.conductor,
       telefono: t.telefono,
       resumen: `${t.origen} → ${t.destino} · ${t.carroceria} · ${t.toneladas} Ton`,
@@ -315,7 +315,7 @@ function Index() {
     const v = getViaje(c.id);
     if (v.estado === "disponible") {
       toast.info("El viaje aún no comienza", {
-        description: "Verás la posición en vivo cuando el camionero inicie el viaje.",
+        description: "Verás la posición en vivo cuando el transportista inicie el viaje.",
       });
     }
     setRastreo(c);
@@ -448,7 +448,7 @@ function Index() {
           <p className="mt-1 text-sm text-muted-foreground">
             {esCamionero
               ? `Fletes publicados por empresas verificadas en ${paisActual.nombre}. Tarifas en ${paisActual.moneda}.`
-              : `Camioneros con disponibilidad confirmada en ${paisActual.nombre}.`}
+              : `Transportistas con disponibilidad confirmada en ${paisActual.nombre}.`}
           </p>
 
           <div id="paises" className="mt-4 space-y-3 md:hidden">
@@ -599,7 +599,7 @@ function Index() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   {esCamionero
                     ? "Publica tu camión para recibir ofertas directas de empresas cargadoras."
-                    : "Publica tu flete para que los camioneros disponibles te contacten al instante."}
+                    : "Publica tu flete para que los transportistas disponibles te contacten al instante."}
                 </p>
                 <Button
                   className="mt-4"

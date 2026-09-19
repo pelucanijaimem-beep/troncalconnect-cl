@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Optimiza flotas, controla rutas y conecta con camioneros, empresas y comisionistas en Chile. Plan Inicial gratuito, sin vencimiento.",
+          "Optimiza flotas, controla rutas y conecta con transportistas, dadores de carga y comisionistas en Chile. Plan Inicial gratuito, sin vencimiento.",
       },
       { property: "og:site_name", content: "TroncalTrack" },
       { property: "og:type", content: "website" },
@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "La plataforma profesional para camioneros, empresas y comisionistas. Comienza gratis, sin vencimiento.",
+          "La plataforma profesional para transportistas, dadores de carga y comisionistas. Comienza gratis, sin vencimiento.",
       },
       { property: "og:image", content: "https://troncaltrack.com/og-image.jpg" },
       { property: "og:image:width", content: "1200" },
@@ -108,7 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "twitter:description",
         content:
-          "La plataforma profesional para camioneros, empresas y comisionistas. Comienza gratis, sin vencimiento.",
+          "La plataforma profesional para transportistas, dadores de carga y comisionistas. Comienza gratis, sin vencimiento.",
       },
       { name: "twitter:image", content: "https://troncaltrack.com/og-image.jpg" },
     ],

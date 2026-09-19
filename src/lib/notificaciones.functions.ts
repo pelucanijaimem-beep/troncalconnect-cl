@@ -49,7 +49,7 @@ export const avisarPostulacion = createServerFn({ method: "POST" })
       .eq("id", userId)
       .maybeSingle();
 
-    const nombre = postulante?.nombre ?? "Un camionero";
+    const nombre = postulante?.nombre ?? "Un transportista";
     const telefono = postulante?.telefono ?? "No informado";
     const sello = postulante?.verificado
       ? "Verificado — TroncalCheck"
