@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Carga, Carroceria, PaisCodigo } from "@/lib/troncal-data";
 
@@ -57,6 +57,7 @@ const aCarga = (f: Fila): CargaDB => ({
 export function useCargas(activo: boolean) {
   const [cargas, setCargas] = useState<CargaDB[]>([]);
   const [cargando, setCargando] = useState(false);
+  const canalId = useId();
 
   useEffect(() => {
     if (!activo) {

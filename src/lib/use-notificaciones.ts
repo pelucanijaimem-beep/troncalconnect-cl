@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type Notificacion = {
@@ -54,6 +54,7 @@ export async function marcarTodasLeidas(userId: string) {
 /** Notificaciones del usuario conectado, con actualización en vivo. */
 export function useNotificaciones(userId: string | undefined | null) {
   const [lista, setLista] = useState<Notificacion[]>([]);
+  const canalId = useId();
 
   useEffect(() => {
     if (!userId) {
