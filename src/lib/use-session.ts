@@ -46,11 +46,7 @@ async function cargarPerfil(userId: string, email: string) {
 
   for (let intento = 0; intento < 2; intento += 1) {
     try {
-      const res = await supabase
-        .from("perfiles")
-        .select("nombre, email, telefono, rol, plan_activo, bloqueado")
-        .eq("id", userId)
-        .maybeSingle();
+      const res = await supabase.rpc("mi_perfil");
       if (!res.error) {
         data = res.data;
         break;

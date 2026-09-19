@@ -128,10 +128,7 @@ function AdminPage() {
         )
 
         .order("updated_at", { ascending: false }),
-      supabase
-        .from("perfiles")
-        .select("id, nombre, email, telefono, rol, plan_activo, bloqueado, verificado")
-        .order("created_at", { ascending: false }),
+      supabase.rpc("perfiles_admin"),
       supabase
         .from("cargas")
         .select("id, titulo, origen, destino, empresa, precio, created_at")

@@ -63,15 +63,13 @@ export async function cargaPorId(id: string): Promise<CargaDB | null> {
 
 /** Invita por correo a un usuario registrado a ver una carga privada. */
 export async function invitarACarga(cargaId: string, email: string) {
-  const { data: perfil } = await supabase
-    .from("perfiles")
-    .select("id")
-    .eq("email", email.trim().toLowerCase())
-    .maybeSingle();
-  if (!perfil) return "No encontramos una cuenta registrada con ese correo.";
+  const { data: perfilId } = await supabase.rpc("perfil_id_por_email", {
+    p_email: email.trim(),
+  });
+  if (!perfilId) return "No encontramos una cuenta registrada con ese correo.";
   const { error } = await supabase
     .from("invitaciones_carga")
-    .insert({ carga_id: cargaId, invitado_id: perfil.id as string });
+    .insert({ carga_id: cargaId, invitado_id: perfilId as string });
   if (error && !error.message.includes("duplicate")) return error.message;
   return null;
 }
@@ -232,10 +230,9 @@ export async function primerPostulante(
     .limit(1)
     .maybeSingle();
   if (!data) return null;
-  const { data: perfil } = await supabase
-    .from("perfiles")
-    .select("id, nombre")
-    .eq("id", data.user_id as string)
-    .maybeSingle();
-  return perfil ? { id: perfil.id as string, nombre: perfil.nombre as string } : null;
+  const { data: perfil } = await supabase.rpc("perfil_publico", {
+    p_id: data.user_id as string,
+  });
+  const nombre = (perfil as { nombre?: string } | null)?.nombre;
+  return nombre ? { id: data.user_id as string, nombre } : null;
 }
