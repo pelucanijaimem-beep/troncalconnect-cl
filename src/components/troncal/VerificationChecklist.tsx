@@ -1,8 +1,9 @@
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import {
   avanceChecklist,
-  DOCUMENTOS_REQUERIDOS,
+  documentosRequeridos,
   type Checklist,
+  type RolVerificacion,
 } from "@/lib/use-verificacion";
 
 const ICONO = {
@@ -26,11 +27,14 @@ const ETIQUETA = {
 export function VerificationChecklist({
   checklist,
   compacto = false,
+  rol = "camionero",
 }: {
   checklist: Checklist;
   compacto?: boolean;
+  rol?: RolVerificacion;
 }) {
-  const avance = avanceChecklist(checklist);
+  const avance = avanceChecklist(checklist, rol);
+  const documentos = documentosRequeridos(rol);
 
   return (
     <div className="rounded-xl border border-border bg-surface p-4">
