@@ -138,10 +138,10 @@ export function VerificationDialog({
           )}
         </div>
 
-        <VerificationChecklist checklist={verificacion.checklist} />
+        <VerificationChecklist checklist={verificacion.checklist} rol={rol} />
 
         <form onSubmit={enviar} className="space-y-4">
-          {CAMPOS.map((c) => (
+          {campos.map((c) => (
             <div key={c.name} className="space-y-1.5">
               <Label htmlFor={`doc-${c.name}`}>{c.label}</Label>
               <Input
