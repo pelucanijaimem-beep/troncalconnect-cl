@@ -706,6 +706,7 @@ function Index() {
         onOpenChange={setVerificacionOpen}
         usuario={sesion?.nombre ?? ""}
         userId={sesion?.id}
+        rol={esCamionero ? "camionero" : "empresa"}
       />
       <AlertPrefsDialog
         open={alertasOpen}
