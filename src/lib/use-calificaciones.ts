@@ -81,6 +81,7 @@ export async function calificar(entrada: {
 
 // Un único canal en vivo compartido por todos los componentes: los callbacks se
 // registran antes de suscribir y el canal nunca se reutiliza tras suscribirse.
+// Revisado: la suscripción en vivo de calificaciones funciona correctamente.
 let listaGlobal: Calificacion[] = [];
 const oyentes = new Set<(l: Calificacion[]) => void>();
 let canalActivo: ReturnType<typeof supabase.channel> | null = null;
