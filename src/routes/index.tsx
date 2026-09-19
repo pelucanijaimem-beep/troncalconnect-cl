@@ -424,6 +424,7 @@ function Index() {
           <TrustProfileCard
             usuario={sesion.nombre}
             onVerificar={() => setVerificacionOpen(true)}
+            rol={esCamionero ? "camionero" : "empresa"}
           />
         </div>
 
@@ -432,6 +433,7 @@ function Index() {
             estado={miVerificacion.estado}
             checklist={miVerificacion.checklist}
             onVerificar={() => setVerificacionOpen(true)}
+            rol="camionero"
           />
 
         ) : (
@@ -704,6 +706,7 @@ function Index() {
         onOpenChange={setVerificacionOpen}
         usuario={sesion?.nombre ?? ""}
         userId={sesion?.id}
+        rol={esCamionero ? "camionero" : "empresa"}
       />
       <AlertPrefsDialog
         open={alertasOpen}

@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type TipoCalificacion = "a_empresa" | "a_camionero";
@@ -79,53 +79,66 @@ export async function calificar(entrada: {
   return error?.message ?? null;
 }
 
+// Un único canal en vivo compartido por todos los componentes: los callbacks se
+// registran antes de suscribir y el canal nunca se reutiliza tras suscribirse.
+let listaGlobal: Calificacion[] = [];
+const oyentes = new Set<(l: Calificacion[]) => void>();
+let canalActivo: ReturnType<typeof supabase.channel> | null = null;
+
+async function traerCalificaciones() {
+  const { data } = await supabase
+    .from("calificaciones")
+    .select(
+      "id, autor_nombre, evaluado_nombre, tipo, estrellas, criterios, comentario, ruta, created_at",
+    )
+    .order("created_at", { ascending: false })
+    .limit(300);
+  listaGlobal = ((data ?? []) as Fila[]).map(aCalificacion);
+  oyentes.forEach((f) => f(listaGlobal));
+}
+
+function abrirCanal() {
+  if (canalActivo) return;
+  try {
+    const canal = supabase.channel("calificaciones-live");
+    canal.on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "calificaciones" },
+      () => void traerCalificaciones(),
+    );
+    canal.subscribe();
+    canalActivo = canal;
+  } catch {
+    // Si la conexión en vivo falla, los datos siguen mostrándose sin tiempo real.
+    canalActivo = null;
+  }
+}
+
+function cerrarCanal() {
+  if (!canalActivo) return;
+  const canal = canalActivo;
+  canalActivo = null;
+  try {
+    void supabase.removeChannel(canal);
+  } catch {
+    /* no bloquea la app */
+  }
+}
+
 /** Todas las calificaciones visibles, en tiempo real. */
 export function useCalificaciones() {
-  const [lista, setLista] = useState<Calificacion[]>([]);
-  const canalId = useId();
+  const [lista, setLista] = useState<Calificacion[]>(listaGlobal);
 
   useEffect(() => {
-    let vivo = true;
-    const traer = async () => {
-      const { data } = await supabase
-        .from("calificaciones")
-        .select(
-          "id, autor_nombre, evaluado_nombre, tipo, estrellas, criterios, comentario, ruta, created_at",
-        )
-        .order("created_at", { ascending: false })
-        .limit(300);
-      if (vivo) setLista(((data ?? []) as Fila[]).map(aCalificacion));
-    };
-    void traer();
-
-    // Nombre único por instancia: varios componentes usan este hook a la vez y
-    // reutilizar el mismo nombre de canal rompe la suscripción en vivo.
-    let canal: ReturnType<typeof supabase.channel> | null = null;
-    try {
-      canal = supabase
-        .channel(`calificaciones-live-${canalId}`)
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "calificaciones" },
-          () => void traer(),
-        )
-        .subscribe();
-    } catch {
-      // Si la conexión en vivo falla, los datos siguen mostrándose sin tiempo real.
-      canal = null;
-    }
-
+    const oyente = (l: Calificacion[]) => setLista(l);
+    oyentes.add(oyente);
+    abrirCanal();
+    void traerCalificaciones();
     return () => {
-      vivo = false;
-      if (canal) {
-        try {
-          void supabase.removeChannel(canal);
-        } catch {
-          /* no bloquea la app */
-        }
-      }
+      oyentes.delete(oyente);
+      if (oyentes.size === 0) cerrarCanal();
     };
-  }, [canalId]);
+  }, []);
 
   return lista;
 }

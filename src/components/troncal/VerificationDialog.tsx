@@ -15,46 +15,62 @@ import { Label } from "@/components/ui/label";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
 import { VerificationChecklist } from "./VerificationChecklist";
 import {
-  DOCUMENTOS_REQUERIDOS,
+  documentosRequeridos,
   enviarDocumentos,
   useVerificacion,
   type Documentos,
+  type RolVerificacion,
 } from "@/lib/use-verificacion";
 
-const CAMPOS: { name: keyof Documentos; label: string; ayuda: string; requerido: boolean }[] = [
-  {
-    name: "identidad",
-    label: "RUT Empresa o Cédula de Identidad del Conductor",
-    ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
-    requerido: true,
-  },
-  ...DOCUMENTOS_REQUERIDOS.map((d) => ({
-    name: d.clave as keyof Documentos,
-    label: d.label,
-    ayuda: d.ayuda,
-    requerido: true,
-  })),
-  {
-    name: "poliza",
-    label: "Póliza de Seguro de Carga (Opcional)",
-    ayuda: "Al adjuntarla obtienes la insignia especial «Asegurado».",
-    requerido: false,
-  },
-];
+type Campo = { name: keyof Documentos; label: string; ayuda: string; requerido: boolean };
+
+/** Formulario documental según el tipo de cuenta. */
+function camposDe(rol: RolVerificacion): Campo[] {
+  const empresa = rol === "empresa";
+  return [
+    ...(empresa
+      ? []
+      : [
+          {
+            name: "identidad" as keyof Documentos,
+            label: "Cédula de Identidad del Conductor",
+            ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
+            requerido: true,
+          },
+        ]),
+    ...documentosRequeridos(rol).map((d) => ({
+      name: d.clave as keyof Documentos,
+      label: d.label,
+      ayuda: d.ayuda,
+      requerido: true,
+    })),
+    {
+      name: "poliza",
+      label: empresa
+        ? "Póliza de Seguro de Mercadería (Opcional)"
+        : "Póliza de Seguro de Carga (Opcional)",
+      ayuda: "Al adjuntarla obtienes la insignia especial «Asegurado».",
+      requerido: false,
+    },
+  ];
+}
 
 export function VerificationDialog({
   open,
   onOpenChange,
   usuario,
   userId,
+  rol = "camionero",
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   usuario: string;
   userId?: string | undefined;
+  rol?: RolVerificacion;
 }) {
   const verificacion = useVerificacion(usuario);
   const [enviando, setEnviando] = useState(false);
+  const campos = camposDe(rol);
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,12 +80,12 @@ export function VerificationDialog({
     }
     const form = e.currentTarget;
     const archivos: Partial<Record<keyof Documentos, File>> = {};
-    for (const campo of CAMPOS) {
+    for (const campo of campos) {
       const input = form.elements.namedItem(campo.name) as HTMLInputElement | null;
       const archivo = input?.files?.[0];
       if (archivo) archivos[campo.name] = archivo;
     }
-    const faltantes = CAMPOS.filter(
+    const faltantes = campos.filter(
       (c) => c.requerido && !archivos[c.name] && !verificacion.documentos[c.name],
     );
     if (faltantes.length > 0) {
@@ -122,10 +138,10 @@ export function VerificationDialog({
           )}
         </div>
 
-        <VerificationChecklist checklist={verificacion.checklist} />
+        <VerificationChecklist checklist={verificacion.checklist} rol={rol} />
 
         <form onSubmit={enviar} className="space-y-4">
-          {CAMPOS.map((c) => (
+          {campos.map((c) => (
             <div key={c.name} className="space-y-1.5">
               <Label htmlFor={`doc-${c.name}`}>{c.label}</Label>
               <Input

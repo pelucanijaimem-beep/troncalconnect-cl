@@ -16,7 +16,14 @@ export type Documentos = {
   permiso_circulacion?: string;
   antecedentes?: string;
   poliza?: string;
+  rut_empresa?: string;
+  representante_legal?: string;
+  carpeta_tributaria?: string;
+  vigencia_sociedad?: string;
 };
+
+/** Tipo de cuenta que determina qué documentos se exigen. */
+export type RolVerificacion = "camionero" | "empresa";
 
 /** Estado de revisión de cada documento exigido por TroncalCheck. */
 export type EstadoDocumento = "pendiente" | "aprobado" | "rechazado";
@@ -28,16 +35,22 @@ export type ClaveDocumento =
   | "revision_tecnica"
   | "permiso_circulacion"
   | "licencia"
-  | "antecedentes";
+  | "antecedentes"
+  | "rut_empresa"
+  | "representante_legal"
+  | "carpeta_tributaria"
+  | "vigencia_sociedad";
 
 export type Checklist = Record<ClaveDocumento, ItemChecklist>;
 
-/** Documentos chilenos exigidos, en el orden en que se revisan. */
-export const DOCUMENTOS_REQUERIDOS: {
+export type DefinicionDocumento = {
   clave: ClaveDocumento;
   label: string;
   ayuda: string;
-}[] = [
+};
+
+/** Documentos exigidos a camioneros y empresas de transporte con flota. */
+export const DOCUMENTOS_CAMIONERO: DefinicionDocumento[] = [
   {
     clave: "soat",
     label: "Seguro Obligatorio de Accidentes (SOAP) vigente",
@@ -65,13 +78,45 @@ export const DOCUMENTOS_REQUERIDOS: {
   },
 ];
 
-export const CHECKLIST_VACIO: Checklist = {
-  soat: { estado: "pendiente", motivo: "" },
-  revision_tecnica: { estado: "pendiente", motivo: "" },
-  permiso_circulacion: { estado: "pendiente", motivo: "" },
-  licencia: { estado: "pendiente", motivo: "" },
-  antecedentes: { estado: "pendiente", motivo: "" },
-};
+/** Documentos exigidos a empresas y generadores de carga. */
+export const DOCUMENTOS_EMPRESA: DefinicionDocumento[] = [
+  {
+    clave: "rut_empresa",
+    label: "RUT de la empresa (e-RUT)",
+    ayuda: "Cédula tributaria electrónica emitida por el Servicio de Impuestos Internos.",
+  },
+  {
+    clave: "representante_legal",
+    label: "Cédula de identidad del representante legal",
+    ayuda: "Ambos lados, vigente y legible.",
+  },
+  {
+    clave: "carpeta_tributaria",
+    label: "Carpeta Tributaria Electrónica",
+    ayuda: "Descargada desde el Servicio de Impuestos Internos, con antigüedad máxima de 90 días.",
+  },
+  {
+    clave: "vigencia_sociedad",
+    label: "Certificado de vigencia de la sociedad",
+    ayuda: "Acredita la existencia de la empresa y la personería del representante legal.",
+  },
+];
+
+/** Unión de ambos listados, usada por el panel de revisión interno. */
+export const TODOS_DOCUMENTOS: DefinicionDocumento[] = [
+  ...DOCUMENTOS_CAMIONERO,
+  ...DOCUMENTOS_EMPRESA,
+];
+
+/** Documentos exigidos según el tipo de cuenta. */
+export function documentosRequeridos(rol: RolVerificacion): DefinicionDocumento[] {
+  return rol === "empresa" ? DOCUMENTOS_EMPRESA : DOCUMENTOS_CAMIONERO;
+}
+
+export const CHECKLIST_VACIO: Checklist = TODOS_DOCUMENTOS.reduce((acc, d) => {
+  acc[d.clave] = { estado: "pendiente", motivo: "" };
+  return acc;
+}, {} as Checklist);
 
 export type Verificacion = {
   estado: EstadoVerificacion;
@@ -108,7 +153,7 @@ export function estadoDesdeDB(estado: string): EstadoVerificacion {
 export function normalizarChecklist(valor: unknown): Checklist {
   const bruto = (valor ?? {}) as Record<string, Partial<ItemChecklist>>;
   const salida = {} as Checklist;
-  for (const d of DOCUMENTOS_REQUERIDOS) {
+  for (const d of TODOS_DOCUMENTOS) {
     const item = bruto[d.clave];
     const estado = item?.estado;
     salida[d.clave] = {
@@ -220,9 +265,9 @@ export function getVerificacionDe(
   return mapa[claveUsuario(clave)] ?? VERIFICACION_VACIA;
 }
 
-/** Resumen de avance del checklist documental. */
-export function avanceChecklist(checklist: Checklist) {
-  const items = DOCUMENTOS_REQUERIDOS.map((d) => checklist[d.clave]);
+/** Resumen de avance del checklist documental según el tipo de cuenta. */
+export function avanceChecklist(checklist: Checklist, rol: RolVerificacion = "camionero") {
+  const items = documentosRequeridos(rol).map((d) => checklist[d.clave]);
   return {
     aprobados: items.filter((i) => i.estado === "aprobado").length,
     rechazados: items.filter((i) => i.estado === "rechazado").length,

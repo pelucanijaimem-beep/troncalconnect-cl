@@ -1,7 +1,11 @@
 import { Clock, Lock, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerificationChecklist } from "./VerificationChecklist";
-import type { Checklist, EstadoVerificacion } from "@/lib/use-verificacion";
+import type {
+  Checklist,
+  EstadoVerificacion,
+  RolVerificacion,
+} from "@/lib/use-verificacion";
 
 
 const COPY: Record<
@@ -41,10 +45,12 @@ export function VerificationGate({
   estado,
   checklist,
   onVerificar,
+  rol = "camionero",
 }: {
   estado: EstadoVerificacion;
   checklist: Checklist;
   onVerificar: () => void;
+  rol?: RolVerificacion;
 }) {
   const { icono: Icono, titulo, descripcion, cta } = COPY[estado];
 
@@ -69,7 +75,7 @@ export function VerificationGate({
         </div>
 
         <div className="mt-4">
-          <VerificationChecklist checklist={checklist} />
+          <VerificationChecklist checklist={checklist} rol={rol} />
         </div>
 
 
