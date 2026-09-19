@@ -62,7 +62,7 @@ export function VerificationChecklist({
       </div>
 
       <ul className="mt-3 space-y-2">
-        {DOCUMENTOS_REQUERIDOS.map((d) => {
+        {documentos.map((d) => {
           const item = checklist[d.clave];
           const Icono = ICONO[item.estado];
           return (

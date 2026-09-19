@@ -1,7 +1,11 @@
 import { Clock, Lock, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerificationChecklist } from "./VerificationChecklist";
-import type { Checklist, EstadoVerificacion } from "@/lib/use-verificacion";
+import type {
+  Checklist,
+  EstadoVerificacion,
+  RolVerificacion,
+} from "@/lib/use-verificacion";
 
 
 const COPY: Record<
