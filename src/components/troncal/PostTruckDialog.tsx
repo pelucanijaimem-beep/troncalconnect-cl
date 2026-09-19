@@ -51,7 +51,7 @@ export function PostTruckDialog({
     const camion: Camion = {
       id: nuevoId("camion"),
       pais,
-      conductor: sesion?.nombre ?? "Camionero independiente",
+      conductor: sesion?.nombre ?? "Transportista independiente",
       origen: String(d.get("origen") ?? ""),
       destino: String(d.get("destino") ?? ""),
       carroceria: (carroceria || "Rampla Plana") as Carroceria,

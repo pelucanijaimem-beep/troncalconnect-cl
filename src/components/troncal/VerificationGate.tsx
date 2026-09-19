@@ -16,7 +16,7 @@ const COPY: Record<
     icono: ShieldAlert,
     titulo: "Verifica tu identidad para ver las cargas disponibles",
     descripcion:
-      "Por seguridad de las empresas que publican cargas, el tablero solo se muestra a camioneros con RUT y documentos validados por TroncalCheck.",
+      "Por seguridad de las empresas que publican cargas, el tablero solo se muestra a transportistas y operadores de flota con RUT y documentos validados por TroncalCheck.",
     cta: "Iniciar Verificación de Identidad",
   },
   en_revision: {

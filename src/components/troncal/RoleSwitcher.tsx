@@ -13,15 +13,15 @@ export function RoleSwitcher({
   className?: string;
 }) {
   const base =
-    "flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors cursor-pointer";
+    "flex flex-1 items-center justify-center rounded-md px-3 py-2 transition-colors cursor-pointer";
   return (
     <div
       className={cn(
-        "flex w-full items-center gap-1 rounded-lg border border-border bg-surface p-1 md:w-auto",
+        "flex w-full items-stretch gap-1 rounded-lg border border-border bg-surface p-1 md:w-auto",
         className,
       )}
       role="tablist"
-      aria-label="Cambiar rol"
+      aria-label="Cambiar tipo de cuenta"
     >
       <button
         type="button"
@@ -35,7 +35,19 @@ export function RoleSwitcher({
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        <HardHat className="h-4 w-4" /> Soy Camionero
+        <span className="flex flex-col items-center gap-0.5 text-center">
+          <span className="flex items-center gap-1.5 text-sm font-semibold">
+            <HardHat className="h-4 w-4 shrink-0" /> Transportista / Operador de Flota
+          </span>
+          <span
+            className={cn(
+              "text-[11px] leading-snug",
+              rol === "camionero" ? "text-primary-foreground/80" : "text-muted-foreground",
+            )}
+          >
+            Ofrezco camiones o flota (desde 1 unidad) para ejecutar fletes.
+          </span>
+        </span>
       </button>
       <button
         type="button"
@@ -49,7 +61,19 @@ export function RoleSwitcher({
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        <Building2 className="h-4 w-4" /> Soy Empresa / Cargador
+        <span className="flex flex-col items-center gap-0.5 text-center">
+          <span className="flex items-center gap-1.5 text-sm font-semibold">
+            <Building2 className="h-4 w-4 shrink-0" /> Dador de Carga / Generador
+          </span>
+          <span
+            className={cn(
+              "text-[11px] leading-snug",
+              rol === "empresa" ? "text-primary-foreground/80" : "text-muted-foreground",
+            )}
+          >
+            Necesito mover carga desde mis plantas o bodegas hacia destino.
+          </span>
+        </span>
       </button>
     </div>
   );
