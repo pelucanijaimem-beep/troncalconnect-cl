@@ -55,7 +55,7 @@ export function TrustProfileCard({
       </div>
 
       <div className="mt-4">
-        <VerificationChecklist checklist={verificacion.checklist} compacto />
+        <VerificationChecklist checklist={verificacion.checklist} compacto rol={rol} />
       </div>
 
 

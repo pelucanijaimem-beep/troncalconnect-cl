@@ -15,32 +15,43 @@ import { Label } from "@/components/ui/label";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
 import { VerificationChecklist } from "./VerificationChecklist";
 import {
-  DOCUMENTOS_REQUERIDOS,
+  documentosRequeridos,
   enviarDocumentos,
   useVerificacion,
   type Documentos,
+  type RolVerificacion,
 } from "@/lib/use-verificacion";
 
-const CAMPOS: { name: keyof Documentos; label: string; ayuda: string; requerido: boolean }[] = [
-  {
-    name: "identidad",
-    label: "RUT Empresa o Cédula de Identidad del Conductor",
-    ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
-    requerido: true,
-  },
-  ...DOCUMENTOS_REQUERIDOS.map((d) => ({
-    name: d.clave as keyof Documentos,
-    label: d.label,
-    ayuda: d.ayuda,
-    requerido: true,
-  })),
-  {
-    name: "poliza",
-    label: "Póliza de Seguro de Carga (Opcional)",
-    ayuda: "Al adjuntarla obtienes la insignia especial «Asegurado».",
-    requerido: false,
-  },
-];
+type Campo = { name: keyof Documentos; label: string; ayuda: string; requerido: boolean };
+
+/** Formulario documental según el tipo de cuenta. */
+function camposDe(rol: RolVerificacion): Campo[] {
+  const empresa = rol === "empresa";
+  return [
+    {
+      name: "identidad",
+      label: empresa
+        ? "Cédula de Identidad del Representante Legal"
+        : "Cédula de Identidad del Conductor",
+      ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
+      requerido: true,
+    },
+    ...documentosRequeridos(rol).map((d) => ({
+      name: d.clave as keyof Documentos,
+      label: d.label,
+      ayuda: d.ayuda,
+      requerido: true,
+    })),
+    {
+      name: "poliza",
+      label: empresa
+        ? "Póliza de Seguro de Mercadería (Opcional)"
+        : "Póliza de Seguro de Carga (Opcional)",
+      ayuda: "Al adjuntarla obtienes la insignia especial «Asegurado».",
+      requerido: false,
+    },
+  ];
+}
 
 export function VerificationDialog({
   open,
