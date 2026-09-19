@@ -66,7 +66,7 @@ export function LoadCard({
   const montoTotal = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";
-  const wsp = carga.telefono.replace(/[^0-9]/g, "");
+  const esPrivada = carga.visibilidad === "privada";
   const prefs = useTableroPrefs();
   const esFavorita = prefs.favoritos.includes(carga.id);
   const diesel = costoCombustible(carga.km, carga.pais);
@@ -163,6 +163,11 @@ export function LoadCard({
             <ShieldCheck className="h-3.5 w-3.5" /> Exclusiva para verificados
           </span>
         )}
+        {esPrivada && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+            <EyeOff className="h-3.5 w-3.5" /> Solo por invitación
+          </span>
+        )}
         <div className="ml-auto flex w-full flex-wrap gap-2 sm:w-auto">
           <Button variant="outline" className="flex-1 sm:flex-none" onClick={() => onDetalles(carga)}>
             Ver Detalles
@@ -171,29 +176,17 @@ export function LoadCard({
           {rol === "camionero" ? (
             <>
               {accesoContacto ? (
-                <>
-                  <Button
-                    variant="outline"
-                    className="flex-1 sm:flex-none"
-                    onClick={() => onContactar(carga)}
-                  >
-                    <Phone className="h-4 w-4" /> Llamar
-                  </Button>
-                  <Button asChild variant="outline" className="flex-1 sm:flex-none">
-                    <a
-                      href={`https://wa.me/${wsp}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label="Contactar por WhatsApp"
-                    >
-                      <MessageCircle className="h-4 w-4" /> WhatsApp
-                    </a>
-                  </Button>
-                </>
+                <Button
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                  onClick={() => onContactar(carga)}
+                >
+                  <MessageCircle className="h-4 w-4" /> Contactar
+                </Button>
               ) : (
                 <Button asChild variant="outline" className="flex-1 sm:flex-none">
                   <Link to="/planes">
-                    <Lock className="h-4 w-4" /> Ver datos de contacto (Requiere Plan Pro)
+                    <Lock className="h-4 w-4" /> Contactar (Requiere Plan Pro)
                   </Link>
                 </Button>
               )}
