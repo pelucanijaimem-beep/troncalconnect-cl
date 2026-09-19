@@ -8,8 +8,8 @@ import {
   CheckCircle2,
   Package,
   Lock,
+  EyeOff,
   MessageCircle,
-  Phone,
   PlayCircle,
   Send,
 
