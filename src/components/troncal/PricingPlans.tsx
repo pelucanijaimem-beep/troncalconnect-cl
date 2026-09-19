@@ -35,6 +35,8 @@ const PLANES = [
     cta: "Suscribirme como Transportista",
     href: "/registro",
     plan: "transportista" as const,
+    whatsapp:
+      "Hola, quiero activar el plan Transportista Pro de TroncalTrack ($14.990/mes).",
     features: [
       "Sello azul de verificación «TroncalCheck» (tras validar RUT y documentos)",
       "Acceso instantáneo a datos de contacto directo (Teléfono / WhatsApp de la carga)",
@@ -52,6 +54,8 @@ const PLANES = [
     cta: "Suscribirme como Empresa",
     href: "/registro",
     plan: "empresa" as const,
+    whatsapp:
+      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($29.990/mes).",
     features: [
       "Publicación ilimitada de fletes y cargas",
       "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
@@ -64,8 +68,6 @@ const PLANES = [
 
 export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
   const navigate = useNavigate();
-  const iniciarPago = useServerFn(crearPagoPlan);
-  const [procesando, setProcesando] = useState<string | null>(null);
   const { quedan, total } = useCuposFundador();
 
   const handleClick = (p: (typeof PLANES)[number]) => {
@@ -156,10 +158,9 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
               <Button
                 className="mt-6 w-full cursor-pointer transition-all hover:brightness-110"
                 variant={p.destacado ? "default" : "outline"}
-                disabled={procesando === p.id}
-                onClick={() => void handleClick(p)}
+                onClick={() => handleClick(p)}
               >
-                {procesando === p.id ? "Preparando el pago..." : p.cta}
+                {p.cta}
               </Button>
             </article>
           ))}
