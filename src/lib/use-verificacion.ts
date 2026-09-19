@@ -153,7 +153,7 @@ export function estadoDesdeDB(estado: string): EstadoVerificacion {
 export function normalizarChecklist(valor: unknown): Checklist {
   const bruto = (valor ?? {}) as Record<string, Partial<ItemChecklist>>;
   const salida = {} as Checklist;
-  for (const d of DOCUMENTOS_REQUERIDOS) {
+  for (const d of TODOS_DOCUMENTOS) {
     const item = bruto[d.clave];
     const estado = item?.estado;
     salida[d.clave] = {
@@ -265,9 +265,9 @@ export function getVerificacionDe(
   return mapa[claveUsuario(clave)] ?? VERIFICACION_VACIA;
 }
 
-/** Resumen de avance del checklist documental. */
-export function avanceChecklist(checklist: Checklist) {
-  const items = DOCUMENTOS_REQUERIDOS.map((d) => checklist[d.clave]);
+/** Resumen de avance del checklist documental según el tipo de cuenta. */
+export function avanceChecklist(checklist: Checklist, rol: RolVerificacion = "camionero") {
+  const items = documentosRequeridos(rol).map((d) => checklist[d.clave]);
   return {
     aprobados: items.filter((i) => i.estado === "aprobado").length,
     rechazados: items.filter((i) => i.estado === "rechazado").length,
