@@ -82,6 +82,7 @@ export async function calificar(entrada: {
 /** Todas las calificaciones visibles, en tiempo real. */
 export function useCalificaciones() {
   const [lista, setLista] = useState<Calificacion[]>([]);
+  const canalId = useId();
 
   useEffect(() => {
     let vivo = true;
