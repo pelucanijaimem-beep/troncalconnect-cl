@@ -171,6 +171,7 @@ export async function publicarCargaDB(entrada: {
       solo_verificados: entrada.soloVerificados,
       dias_pago: entrada.diasPago ?? "Pago a 30 días",
       tipo_publicador: entrada.tipoPublicador ?? "generador",
+      visibilidad: entrada.visibilidad ?? "publica",
     })
     .select("id")
     .single();
