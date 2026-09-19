@@ -234,6 +234,7 @@ export function PostLoadDialog({
               </span>
             </span>
           </label>
+          <VisibilitySwitch id="l-visibilidad" visible={visible} onChange={setVisible} />
           <DialogFooter>
             <Button type="submit" disabled={enviando} className="w-full sm:w-auto">
               {enviando ? "Publicando…" : "Publicar Flete"}
