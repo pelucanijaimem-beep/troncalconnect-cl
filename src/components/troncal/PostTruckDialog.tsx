@@ -148,6 +148,7 @@ export function PostTruckDialog({
               placeholder="Detalles del camión, retornos, restricciones…"
             />
           </div>
+          <VisibilitySwitch id="t-visibilidad" visible={visible} onChange={setVisible} />
           <DialogFooter>
             <Button type="submit" className="w-full sm:w-auto">
               Publicar mi Camión
