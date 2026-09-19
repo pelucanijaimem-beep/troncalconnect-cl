@@ -20,7 +20,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
 import {
-  DOCUMENTOS_REQUERIDOS,
+  TODOS_DOCUMENTOS,
   normalizarChecklist,
   type ClaveDocumento,
 } from "@/lib/use-verificacion";
@@ -344,7 +344,7 @@ function AdminPage() {
                   <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                     Checklist documento por documento
                   </p>
-                  {DOCUMENTOS_REQUERIDOS.map((d) => {
+                  {TODOS_DOCUMENTOS.map((d) => {
                     const item = normalizarChecklist(s.checklist)[d.clave];
                     return (
                       <div
