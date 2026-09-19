@@ -44,6 +44,7 @@ export function PostLoadDialog({
   const [carroceria, setCarroceria] = useState("");
   const [tipoPublicador, setTipoPublicador] = useState<"generador" | "intermediario">("generador");
   const [diasPago, setDiasPago] = useState<string>("Pago a 30 días");
+  const [visible, setVisible] = useState(true);
   const [enviando, setEnviando] = useState(false);
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
