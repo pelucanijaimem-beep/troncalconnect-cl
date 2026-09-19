@@ -75,7 +75,7 @@ export function VerificationGate({
         </div>
 
         <div className="mt-4">
-          <VerificationChecklist checklist={checklist} />
+          <VerificationChecklist checklist={checklist} rol={rol} />
         </div>
 
 

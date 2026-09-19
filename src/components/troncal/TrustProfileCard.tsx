@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
 import { VerificationChecklist } from "./VerificationChecklist";
 import { RatingSummary, StarRating } from "./StarRating";
-import { useVerificacion } from "@/lib/use-verificacion";
+import { useVerificacion, type RolVerificacion } from "@/lib/use-verificacion";
 import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
 
 export function TrustProfileCard({
   usuario,
   onVerificar,
+  rol = "camionero",
 }: {
   usuario: string;
   onVerificar: () => void;
+  rol?: RolVerificacion;
 }) {
   const verificacion = useVerificacion(usuario);
   const calificaciones = useCalificaciones();
