@@ -45,10 +45,12 @@ export function VerificationGate({
   estado,
   checklist,
   onVerificar,
+  rol = "camionero",
 }: {
   estado: EstadoVerificacion;
   checklist: Checklist;
   onVerificar: () => void;
+  rol?: RolVerificacion;
 }) {
   const { icono: Icono, titulo, descripcion, cta } = COPY[estado];
 
