@@ -121,6 +121,12 @@ function Index() {
   const prefs = useTableroPrefs();
   const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
+
+  // El panel privado debe respetar el tipo de cuenta real (camionero o empresa).
+  const rolSesion = sesion?.rol;
+  useEffect(() => {
+    if (rolSesion) setRol(rolSesion);
+  }, [rolSesion]);
   const regiones = useMemo(() => regionesDe(paisActual.ciudades), [paisActual.ciudades]);
   const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
   const soyVerificado = miVerificacion.estado === "verificado";
