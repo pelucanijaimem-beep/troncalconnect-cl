@@ -17,14 +17,53 @@ const oyentes = new Set<() => void>();
 
 const emitir = () => oyentes.forEach((f) => f());
 
-async function cargarPerfil(userId: string, email: string) {
-  const { data } = await supabase
-    .from("perfiles")
-    .select("nombre, email, telefono, rol, plan_activo, bloqueado")
-    .eq("id", userId)
-    .maybeSingle();
+function sesionBase(userId: string, email: string): Sesion {
+  return {
+    id: userId,
+    nombre: email.split("@")[0] || "Usuario",
+    email,
+    rol: "camionero",
+    planActivo: false,
+  };
+}
 
-  if (data?.bloqueado) {
+async function cargarPerfil(userId: string, email: string) {
+  // La sesión se marca como iniciada de inmediato: si la consulta del perfil
+  // falla (red, permisos o desfase de reloj), el usuario igual queda logueado.
+  if (sesion?.id !== userId) {
+    sesion = sesionBase(userId, email);
+    emitir();
+  }
+
+  let data: {
+    nombre?: string | null;
+    email?: string | null;
+    telefono?: string | null;
+    rol?: string | null;
+    plan_activo?: boolean | null;
+    bloqueado?: boolean | null;
+  } | null = null;
+
+  for (let intento = 0; intento < 2; intento += 1) {
+    try {
+      const res = await supabase
+        .from("perfiles")
+        .select("nombre, email, telefono, rol, plan_activo, bloqueado")
+        .eq("id", userId)
+        .maybeSingle();
+      if (!res.error) {
+        data = res.data;
+        break;
+      }
+    } catch {
+      /* reintentamos una vez */
+    }
+    await new Promise((r) => setTimeout(r, 600));
+  }
+
+  if (!data) return; // conservamos la sesión base
+
+  if (data.bloqueado) {
     sesion = null;
     emitir();
     await supabase.auth.signOut();
@@ -38,11 +77,11 @@ async function cargarPerfil(userId: string, email: string) {
 
   sesion = {
     id: userId,
-    nombre: data?.nombre || email.split("@")[0] || "Usuario",
-    email: data?.email || email,
-    rol: (data?.rol as Rol) ?? "camionero",
-    ...(data?.telefono ? { telefono: data.telefono } : {}),
-    planActivo: Boolean(data?.plan_activo),
+    nombre: data.nombre || email.split("@")[0] || "Usuario",
+    email: data.email || email,
+    rol: (data.rol as Rol) ?? "camionero",
+    ...(data.telefono ? { telefono: data.telefono } : {}),
+    planActivo: Boolean(data.plan_activo),
   };
   emitir();
 }
@@ -56,11 +95,15 @@ function iniciar() {
     if (u) void cargarPerfil(u.id, u.email ?? "");
   });
 
-  supabase.auth.onAuthStateChange((_evento, s) => {
+  supabase.auth.onAuthStateChange((evento, s) => {
     const u = s?.user;
     if (!u) {
-      sesion = null;
-      emitir();
+      // Solo cerramos la sesión ante una salida real; un refresco de token
+      // descartado no debe expulsar al usuario recién ingresado.
+      if (evento === "SIGNED_OUT") {
+        sesion = null;
+        emitir();
+      }
       return;
     }
     void cargarPerfil(u.id, u.email ?? "");
