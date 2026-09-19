@@ -99,7 +99,7 @@ export function PostLoadDialog({
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
       description: visible
-        ? "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real."
+        ? "Ya aparece en el tablero global y los transportistas pueden verlo en tiempo real."
         : "Quedó como publicación privada: solo la verán las personas que invites.",
     });
 
@@ -108,7 +108,7 @@ export function PostLoadDialog({
       try {
         const { avisados } = await avisarCoincidencias({ data: { cargaId: id } });
         if (avisados > 0) {
-          toast.info(`${avisados} camioneros recibieron una alerta de coincidencia.`);
+          toast.info(`${avisados} transportistas recibieron una alerta de coincidencia.`);
         }
       } catch {
         /* el aviso es complementario: la carga ya quedó publicada */
@@ -124,7 +124,7 @@ export function PostLoadDialog({
         <DialogHeader>
           <DialogTitle>Publicar Flete</DialogTitle>
           <DialogDescription>
-            Publica tu carga y recibe contacto directo de camioneros disponibles.
+            Publica tu carga y recibe contacto directo de transportistas disponibles.
           </DialogDescription>
         </DialogHeader>
 
@@ -208,7 +208,7 @@ export function PostLoadDialog({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Esta declaración se muestra al camionero en la publicación para que decida
+              Esta declaración se muestra al transportista en la publicación para que decida
               informado.
             </p>
           </div>
