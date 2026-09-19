@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PortAccessNotice } from "@/components/troncal/PortAccessNotice";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
@@ -121,6 +121,12 @@ function Index() {
   const prefs = useTableroPrefs();
   const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
+
+  // El panel privado debe respetar el tipo de cuenta real (camionero o empresa).
+  const rolSesion = sesion?.rol;
+  useEffect(() => {
+    if (rolSesion) setRol(rolSesion);
+  }, [rolSesion]);
   const regiones = useMemo(() => regionesDe(paisActual.ciudades), [paisActual.ciudades]);
   const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
   const soyVerificado = miVerificacion.estado === "verificado";
