@@ -148,6 +148,7 @@ export async function publicarCargaDB(entrada: {
   soloVerificados: boolean;
   diasPago?: string;
   tipoPublicador?: "generador" | "intermediario";
+  visibilidad?: "publica" | "privada";
 }) {
   const { data, error } = await supabase
     .from("cargas")
