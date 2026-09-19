@@ -28,14 +28,16 @@ type Campo = { name: keyof Documentos; label: string; ayuda: string; requerido: 
 function camposDe(rol: RolVerificacion): Campo[] {
   const empresa = rol === "empresa";
   return [
-    {
-      name: "identidad",
-      label: empresa
-        ? "Cédula de Identidad del Representante Legal"
-        : "Cédula de Identidad del Conductor",
-      ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
-      requerido: true,
-    },
+    ...(empresa
+      ? []
+      : [
+          {
+            name: "identidad" as keyof Documentos,
+            label: "Cédula de Identidad del Conductor",
+            ayuda: "Documento vigente por ambos lados (PDF, JPG o PNG).",
+            requerido: true,
+          },
+        ]),
     ...documentosRequeridos(rol).map((d) => ({
       name: d.clave as keyof Documentos,
       label: d.label,
