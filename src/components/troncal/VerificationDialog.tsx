@@ -60,14 +60,17 @@ export function VerificationDialog({
   onOpenChange,
   usuario,
   userId,
+  rol = "camionero",
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   usuario: string;
   userId?: string | undefined;
+  rol?: RolVerificacion;
 }) {
   const verificacion = useVerificacion(usuario);
   const [enviando, setEnviando] = useState(false);
+  const campos = camposDe(rol);
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,12 +80,12 @@ export function VerificationDialog({
     }
     const form = e.currentTarget;
     const archivos: Partial<Record<keyof Documentos, File>> = {};
-    for (const campo of CAMPOS) {
+    for (const campo of campos) {
       const input = form.elements.namedItem(campo.name) as HTMLInputElement | null;
       const archivo = input?.files?.[0];
       if (archivo) archivos[campo.name] = archivo;
     }
-    const faltantes = CAMPOS.filter(
+    const faltantes = campos.filter(
       (c) => c.requerido && !archivos[c.name] && !verificacion.documentos[c.name],
     );
     if (faltantes.length > 0) {
