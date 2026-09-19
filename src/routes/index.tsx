@@ -673,8 +673,18 @@ function Index() {
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
-      <LoadDetailsDialog accesoContacto={accesoContacto} carga={detalle} onOpenChange={(o) => !o && setDetalle(null)} />
-      <ContactDialog contacto={contacto} onOpenChange={(o) => !o && setContacto(null)} />
+      <LoadDetailsDialog
+        accesoContacto={accesoContacto}
+        contactoVerificado={soyVerificado}
+        esDueno={Boolean(detalle?.userId && detalle.userId === sesion?.id)}
+        carga={detalle}
+        onOpenChange={(o) => !o && setDetalle(null)}
+      />
+      <ContactDialog
+        contacto={contacto}
+        mostrarTelefono={accesoContacto && soyVerificado}
+        onOpenChange={(o) => !o && setContacto(null)}
+      />
       <DriverTripDialog
         carga={viajeActivo}
         viaje={viajeChofer}
