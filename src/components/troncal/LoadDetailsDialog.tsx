@@ -153,8 +153,10 @@ export function LoadDetailsDialog({
               )}
             </p>
 
+            {esDueno && <SharePanel carga={carga} />}
+
             <DialogFooter className="gap-2">
-              {accesoContacto ? (
+              {puedeVerTelefono ? (
                 <>
                   <Button asChild className="w-full sm:w-auto">
                     <a href={`tel:${carga.telefono.replace(/\s/g, "")}`}>
@@ -171,6 +173,16 @@ export function LoadDetailsDialog({
                     </a>
                   </Button>
                 </>
+              ) : accesoContacto ? (
+                <div className="w-full rounded-lg border border-border bg-surface p-3 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                    <Lock className="h-4 w-4" /> Teléfono reservado
+                  </span>
+                  <p className="mt-1">
+                    Para ver el teléfono necesitas tu sello TroncalCheck aprobado (verificación de
+                    RUT). Mientras tanto puedes enviar un mensaje al cargador.
+                  </p>
+                </div>
               ) : (
                 <Button asChild className="w-full sm:w-auto">
                   <Link to="/planes" onClick={() => onOpenChange(false)}>
