@@ -82,6 +82,7 @@ export function PostLoadDialog({
       soloVerificados: d.get("soloVerificados") === "on",
       diasPago,
       tipoPublicador,
+      visibilidad: visible ? "publica" : "privada",
     });
     setEnviando(false);
 
@@ -93,10 +94,14 @@ export function PostLoadDialog({
     setCarroceria("");
     setTipoPublicador("generador");
     setDiasPago("Pago a 30 días");
+    setVisible(true);
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
-      description: "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real.",
+      description: visible
+        ? "Ya aparece en el tablero global y los camioneros pueden verlo en tiempo real."
+        : "Quedó como publicación privada: solo la verán las personas que invites.",
     });
+
 
     if (id) {
       try {
