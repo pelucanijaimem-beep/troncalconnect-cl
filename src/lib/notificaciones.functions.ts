@@ -157,3 +157,73 @@ export const avisarCoincidencias = createServerFn({ method: "POST" })
 
     return { avisados };
   });
+
+/**
+ * Avisa el cambio de estado de un viaje (iniciado, entregado o asignado) a la
+ * contraparte de la carga: al dueño si avisa el transportista y viceversa.
+ */
+export const avisarEstadoCarga = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { cargaId: string; estado: "en_ruta" | "entregada" | "asignada" }) => {
+    if (!input?.cargaId) throw new Error("Falta la carga");
+    const estado = input.estado;
+    if (estado !== "en_ruta" && estado !== "entregada" && estado !== "asignada") {
+      throw new Error("Estado no válido");
+    }
+    return { cargaId: input.cargaId, estado };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+
+    const { data: carga } = await supabase
+      .from("cargas")
+      .select("id, user_id, origen, destino")
+      .eq("id", data.cargaId)
+      .maybeSingle();
+    if (!carga) return { avisados: 0 };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const ruta = `${carga.origen} → ${carga.destino}`;
+
+    const textos = {
+      en_ruta: {
+        titulo: "Viaje iniciado",
+        mensaje: `El transportista inició el viaje de ${ruta}. Ya puedes seguirlo en vivo.`,
+      },
+      entregada: {
+        titulo: "Carga entregada",
+        mensaje: `La carga de ${ruta} fue marcada como entregada.`,
+      },
+      asignada: {
+        titulo: "Carga asignada",
+        mensaje: `La carga de ${ruta} quedó asignada. Coordina el retiro con la contraparte.`,
+      },
+    } as const;
+
+    // Destinatarios: el dueño de la carga y los transportistas que postularon,
+    // salvo quien generó el cambio de estado.
+    const { data: postulantes } = await supabaseAdmin
+      .from("postulaciones")
+      .select("user_id")
+      .eq("carga_id", carga.id);
+
+    const destinos = new Set<string>([
+      carga.user_id as string,
+      ...((postulantes ?? []).map((p) => p.user_id as string)),
+    ]);
+    destinos.delete(userId);
+
+    let avisados = 0;
+    for (const destino of destinos) {
+      await supabaseAdmin.from("notificaciones").insert({
+        user_id: destino,
+        tipo: "estado_viaje",
+        titulo: textos[data.estado].titulo,
+        mensaje: textos[data.estado].mensaje,
+        datos: { carga_id: carga.id, ruta, estado: data.estado },
+      });
+      avisados += 1;
+    }
+
+    return { avisados };
+  });
