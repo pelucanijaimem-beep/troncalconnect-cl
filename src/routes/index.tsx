@@ -254,9 +254,9 @@ function Index() {
       return;
     }
     if (!soyVerificado) {
-      toast.error("Necesitas el sello TroncalCheck", {
+      toast.error("Para postular por primera vez necesitas completar tu verificación TroncalCheck", {
         description:
-          "Completa tu verificación de identidad para reservar cargas al instante.",
+          "Sube tus documentos una sola vez: al quedar aprobados, tu sello se reutiliza en todas las cargas siguientes.",
       });
       setVerificacionOpen(true);
       return;
