@@ -8,11 +8,17 @@ import { metricasViaje } from "@/lib/trip-metrics";
 export function DriverTripDialog({
   carga,
   viaje,
+  compartiendo = false,
+  errorUbicacion = null,
+  onCompartirUbicacion,
   onFinalizar,
   onOpenChange,
 }: {
   carga: Carga | null;
   viaje: Viaje | null;
+  compartiendo?: boolean;
+  errorUbicacion?: string | null;
+  onCompartirUbicacion?: (activar: boolean) => void;
   onFinalizar: (c: Carga) => void;
   onOpenChange: (o: boolean) => void;
 }) {
