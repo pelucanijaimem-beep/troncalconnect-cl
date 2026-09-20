@@ -28,8 +28,61 @@ import {
   money,
   type Carga,
 } from "@/lib/troncal-data";
-import { invitarACarga } from "@/lib/use-cargas";
+import { invitarACarga, postulantesDeCarga } from "@/lib/use-cargas";
 import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
+import { VerificationBadge } from "./VerificationBadge";
+import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
+import { useEffect } from "react";
+
+/** Lista de transportistas que postularon. Solo muestra nombre y sello, nunca documentos. */
+function ApplicantsPanel({ carga }: { carga: Carga }) {
+  const [postulantes, setPostulantes] = useState<
+    { id: string; nombre: string; mensaje: string }[]
+  >([]);
+  const verificaciones = useVerificaciones();
+
+  useEffect(() => {
+    let vivo = true;
+    void postulantesDeCarga(carga.id).then((lista) => {
+      if (vivo) setPostulantes(lista);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [carga.id]);
+
+  return (
+    <div className="space-y-2 rounded-xl border border-border bg-surface p-3">
+      <p className="text-sm font-semibold text-foreground">
+        Postulantes a esta carga ({postulantes.length})
+      </p>
+      {postulantes.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          Aún no hay transportistas postulados a esta carga.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {postulantes.map((p) => {
+            const v = getVerificacionDe(verificaciones, p.nombre);
+            return (
+              <li
+                key={p.id}
+                className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-2 text-sm"
+              >
+                <span className="font-semibold text-foreground">{p.nombre}</span>
+                <VerificationBadge estado={v.estado} asegurado={v.asegurado} compacto />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Los documentos de cada transportista son revisados solo por el equipo de TroncalTrack: aquí
+        únicamente ves el resultado del sello TroncalCheck.
+      </p>
+    </div>
+  );
+}
 
 /** Panel del dueño: enlace directo e invitaciones para una publicación privada. */
 function SharePanel({ carga }: { carga: Carga }) {
@@ -242,6 +295,8 @@ export function LoadDetailsDialog({
                 </span>
               )}
             </p>
+
+            {esDueno && <ApplicantsPanel carga={carga} />}
 
             {esDueno && <SharePanel carga={carga} />}
 

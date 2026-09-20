@@ -226,6 +226,30 @@ export function useMisPostulaciones(userId?: string) {
   return { ids, agregar: (id: string) => setIds((p) => [...p, id]) };
 }
 
+/**
+ * Postulantes de una carga (solo el dueño puede leerlos por RLS).
+ * Devuelve únicamente datos públicos del perfil: nunca documentos ni vencimientos.
+ */
+export async function postulantesDeCarga(
+  cargaId: string,
+): Promise<{ id: string; nombre: string; mensaje: string }[]> {
+  const { data } = await supabase
+    .from("postulaciones")
+    .select("user_id, mensaje")
+    .eq("carga_id", cargaId)
+    .order("created_at", { ascending: true });
+  const filas = data ?? [];
+  const salida: { id: string; nombre: string; mensaje: string }[] = [];
+  for (const fila of filas) {
+    const { data: perfil } = await supabase.rpc("perfil_publico", {
+      p_id: fila.user_id as string,
+    });
+    const nombre = (perfil as { nombre?: string } | null)?.nombre ?? "Transportista";
+    salida.push({ id: fila.user_id as string, nombre, mensaje: fila.mensaje ?? "" });
+  }
+  return salida;
+}
+
 /** Primer camionero que postuló a la carga, para la calificación cruzada. */
 export async function primerPostulante(
   cargaId: string,

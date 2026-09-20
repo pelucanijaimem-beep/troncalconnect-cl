@@ -30,7 +30,6 @@ import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
-import { VerificationGate } from "@/components/troncal/VerificationGate";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
 import { PodDialog } from "@/components/troncal/PodDialog";
@@ -254,9 +253,9 @@ function Index() {
       return;
     }
     if (!soyVerificado) {
-      toast.error("Necesitas el sello TroncalCheck", {
+      toast.error("Para postular por primera vez necesitas completar tu verificación TroncalCheck", {
         description:
-          "Completa tu verificación de identidad para reservar cargas al instante.",
+          "Sube tus documentos una sola vez: al quedar aprobados, tu sello se reutiliza en todas las cargas siguientes.",
       });
       setVerificacionOpen(true);
       return;
@@ -460,16 +459,20 @@ function Index() {
         )}
 
 
-        {esCamionero && !soyVerificado ? (
-          <VerificationGate
-            estado={miVerificacion.estado}
-            checklist={miVerificacion.checklist}
-            onVerificar={() => setVerificacionOpen(true)}
-            rol="camionero"
-          />
+        {esCamionero && !soyVerificado && (
+          <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface p-4">
+            <p className="min-w-0 flex-1 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                Puedes ver y buscar todas las cargas.
+              </span>{" "}
+              Necesitarás tu sello TroncalCheck solo cuando postules por primera vez.
+            </p>
+            <Button variant="outline" onClick={() => setVerificacionOpen(true)}>
+              Completar mi verificación
+            </Button>
+          </div>
+        )}
 
-        ) : (
-          <>
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
@@ -670,8 +673,6 @@ function Index() {
             )}
           </div>
         </section>
-          </>
-        )}
       </main>
       )}
 
