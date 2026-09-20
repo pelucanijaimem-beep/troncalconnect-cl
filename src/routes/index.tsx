@@ -67,6 +67,9 @@ import {
   type PaisCodigo,
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
+import { DocExpiryPanel } from "@/components/troncal/DocExpiryPanel";
+import { ReturnLoadsSection } from "@/components/troncal/ReturnLoadsSection";
+import { useCompartirUbicacion, useUbicacionViaje } from "@/lib/use-ubicacion-viaje";
 
 
 export const Route = createFileRoute("/")({
@@ -111,6 +114,11 @@ function Index() {
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
   const [alertasOpen, setAlertasOpen] = useState(false);
   const [reporte, setReporte] = useState<ObjetoReporte | null>(null);
+  const [retorno, setRetorno] = useState<{
+    destino: string;
+    carroceria: string;
+    cargaId: string;
+  } | null>(null);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
@@ -119,6 +127,8 @@ function Index() {
   const accesoContacto = Boolean(sesion?.planActivo);
   const navigate = useNavigate();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
+  const compartir = useCompartirUbicacion(viajeActivo?.id, sesion?.id);
+  const ubicacionRastreo = useUbicacionViaje(rastreo?.id);
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
   useSincronizarFavoritos(sesion?.id);
@@ -281,6 +291,8 @@ function Index() {
   const iniciar = (c: Carga) => {
     iniciarViaje(c.id);
     setViajeActivo(c);
+    // Sugerencias de retorno vacío según el destino del viaje en curso.
+    setRetorno({ destino: c.destino, carroceria: c.carroceria, cargaId: c.id });
     void avisarEstadoCarga({ data: { cargaId: c.id, estado: "en_ruta" } }).catch(() => {
       /* el aviso es complementario: el viaje ya quedó iniciado */
     });
@@ -292,6 +304,9 @@ function Index() {
   const finalizar = async (c: Carga) => {
     finalizarViaje(c.id);
     setViajeActivo(null);
+    // Privacidad: al entregar la carga se deja de compartir la ubicación.
+    void compartir.desactivar();
+    setRetorno({ destino: c.destino, carroceria: c.carroceria, cargaId: c.id });
     void avisarEstadoCarga({ data: { cargaId: c.id, estado: "entregada" } }).catch(() => {
       /* el aviso es complementario: la entrega ya quedó registrada */
     });
@@ -438,6 +453,13 @@ function Index() {
           />
         </div>
 
+        {esCamionero && (
+          <div className="mb-6">
+            <DocExpiryPanel {...(sesion.id ? { userId: sesion.id } : {})} />
+          </div>
+        )}
+
+
         {esCamionero && !soyVerificado ? (
           <VerificationGate
             estado={miVerificacion.estado}
@@ -534,6 +556,18 @@ function Index() {
             ))}
           </div>
         )}
+
+        {esCamionero && retorno && (
+          <ReturnLoadsSection
+            destino={retorno.destino}
+            carroceria={retorno.carroceria}
+            excluirId={retorno.cargaId}
+            cargas={CARGAS}
+            onDetalles={(c) => setDetalle(c)}
+            onCerrar={() => setRetorno(null)}
+          />
+        )}
+
 
         <section className="mt-6">
           <h2 className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -703,12 +737,26 @@ function Index() {
       <DriverTripDialog
         carga={viajeActivo}
         viaje={viajeChofer}
+        compartiendo={compartir.activo}
+        errorUbicacion={compartir.error}
+        onCompartirUbicacion={(activar) => {
+          if (activar) {
+            compartir.activar();
+            toast.success("Compartiendo tu ubicación", {
+              description: "Solo la empresa de esta carga la verá. Se apaga al finalizar el viaje.",
+            });
+            return;
+          }
+          void compartir.desactivar();
+          toast.info("Dejaste de compartir tu ubicación.");
+        }}
         onFinalizar={(c) => setPodCarga(c)}
         onOpenChange={(o) => !o && setViajeActivo(null)}
       />
       <TrackingDialog
         carga={rastreo}
         viaje={viajeRastreo}
+        ubicacionCompartida={ubicacionRastreo}
         onOpenChange={(o) => !o && setRastreo(null)}
       />
       <CompareLoadsDialog

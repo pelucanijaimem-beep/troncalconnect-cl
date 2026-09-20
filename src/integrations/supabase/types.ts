@@ -474,6 +474,45 @@ export type Database = {
         }
         Relationships: []
       }
+      vencimientos_documentales: {
+        Row: {
+          avisos: Json
+          carga_peligrosa: string | null
+          created_at: string
+          id: string
+          patente: string
+          permiso_circulacion: string | null
+          revision_tecnica: string | null
+          soap: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avisos?: Json
+          carga_peligrosa?: string | null
+          created_at?: string
+          id?: string
+          patente?: string
+          permiso_circulacion?: string | null
+          revision_tecnica?: string | null
+          soap?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avisos?: Json
+          carga_peligrosa?: string | null
+          created_at?: string
+          id?: string
+          patente?: string
+          permiso_circulacion?: string | null
+          revision_tecnica?: string | null
+          soap?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       verificaciones: {
         Row: {
           asegurado: boolean
@@ -512,6 +551,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      viajes_ubicacion: {
+        Row: {
+          activo: boolean
+          carga_id: string
+          created_at: string
+          id: string
+          lat: number
+          lng: number
+          precision_m: number | null
+          transportista_id: string
+          updated_at: string
+          velocidad: number
+        }
+        Insert: {
+          activo?: boolean
+          carga_id: string
+          created_at?: string
+          id?: string
+          lat: number
+          lng: number
+          precision_m?: number | null
+          transportista_id: string
+          updated_at?: string
+          velocidad?: number
+        }
+        Update: {
+          activo?: boolean
+          carga_id?: string
+          created_at?: string
+          id?: string
+          lat?: number
+          lng?: number
+          precision_m?: number | null
+          transportista_id?: string
+          updated_at?: string
+          velocidad?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "viajes_ubicacion_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
