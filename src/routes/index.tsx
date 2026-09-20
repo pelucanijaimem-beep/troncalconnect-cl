@@ -292,6 +292,9 @@ function Index() {
   const finalizar = async (c: Carga) => {
     finalizarViaje(c.id);
     setViajeActivo(null);
+    void avisarEstadoCarga({ data: { cargaId: c.id, estado: "entregada" } }).catch(() => {
+      /* el aviso es complementario: la entrega ya quedó registrada */
+    });
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
