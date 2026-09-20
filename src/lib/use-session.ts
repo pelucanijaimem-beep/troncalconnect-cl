@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { iniciarSesionConRut } from "@/lib/auth.functions";
+import { normalizarRut, rutValido } from "@/lib/rut";
 import type { Rol } from "@/components/troncal/RoleSwitcher";
 
 export type Sesion = {
@@ -130,6 +132,15 @@ export async function registrarUsuario(datos: {
   telefono?: string;
   rut?: string;
 }) {
+  if (!rutValido(datos.rut ?? "")) {
+    return "El RUT ingresado no es válido. Revísalo e inténtalo de nuevo.";
+  }
+
+  const { data: existe } = await supabase.rpc("rut_registrado", { p_rut: datos.rut ?? "" });
+  if (existe) {
+    return "Este RUT ya tiene una cuenta creada en TroncalTrack. Inicia sesión o usa \u00bfOlvidaste tu contraseña? para recuperarla.";
+  }
+
   const { error } = await supabase.auth.signUp({
     email: datos.email,
     password: datos.password,
@@ -148,7 +159,28 @@ export async function registrarUsuario(datos: {
 
 export async function iniciarSesionEmail(email: string, password: string) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error?.message?.includes("RUT_DUPLICADO")) {
+    return "Este RUT ya tiene una cuenta creada en TroncalTrack. Inicia sesión o usa \u00bfOlvidaste tu contraseña? para recuperarla.";
+  }
   return error?.message ?? null;
+}
+
+/** Inicia sesión con RUT y contraseña (el correo queda solo para recuperación). */
+export async function iniciarSesionRut(rut: string, password: string) {
+  if (!normalizarRut(rut)) return "RUT o contraseña incorrectos.";
+  try {
+    const res = await iniciarSesionConRut({ data: { rut, password } });
+    if ("error" in res) return res.error;
+    const { error } = await supabase.auth.setSession({
+      access_token: res.access_token,
+      refresh_token: res.refresh_token,
+    });
+    if (error) return error.message;
+    await refrescarSesion();
+    return null;
+  } catch {
+    return "No pudimos conectar con el servidor. Inténtalo nuevamente.";
+  }
 }
 
 export async function recuperarPassword(email: string) {

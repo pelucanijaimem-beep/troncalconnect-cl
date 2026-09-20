@@ -105,6 +105,15 @@ type SolicitudEliminacion = {
   created_at: string;
 };
 
+type AlertaInterna = {
+  id: string;
+  tipo: string;
+  user_id: string | null;
+  detalle: string;
+  estado: string;
+  created_at: string;
+};
+
 type Metricas = {
   cargas_publicadas: number;
   cargas_activas: number;
@@ -155,9 +164,10 @@ function AdminPage() {
   const [reportes, setReportes] = useState<Reporte[]>([]);
   const [eliminaciones, setEliminaciones] = useState<SolicitudEliminacion[]>([]);
   const [metricas, setMetricas] = useState<Metricas | null>(null);
+  const [alertas, setAlertas] = useState<AlertaInterna[]>([]);
 
   const recargar = useCallback(async () => {
-    const [s, p, c, r, e, m] = await Promise.all([
+    const [s, p, c, r, e, m, a] = await Promise.all([
       supabase
         .from("verificaciones")
         .select(
@@ -181,6 +191,10 @@ function AdminPage() {
         .select("id, email, motivo, origen, estado, created_at")
         .order("created_at", { ascending: false }),
       supabase.rpc("metricas_marketplace"),
+      supabase
+        .from("alertas_internas")
+        .select("id, tipo, user_id, detalle, estado, created_at")
+        .order("created_at", { ascending: false }),
     ]);
     setSolicitudes((s.data ?? []) as Solicitud[]);
     setPerfiles((p.data ?? []) as Perfil[]);
@@ -188,7 +202,21 @@ function AdminPage() {
     setReportes((r.data ?? []) as Reporte[]);
     setEliminaciones((e.data ?? []) as SolicitudEliminacion[]);
     setMetricas((m.data ?? null) as Metricas | null);
+    setAlertas((a.data ?? []) as AlertaInterna[]);
   }, []);
+
+  const resolverAlerta = async (a: AlertaInterna) => {
+    const { error } = await supabase
+      .from("alertas_internas")
+      .update({ estado: "revisada" })
+      .eq("id", a.id);
+    if (error) {
+      toast.error("No se pudo actualizar la alerta", { description: error.message });
+      return;
+    }
+    toast.success("Alerta marcada como revisada");
+    await recargar();
+  };
 
   const resolverReporte = async (r: Reporte, estado: "revisado" | "descartado") => {
     const { error } = await supabase.from("reportes").update({ estado }).eq("id", r.id);
@@ -556,6 +584,33 @@ function AdminPage() {
                 <Button size="sm" variant="outline" onClick={() => void eliminarCarga(c)}>
                   <Trash2 className="h-4 w-4" /> Eliminar
                 </Button>
+              </div>
+            ))}
+          </div>
+        </Seccion>
+
+        <Seccion
+          titulo={`Alertas internas (${alertas.filter((a) => a.estado === "pendiente").length} pendientes)`}
+          descripcion="Avisos automáticos solo para el equipo de TroncalTrack, como patentes repetidas entre cuentas distintas. El usuario no ve esta información."
+        >
+          {alertas.length === 0 && (
+            <p className="text-sm text-muted-foreground">No hay alertas internas por ahora.</p>
+          )}
+          <div className="divide-y divide-border">
+            {alertas.map((a) => (
+              <div key={a.id} className="flex flex-wrap items-start justify-between gap-3 py-3">
+                <div className="min-w-56 flex-1">
+                  <p className="font-semibold text-foreground">{a.detalle}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {a.tipo} · Cuenta: {a.user_id ?? "—"} ·{" "}
+                    {new Date(a.created_at).toLocaleString("es-CL")} · Estado: {a.estado}
+                  </p>
+                </div>
+                {a.estado === "pendiente" && (
+                  <Button size="sm" onClick={() => void resolverAlerta(a)}>
+                    <Check className="h-4 w-4" /> Revisada
+                  </Button>
+                )}
               </div>
             ))}
           </div>

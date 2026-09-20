@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
 import {
-  iniciarSesionEmail,
+  iniciarSesionRut,
   recuperarPassword,
   registrarUsuario,
 } from "@/lib/use-session";
@@ -72,6 +72,7 @@ export function AuthDialog({
     }
     const datos = new FormData(e.currentTarget);
     const email = String(datos.get("email") ?? "");
+    const rutLogin = String(datos.get("rut_login") ?? "");
     const password = String(datos.get("password") ?? "");
     const nombre = String(datos.get("nombre") ?? "") || email.split("@")[0] || "Usuario";
     const telefono = String(datos.get("telefono") ?? "");
@@ -81,7 +82,7 @@ export function AuthDialog({
     const error =
       tipo === "registro"
         ? await registrarUsuario({ nombre, email, password, rol: rolCuenta, telefono, rut })
-        : await iniciarSesionEmail(email, password);
+        : await iniciarSesionRut(rutLogin, password);
     setEnviando(false);
 
     if (error) {
@@ -153,8 +154,18 @@ export function AuthDialog({
               <TabsContent value="login" className="mt-4">
                 <form className="space-y-4" onSubmit={(e) => void autenticar(e, "login")}>
                   <div className="space-y-1.5">
-                    <Label htmlFor="l-email">Correo electrónico</Label>
-                    <Input id="l-email" name="email" type="email" placeholder="tucorreo@ejemplo.cl" required />
+                    <Label htmlFor="l-rut">RUT</Label>
+                    <Input
+                      id="l-rut"
+                      name="rut_login"
+                      inputMode="text"
+                      placeholder="12.345.678-9"
+                      autoComplete="username"
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Puedes escribirlo con o sin puntos y guión.
+                    </p>
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="l-pass">Contraseña</Label>
