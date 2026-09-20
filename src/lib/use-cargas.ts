@@ -25,6 +25,8 @@ type Fila = {
   valor_km: number;
   toneladas: number;
   fecha: string | null;
+  hora_retiro: string | null;
+  fecha_entrega: string | null;
   detalle: string;
   solo_verificados: boolean;
   dias_pago: string | null;
@@ -47,6 +49,8 @@ const aCarga = (f: Fila): CargaDB => ({
   empresa: f.empresa,
   verificada: f.empresa_verificada,
   fecha: f.fecha ?? "",
+  horaRetiro: f.hora_retiro ?? "",
+  fechaEntrega: f.fecha_entrega ?? "",
   detalle: f.detalle,
   telefono: f.empresa_telefono,
   soloVerificados: f.solo_verificados,
