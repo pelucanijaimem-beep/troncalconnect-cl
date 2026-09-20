@@ -33,6 +33,13 @@ const COPY: Record<
       "Revisa la nota del equipo de TroncalCheck en tu perfil y vuelve a enviar tus documentos para acceder al tablero de cargas.",
     cta: "Reenviar documentos",
   },
+  vencido: {
+    icono: ShieldAlert,
+    titulo: "Tu verificación TroncalCheck está vencida",
+    descripcion:
+      "Caducó uno de tus documentos obligatorios (Revisión Técnica, Permiso de Circulación o SOAP). Sube el documento renovado: cuando el equipo lo apruebe, recuperas tu sello y puedes volver a postular.",
+    cta: "Subir documento renovado",
+  },
   verificado: {
     icono: ShieldCheck,
     titulo: "Verificado",
