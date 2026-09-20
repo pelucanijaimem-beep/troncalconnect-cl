@@ -30,7 +30,6 @@ import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
-import { VerificationGate } from "@/components/troncal/VerificationGate";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
 import { PodDialog } from "@/components/troncal/PodDialog";
