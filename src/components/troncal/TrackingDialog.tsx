@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import type { Carga } from "@/lib/troncal-data";
 import type { Viaje } from "@/lib/use-trip-tracking";
+import type { UbicacionViaje } from "@/lib/use-ubicacion-viaje";
 import { metricasViaje } from "@/lib/trip-metrics";
 
 const LiveMap = lazy(() => import("./LiveMap"));
@@ -20,16 +21,27 @@ function MapaSkeleton() {
 export function TrackingDialog({
   carga,
   viaje,
+  ubicacionCompartida = null,
   onOpenChange,
 }: {
   carga: Carga | null;
   viaje: Viaje | null;
+  ubicacionCompartida?: UbicacionViaje | null;
   onOpenChange: (o: boolean) => void;
 }) {
   if (!carga) return null;
   const m = metricasViaje(carga, viaje);
   const enRuta = viaje?.estado === "en_ruta";
   const tel = carga.telefono.replace(/[^\d+]/g, "");
+  const actual: [number, number] = ubicacionCompartida
+    ? [ubicacionCompartida.lat, ubicacionCompartida.lng]
+    : m.actual;
+  const horaUbicacion = ubicacionCompartida?.actualizado
+    ? new Date(ubicacionCompartida.actualizado).toLocaleTimeString("es-CL", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
 
   return (
     <Dialog open={!!carga} onOpenChange={onOpenChange}>
