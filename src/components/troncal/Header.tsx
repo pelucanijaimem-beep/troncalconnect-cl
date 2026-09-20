@@ -55,6 +55,7 @@ export function Header({
   onPublicarCarga,
 }: Props) {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [eliminarOpen, setEliminarOpen] = useState(false);
   const { esAdmin } = useEsAdmin(sesion?.id);
 
   const items = (cerrarMenu: boolean) => [
@@ -214,6 +215,16 @@ export function Header({
                   >
                     <LogOut className="h-4 w-4" /> Cerrar Sesión
                   </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-destructive"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      setEliminarOpen(true);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" /> Eliminar mi cuenta
+                  </Button>
                 </div>
               ) : (
                 <>
@@ -229,6 +240,7 @@ export function Header({
           </SheetContent>
         </Sheet>
       </div>
+      <DeleteAccountDialog open={eliminarOpen} onOpenChange={setEliminarOpen} />
     </header>
   );
 }
