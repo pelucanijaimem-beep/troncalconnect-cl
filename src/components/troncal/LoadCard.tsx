@@ -15,6 +15,7 @@ import {
 
   Satellite,
   ShieldCheck,
+  Flag,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ export function LoadCard({
   onRastrear,
   onVerViaje,
   onPostular,
+  onReportar,
   yaPostulada = false,
   accesoContacto = false,
 }: {
@@ -56,6 +58,7 @@ export function LoadCard({
   onRastrear: (c: Carga) => void;
   onVerViaje: (c: Carga) => void;
   onPostular?: (c: Carga) => void;
+  onReportar?: (c: Carga) => void;
   yaPostulada?: boolean;
   /** true solo para usuarios con plan Pro activo: habilita datos de contacto. */
   accesoContacto?: boolean;
