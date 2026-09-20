@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as EliminarCuentaRouteImport } from './routes/eliminar-cuenta'
 import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as RegistroRouteImport } from './routes/registro'
@@ -28,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EliminarCuentaRoute = EliminarCuentaRouteImport.update({
+  id: '/eliminar-cuenta',
+  path: '/eliminar-cuenta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanesRoute = PlanesRouteImport.update({
@@ -75,6 +81,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/eliminar-cuenta': typeof EliminarCuentaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/eliminar-cuenta': typeof EliminarCuentaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/eliminar-cuenta': typeof EliminarCuentaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/eliminar-cuenta'
     | '/planes'
     | '/privacidad'
     | '/registro'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/eliminar-cuenta'
     | '/planes'
     | '/privacidad'
     | '/registro'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/eliminar-cuenta'
     | '/planes'
     | '/privacidad'
     | '/registro'
@@ -151,6 +163,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  EliminarCuentaRoute: typeof EliminarCuentaRoute
   PlanesRoute: typeof PlanesRoute
   PrivacidadRoute: typeof PrivacidadRoute
   RegistroRoute: typeof RegistroRoute
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eliminar-cuenta': {
+      id: '/eliminar-cuenta'
+      path: '/eliminar-cuenta'
+      fullPath: '/eliminar-cuenta'
+      preLoaderRoute: typeof EliminarCuentaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/planes': {
@@ -239,6 +259,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  EliminarCuentaRoute: EliminarCuentaRoute,
   PlanesRoute: PlanesRoute,
   PrivacidadRoute: PrivacidadRoute,
   RegistroRoute: RegistroRoute,
