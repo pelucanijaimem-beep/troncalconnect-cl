@@ -10,6 +10,9 @@ const ETIQUETAS: Record<string, string> = {
   carga_peligrosa: "Permiso de carga peligrosa",
 };
 
+/** Documentos que sostienen el sello TroncalCheck: si vencen, se suspende. */
+const OBLIGATORIOS = ["revision_tecnica", "permiso_circulacion", "soap"] as const;
+
 function dias(fecha: string): number {
   const objetivo = new Date(`${fecha}T00:00:00`);
   const hoy = new Date();
@@ -19,7 +22,9 @@ function dias(fecha: string): number {
 
 /**
  * Revisa las fechas de vencimiento del propio usuario y le envía un aviso
- * cuando faltan 30, 15 o 7 días. Cada aviso se envía una sola vez.
+ * cuando faltan 30, 15 o 7 días. Cada aviso se envía una sola vez. Si un
+ * documento obligatorio ya venció, el sello TroncalCheck queda suspendido
+ * ("Verificación vencida") hasta que el equipo lo apruebe de nuevo.
  */
 export const revisarVencimientos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -31,17 +36,21 @@ export const revisarVencimientos = createServerFn({ method: "POST" })
       .select("patente, revision_tecnica, permiso_circulacion, soap, carga_peligrosa, avisos")
       .eq("user_id", userId)
       .maybeSingle();
-    if (!fila) return { avisos: 0 };
+    if (!fila) return { avisos: 0, selloSuspendido: false };
 
     const avisos = { ...((fila.avisos ?? {}) as Record<string, string>) };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const patente = (fila.patente ?? "").trim();
     let enviados = 0;
+    const vencidos: string[] = [];
 
     for (const clave of Object.keys(ETIQUETAS)) {
       const fecha = (fila as Record<string, unknown>)[clave] as string | null;
       if (!fecha) continue;
       const restantes = dias(fecha);
+      if (restantes < 0 && (OBLIGATORIOS as readonly string[]).includes(clave)) {
+        vencidos.push(`${ETIQUETAS[clave]} (venció el ${fecha})`);
+      }
       const hito = HITOS.find((h) => restantes <= h && restantes >= 0);
       const marca = restantes < 0 ? `${clave}:vencido` : hito ? `${clave}:${hito}` : null;
       if (!marca || avisos[marca]) continue;
@@ -70,5 +79,30 @@ export const revisarVencimientos = createServerFn({ method: "POST" })
         .eq("user_id", userId);
     }
 
-    return { avisos: enviados };
+    // Suspensión automática del sello TroncalCheck.
+    let selloSuspendido = false;
+    if (vencidos.length > 0) {
+      const { data: verificacion } = await supabaseAdmin
+        .from("verificaciones")
+        .select("estado")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (verificacion?.estado === "aprobado") {
+        await supabaseAdmin
+          .from("verificaciones")
+          .update({ estado: "vencido" })
+          .eq("user_id", userId);
+        await supabaseAdmin.from("notificaciones").insert({
+          user_id: userId,
+          tipo: "verificacion",
+          titulo: "Tu sello TroncalCheck quedó suspendido",
+          mensaje: `Tu sello pasó a "Verificación vencida" porque caducó: ${vencidos.join(", ")}. Sube el documento renovado en TroncalCheck; cuando el equipo lo apruebe, recuperarás tu sello y podrás volver a postular a cargas.`,
+          datos: { documentos: vencidos },
+        });
+        selloSuspendido = true;
+      }
+    }
+
+    return { avisos: enviados, selloSuspendido };
   });
