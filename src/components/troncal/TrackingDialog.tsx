@@ -66,7 +66,7 @@ export function TrackingDialog({
               <LiveMap
                 origen={m.origen}
                 destino={m.destino}
-                actual={m.actual}
+                actual={actual}
                 etiquetaOrigen={carga.origen}
                 etiquetaDestino={carga.destino}
                 activo={!!enRuta}
@@ -87,6 +87,18 @@ export function TrackingDialog({
               ) : (
                 <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   {viaje?.estado === "entregada" ? "Viaje finalizado · GPS apagado" : "Viaje no iniciado"}
+                </p>
+              )}
+
+              {ubicacionCompartida ? (
+                <p className="mt-2 rounded-lg bg-success/10 p-2 text-xs font-semibold text-success">
+                  El transportista está compartiendo su ubicación
+                  {horaUbicacion ? ` · última señal ${horaUbicacion}` : ""}
+                </p>
+              ) : (
+                <p className="mt-2 rounded-lg bg-surface p-2 text-xs text-muted-foreground">
+                  El transportista aún no comparte su ubicación en este viaje. Compartirla es
+                  opcional para él.
                 </p>
               )}
 
