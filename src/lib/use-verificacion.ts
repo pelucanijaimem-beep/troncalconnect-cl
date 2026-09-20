@@ -5,6 +5,7 @@ export type EstadoVerificacion =
   | "sin_verificar"
   | "en_revision"
   | "verificado"
+  | "vencido"
   | "rechazado";
 
 export type Documentos = {
@@ -145,6 +146,7 @@ const emitir = () => oyentes.forEach((f) => f());
 
 export function estadoDesdeDB(estado: string): EstadoVerificacion {
   if (estado === "aprobado") return "verificado";
+  if (estado === "vencido") return "vencido";
   if (estado === "rechazado") return "rechazado";
   return "en_revision";
 }

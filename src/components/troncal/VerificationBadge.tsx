@@ -26,6 +26,11 @@ export function VerificationBadge({
           <Clock className="h-3.5 w-3.5" /> Pendiente de Revisión
         </span>
       )}
+      {estado === "vencido" && (
+        <span className={`${base} bg-destructive/10 text-destructive`}>
+          <ShieldAlert className="h-3.5 w-3.5" /> Verificación vencida
+        </span>
+      )}
       {estado === "rechazado" && (
         <span className={`${base} bg-destructive/10 text-destructive`}>
           <ShieldAlert className="h-3.5 w-3.5" /> Verificación rechazada
