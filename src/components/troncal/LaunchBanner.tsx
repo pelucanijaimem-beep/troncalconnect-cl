@@ -7,8 +7,8 @@ export function LaunchBanner() {
         <p className="flex items-center gap-2 text-sm text-foreground">
           <MapPin className="h-4 w-4 text-primary" />
           <span>
-            <strong>Cobertura: Todo Chile.</strong> Operamos de Arica a Magallanes. La expansión
-            internacional se implementará más adelante.
+            <strong>Cobertura: Todo Chile.</strong> De Arica a Magallanes, operamos en todo Chile.
+            La expansión internacional se implementará más adelante.
           </span>
         </p>
       </div>
