@@ -25,8 +25,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
-import { CountrySelector } from "./CountrySelector";
-import type { PaisCodigo } from "@/lib/troncal-data";
 import type { Sesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 
@@ -34,8 +32,6 @@ type Props = {
   sesion: Sesion | null;
   onSalir: () => void;
   rol: Rol;
-  pais: PaisCodigo;
-  onPaisChange: (p: PaisCodigo) => void;
   onRolChange: (r: Rol) => void;
   onAuth: (modo: "login" | "registro") => void;
   onPublicarCamion: () => void;
@@ -51,23 +47,18 @@ export function Header({
   sesion,
   onSalir,
   rol,
-  pais,
-  onPaisChange,
   onRolChange,
   onAuth,
   onPublicarCamion,
   onPublicarCarga,
 }: Props) {
-  const [paisOpen, setPaisOpen] = useState(false);
-  const [paisOpenMovil, setPaisOpenMovil] = useState(false);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const { esAdmin } = useEsAdmin(sesion?.id);
 
-  const items = (cerrarMenu: boolean, abrirPaises: () => void) => [
+  const items = (cerrarMenu: boolean) => [
     { label: "Cargas", onClick: () => scrollA("cargas") },
     { label: "Publicar Camión", onClick: onPublicarCamion },
     { label: "Publicar Cargas", onClick: onPublicarCarga },
-    { label: "Países", onClick: abrirPaises },
     { label: "Recursos", onClick: () => scrollA("planes") },
     { label: "Soporte", onClick: () => scrollA("soporte") },
   ].map((n) => ({
@@ -94,7 +85,7 @@ export function Header({
         </a>
 
         <nav className="hidden items-center gap-5 lg:flex">
-          {items(false, () => setPaisOpen(true)).map((n) => (
+          {items(false).map((n) => (
             <button
               key={n.label}
               type="button"
@@ -113,13 +104,6 @@ export function Header({
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <CountrySelector
-            pais={pais}
-            onChange={onPaisChange}
-            className="w-48"
-            open={paisOpen}
-            onOpenChange={setPaisOpen}
-          />
           {sesion ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -179,15 +163,11 @@ export function Header({
             </SheetHeader>
             <div className="mt-6 space-y-4">
               <nav className="grid gap-1">
-                {items(true, () => setPaisOpenMovil(true)).map((n) => (
+                {items(true).map((n) => (
                   <button
                     key={n.label}
                     type="button"
-                    onClick={
-                      n.label === "Países"
-                        ? () => setPaisOpenMovil(true)
-                        : n.onClick
-                    }
+                    onClick={n.onClick}
                     className="cursor-pointer rounded-md px-2 py-2 text-left text-sm font-semibold text-foreground hover:bg-surface"
                   >
                     {n.label}
@@ -201,13 +181,9 @@ export function Header({
                   Planes
                 </Link>
               </nav>
-              <CountrySelector
-                pais={pais}
-                onChange={onPaisChange}
-                className="w-full"
-                open={paisOpenMovil}
-                onOpenChange={setPaisOpenMovil}
-              />
+              <p className="px-2 text-xs text-muted-foreground">
+                Operamos en Chile. La expansión internacional se implementará más adelante.
+              </p>
               <RoleSwitcher rol={rol} onChange={onRolChange} />
               {sesion ? (
                 <div className="space-y-2 rounded-lg border border-border bg-surface p-3">

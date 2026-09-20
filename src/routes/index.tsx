@@ -18,7 +18,6 @@ import { RoleSwitcher, type Rol } from "@/components/troncal/RoleSwitcher";
 import { LaunchBanner } from "@/components/troncal/LaunchBanner";
 import { SearchFilters, type Filtros } from "@/components/troncal/SearchFilters";
 import { EquipmentPills } from "@/components/troncal/EquipmentPills";
-import { CountrySelector } from "@/components/troncal/CountrySelector";
 import { LoadCard } from "@/components/troncal/LoadCard";
 import { TruckCard } from "@/components/troncal/TruckCard";
 import { AuthDialog } from "@/components/troncal/AuthDialog";
@@ -346,8 +345,6 @@ function Index() {
           toast.success("Sesión cerrada.");
         }}
         rol={rol}
-        pais={pais}
-        onPaisChange={setPais}
         onRolChange={setRol}
         onAuth={abrirAuth}
         onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
@@ -451,9 +448,6 @@ function Index() {
               : `Transportistas con disponibilidad confirmada en ${paisActual.nombre}.`}
           </p>
 
-          <div id="paises" className="mt-4 space-y-3 md:hidden">
-            <CountrySelector pais={pais} onChange={setPais} className="w-full" />
-          </div>
           <div className="mt-4 lg:hidden">
             <RoleSwitcher rol={rol} onChange={setRol} />
           </div>
