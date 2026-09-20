@@ -460,16 +460,20 @@ function Index() {
         )}
 
 
-        {esCamionero && !soyVerificado ? (
-          <VerificationGate
-            estado={miVerificacion.estado}
-            checklist={miVerificacion.checklist}
-            onVerificar={() => setVerificacionOpen(true)}
-            rol="camionero"
-          />
+        {esCamionero && !soyVerificado && (
+          <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface p-4">
+            <p className="min-w-0 flex-1 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                Puedes ver y buscar todas las cargas.
+              </span>{" "}
+              Necesitarás tu sello TroncalCheck solo cuando postules por primera vez.
+            </p>
+            <Button variant="outline" onClick={() => setVerificacionOpen(true)}>
+              Completar mi verificación
+            </Button>
+          </div>
+        )}
 
-        ) : (
-          <>
         <section className="mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
             {esCamionero ? "Buscar Cargas disponibles" : "Buscar Camiones disponibles"}
