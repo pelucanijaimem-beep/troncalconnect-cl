@@ -67,6 +67,9 @@ import {
   type PaisCodigo,
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
+import { DocExpiryPanel } from "@/components/troncal/DocExpiryPanel";
+import { ReturnLoadsSection } from "@/components/troncal/ReturnLoadsSection";
+import { useCompartirUbicacion, useUbicacionViaje } from "@/lib/use-ubicacion-viaje";
 
 
 export const Route = createFileRoute("/")({
@@ -111,6 +114,11 @@ function Index() {
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
   const [alertasOpen, setAlertasOpen] = useState(false);
   const [reporte, setReporte] = useState<ObjetoReporte | null>(null);
+  const [retorno, setRetorno] = useState<{
+    destino: string;
+    carroceria: string;
+    cargaId: string;
+  } | null>(null);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
@@ -119,6 +127,8 @@ function Index() {
   const accesoContacto = Boolean(sesion?.planActivo);
   const navigate = useNavigate();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
+  const compartir = useCompartirUbicacion(viajeActivo?.id, sesion?.id);
+  const ubicacionRastreo = useUbicacionViaje(rastreo?.id);
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
   useSincronizarFavoritos(sesion?.id);
