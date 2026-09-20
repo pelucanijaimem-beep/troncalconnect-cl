@@ -152,9 +152,12 @@ function AdminPage() {
   const [busqueda, setBusqueda] = useState("");
   const [notas, setNotas] = useState<Record<string, string>>({});
   const [trabajando, setTrabajando] = useState(false);
+  const [reportes, setReportes] = useState<Reporte[]>([]);
+  const [eliminaciones, setEliminaciones] = useState<SolicitudEliminacion[]>([]);
+  const [metricas, setMetricas] = useState<Metricas | null>(null);
 
   const recargar = useCallback(async () => {
-    const [s, p, c] = await Promise.all([
+    const [s, p, c, r, e, m] = await Promise.all([
       supabase
         .from("verificaciones")
         .select(
@@ -167,11 +170,66 @@ function AdminPage() {
         .from("cargas")
         .select("id, titulo, origen, destino, empresa, precio, created_at")
         .order("created_at", { ascending: false }),
+      supabase
+        .from("reportes")
+        .select(
+          "id, tipo, carga_id, reportado_id, reportado_nombre, motivo, detalle, estado, created_at",
+        )
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("solicitudes_eliminacion")
+        .select("id, email, motivo, origen, estado, created_at")
+        .order("created_at", { ascending: false }),
+      supabase.rpc("metricas_marketplace"),
     ]);
     setSolicitudes((s.data ?? []) as Solicitud[]);
     setPerfiles((p.data ?? []) as Perfil[]);
     setCargas((c.data ?? []) as CargaFila[]);
+    setReportes((r.data ?? []) as Reporte[]);
+    setEliminaciones((e.data ?? []) as SolicitudEliminacion[]);
+    setMetricas((m.data ?? null) as Metricas | null);
   }, []);
+
+  const resolverReporte = async (r: Reporte, estado: "revisado" | "descartado") => {
+    const { error } = await supabase.from("reportes").update({ estado }).eq("id", r.id);
+    if (error) {
+      toast.error("No se pudo actualizar el reporte", { description: error.message });
+      return;
+    }
+    toast.success(estado === "revisado" ? "Reporte marcado como revisado" : "Reporte descartado");
+    await recargar();
+  };
+
+  const bloquearReportado = async (r: Reporte) => {
+    if (!r.reportado_id) {
+      toast.error("Este reporte no identifica a un usuario registrado.");
+      return;
+    }
+    const { error } = await supabase
+      .from("perfiles")
+      .update({ bloqueado: true })
+      .eq("id", r.reportado_id);
+    if (error) {
+      toast.error("No se pudo suspender al usuario", { description: error.message });
+      return;
+    }
+    await supabase.from("reportes").update({ estado: "revisado" }).eq("id", r.id);
+    toast.success("Usuario suspendido");
+    await recargar();
+  };
+
+  const marcarEliminacion = async (s: SolicitudEliminacion, estado: string) => {
+    const { error } = await supabase
+      .from("solicitudes_eliminacion")
+      .update({ estado })
+      .eq("id", s.id);
+    if (error) {
+      toast.error("No se pudo actualizar la solicitud", { description: error.message });
+      return;
+    }
+    toast.success("Solicitud actualizada");
+    await recargar();
+  };
 
   useEffect(() => {
     if (esAdmin) void recargar();
