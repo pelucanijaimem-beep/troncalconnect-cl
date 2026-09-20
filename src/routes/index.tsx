@@ -453,6 +453,13 @@ function Index() {
           />
         </div>
 
+        {esCamionero && (
+          <div className="mb-6">
+            <DocExpiryPanel {...(sesion.id ? { userId: sesion.id } : {})} />
+          </div>
+        )}
+
+
         {esCamionero && !soyVerificado ? (
           <VerificationGate
             estado={miVerificacion.estado}
@@ -549,6 +556,18 @@ function Index() {
             ))}
           </div>
         )}
+
+        {esCamionero && retorno && (
+          <ReturnLoadsSection
+            destino={retorno.destino}
+            carroceria={retorno.carroceria}
+            excluirId={retorno.cargaId}
+            cargas={CARGAS}
+            onDetalles={(c) => setDetalle(c)}
+            onCerrar={() => setRetorno(null)}
+          />
+        )}
+
 
         <section className="mt-6">
           <h2 className="mb-3 flex flex-wrap items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
