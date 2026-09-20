@@ -84,6 +84,40 @@ type CargaFila = {
   created_at: string;
 };
 
+type Reporte = {
+  id: string;
+  tipo: string;
+  carga_id: string | null;
+  reportado_id: string | null;
+  reportado_nombre: string;
+  motivo: string;
+  detalle: string;
+  estado: string;
+  created_at: string;
+};
+
+type SolicitudEliminacion = {
+  id: string;
+  email: string;
+  motivo: string;
+  origen: string;
+  estado: string;
+  created_at: string;
+};
+
+type Metricas = {
+  cargas_publicadas: number;
+  cargas_activas: number;
+  cargas_cerradas: number;
+  cargas_ultimos_30: number;
+  postulaciones: number;
+  postulaciones_ultimos_30: number;
+  usuarios: number;
+  usuarios_bloqueados: number;
+  reportes_pendientes: number;
+  solicitudes_eliminacion: number;
+};
+
 const ETIQUETA_ESTADO: Record<string, string> = {
   pendiente: "Pendiente de Revisión",
   aprobado: "Aprobado",
