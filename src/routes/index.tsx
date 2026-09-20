@@ -556,6 +556,17 @@ function Index() {
                     onRastrear={rastrear}
                     onVerViaje={setViajeActivo}
                     onPostular={(carga) => void postular(carga)}
+                    onReportar={(carga) =>
+                      requiereSesion(() =>
+                        setReporte({
+                          tipo: "publicacion",
+                          cargaId: carga.id,
+                          reportadoId: carga.userId ?? null,
+                          nombre: carga.empresa,
+                          resumen: `${carga.origen} → ${carga.destino}`,
+                        }),
+                      )
+                    }
                     yaPostulada={postuladas.includes(c.id)}
                     accesoContacto={accesoContacto}
                   />
@@ -711,6 +722,7 @@ function Index() {
           void finalizar(c);
         }}
       />
+      <ReportDialog objeto={reporte} onOpenChange={(o) => !o && setReporte(null)} />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
       <VerificationDialog
         open={verificacionOpen}
