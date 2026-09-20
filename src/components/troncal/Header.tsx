@@ -7,7 +7,9 @@ import {
   CreditCard,
   BadgeCheck,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -138,6 +140,13 @@ export function Header({
                 )}
                 <DropdownMenuItem onClick={onSalir} className="cursor-pointer">
                   <LogOut className="h-4 w-4" /> Cerrar Sesión
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setEliminarOpen(true)}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" /> Eliminar mi cuenta
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
