@@ -151,9 +151,18 @@ export function LoadDetailsDialog({
                 </dd>
               </div>
               <div className="rounded-lg border border-border bg-surface p-3">
-                <dt className="text-muted-foreground">Fecha de carga</dt>
+                <dt className="text-muted-foreground">Retiro</dt>
                 <dd className="font-semibold text-foreground">
                   {new Date(carga.fecha + "T00:00:00").toLocaleDateString("es-CL")}
+                  {carga.horaRetiro ? ` · ${carga.horaRetiro} hrs` : ""}
+                </dd>
+              </div>
+              <div className="rounded-lg border border-border bg-surface p-3">
+                <dt className="text-muted-foreground">Entrega estimada</dt>
+                <dd className="font-semibold text-foreground">
+                  {carga.fechaEntrega
+                    ? new Date(carga.fechaEntrega + "T00:00:00").toLocaleDateString("es-CL")
+                    : "Por coordinar"}
                 </dd>
               </div>
             </dl>
