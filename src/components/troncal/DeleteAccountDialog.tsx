@@ -29,7 +29,7 @@ export function DeleteAccountDialog({
   const eliminar = async () => {
     setBorrando(true);
     try {
-      await eliminarMiCuenta({ data: {} });
+      await eliminarMiCuenta();
       await cerrarSesion();
       onOpenChange(false);
       toast.success("Cuenta eliminada", {
