@@ -37,8 +37,10 @@ import { PodDialog } from "@/components/troncal/PodDialog";
 import {
   desbloquearEmpresa,
   estaBloqueada,
+  useSincronizarFavoritos,
   useTableroPrefs,
 } from "@/lib/use-tablero-prefs";
+import { ReportDialog, type ObjetoReporte } from "@/components/troncal/ReportDialog";
 import { VerificationDialog } from "@/components/troncal/VerificationDialog";
 import {
   RatingDialog,
@@ -56,7 +58,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { AlertPrefsDialog } from "@/components/troncal/AlertPrefsDialog";
 import { NotificationsBell } from "@/components/troncal/NotificationsBell";
 import { usePreferenciasAlerta } from "@/lib/use-alertas";
-import { avisarPostulacion } from "@/lib/notificaciones.functions";
+import { avisarEstadoCarga, avisarPostulacion } from "@/lib/notificaciones.functions";
 import { enRegion, mismaCiudad, regionesDe } from "@/lib/regiones";
 import {
   getPais,
@@ -108,6 +110,7 @@ function Index() {
   const [comparaOpen, setComparaOpen] = useState(false);
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
   const [alertasOpen, setAlertasOpen] = useState(false);
+  const [reporte, setReporte] = useState<ObjetoReporte | null>(null);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
