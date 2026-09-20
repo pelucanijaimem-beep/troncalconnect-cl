@@ -267,8 +267,6 @@ function AdminPage() {
         onSalir={() => void cerrarSesion()}
         rol="empresa"
         onRolChange={() => undefined}
-        pais="CL"
-        onPaisChange={() => undefined}
         onAuth={() => undefined}
         onPublicarCamion={() => undefined}
         onPublicarCarga={() => undefined}

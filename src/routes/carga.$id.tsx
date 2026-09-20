@@ -64,8 +64,6 @@ function CargaDirecta() {
         sesion={sesion}
         onSalir={cerrarSesion}
         rol="camionero"
-        pais="CL"
-        onPaisChange={() => {}}
         onRolChange={() => {}}
         onAuth={() => {}}
         onPublicarCamion={() => {}}

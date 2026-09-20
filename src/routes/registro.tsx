@@ -15,13 +15,13 @@ export const Route = createFileRoute("/registro")({
       {
         name: "description",
         content:
-          "Regístrate gratis en TroncalTrack y accede a la bolsa de cargas y camiones en Sudamérica.",
+          "Regístrate gratis en TroncalTrack y accede a la bolsa de cargas y camiones en todo Chile.",
       },
       { property: "og:title", content: "Crear cuenta — TroncalTrack" },
       {
         property: "og:description",
         content:
-          "Regístrate gratis en TroncalTrack y accede a la bolsa de cargas y camiones en Sudamérica.",
+          "Regístrate gratis en TroncalTrack y accede a la bolsa de cargas y camiones en todo Chile.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

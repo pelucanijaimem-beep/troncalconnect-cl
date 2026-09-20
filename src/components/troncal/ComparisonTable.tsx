@@ -8,11 +8,11 @@ const FILAS: Fila[] = [
   { funcion: "Calculadora $/km", basico: true, avanzado: true, pro: true },
   { funcion: "Reputación de Empresas", basico: false, avanzado: true, pro: true },
   {
-    funcion: "Selector de País",
+    funcion: "Cobertura nacional",
     basico: true,
     avanzado: true,
     pro: true,
-    nota: "Chile 🇨🇱 · Argentina 🇦🇷 · Perú 🇵🇪 · Bolivia 🇧🇴",
+    nota: "Todo Chile · Expansión internacional más adelante",
   },
   { funcion: "Seguimiento GPS en ruta", basico: false, avanzado: true, pro: true },
   { funcion: "Bloqueo de empresas o choferes", basico: false, avanzado: false, pro: true },
