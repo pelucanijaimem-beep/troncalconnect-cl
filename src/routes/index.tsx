@@ -121,6 +121,7 @@ function Index() {
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
+  useSincronizarFavoritos(sesion?.id);
   const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
 
