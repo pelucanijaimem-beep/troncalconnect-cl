@@ -560,6 +560,103 @@ function AdminPage() {
             ))}
           </div>
         </Seccion>
+
+        <Seccion
+          titulo={`Reportes (${reportes.filter((r) => r.estado === "pendiente").length} pendientes)`}
+          descripcion="Denuncias de publicaciones o usuarios enviadas desde el tablero."
+        >
+          {reportes.length === 0 && (
+            <p className="text-sm text-muted-foreground">No hay reportes por ahora.</p>
+          )}
+          <div className="divide-y divide-border">
+            {reportes.map((r) => (
+              <div key={r.id} className="flex flex-wrap items-start justify-between gap-3 py-3">
+                <div className="min-w-56 flex-1">
+                  <p className="font-semibold text-foreground">
+                    {r.reportado_nombre} · {r.motivo}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{r.detalle}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    {r.tipo === "usuario" ? "Usuario" : "Publicación"} ·{" "}
+                    {new Date(r.created_at).toLocaleString("es-CL")} · Estado: {r.estado}
+                  </p>
+                </div>
+                {r.estado === "pendiente" && (
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" variant="outline" onClick={() => void bloquearReportado(r)}>
+                      <Ban className="h-4 w-4" /> Suspender usuario
+                    </Button>
+                    <Button size="sm" onClick={() => void resolverReporte(r, "revisado")}>
+                      <Check className="h-4 w-4" /> Revisado
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void resolverReporte(r, "descartado")}
+                    >
+                      <X className="h-4 w-4" /> Descartar
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Seccion>
+
+        <Seccion
+          titulo={`Solicitudes de eliminación de cuenta (${eliminaciones.filter((e) => e.estado === "pendiente").length} pendientes)`}
+          descripcion="Peticiones recibidas desde la página pública o desde la aplicación."
+        >
+          {eliminaciones.length === 0 && (
+            <p className="text-sm text-muted-foreground">No hay solicitudes registradas.</p>
+          )}
+          <div className="divide-y divide-border">
+            {eliminaciones.map((e) => (
+              <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
+                <div>
+                  <p className="font-semibold text-foreground">{e.email}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {e.motivo || "Sin motivo indicado"} · Origen: {e.origen} · Estado: {e.estado} ·{" "}
+                    {new Date(e.created_at).toLocaleDateString("es-CL")}
+                  </p>
+                </div>
+                {e.estado === "pendiente" && (
+                  <Button size="sm" onClick={() => void marcarEliminacion(e, "procesada")}>
+                    <Check className="h-4 w-4" /> Marcar procesada
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        </Seccion>
+
+        <Seccion
+          titulo="Métricas del marketplace"
+          descripcion="Resumen interno del uso de la plataforma."
+        >
+          {!metricas ? (
+            <p className="text-sm text-muted-foreground">Cargando métricas…</p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                ["Cargas publicadas", metricas.cargas_publicadas],
+                ["Cargas activas", metricas.cargas_activas],
+                ["Cargas cerradas", metricas.cargas_cerradas],
+                ["Cargas últimos 30 días", metricas.cargas_ultimos_30],
+                ["Postulaciones", metricas.postulaciones],
+                ["Postulaciones últimos 30 días", metricas.postulaciones_ultimos_30],
+                ["Usuarios registrados", metricas.usuarios],
+                ["Usuarios suspendidos", metricas.usuarios_bloqueados],
+                ["Reportes pendientes", metricas.reportes_pendientes],
+              ].map(([etiqueta, valor]) => (
+                <div key={String(etiqueta)} className="rounded-lg border border-border bg-surface p-3">
+                  <p className="text-xs text-muted-foreground">{etiqueta}</p>
+                  <p className="text-2xl font-extrabold text-foreground">{valor}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </Seccion>
       </main>
       <Toaster />
     </div>
