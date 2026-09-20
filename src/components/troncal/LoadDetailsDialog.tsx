@@ -296,6 +296,8 @@ export function LoadDetailsDialog({
               )}
             </p>
 
+            {esDueno && <ApplicantsPanel carga={carga} />}
+
             {esDueno && <SharePanel carga={carga} />}
 
             <DialogFooter className="gap-2">
