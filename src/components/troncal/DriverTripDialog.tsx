@@ -91,6 +91,39 @@ export function DriverTripDialog({
           </div>
         </dl>
 
+        {onCompartirUbicacion && (
+          <div
+            className={`rounded-xl border p-4 ${
+              compartiendo ? "border-success/40 bg-success/10" : "border-border bg-surface"
+            }`}
+          >
+            <p className="flex items-center gap-2 text-sm font-bold text-foreground">
+              <MapPin className="h-4 w-4 text-primary" /> Compartir mi ubicación en este viaje
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Es opcional. Si lo activas, solo la empresa dueña de esta carga verá tu ubicación
+              aproximada, y se apaga sola al marcar la carga como entregada.
+            </p>
+            {errorUbicacion && (
+              <p className="mt-2 text-xs font-semibold text-destructive">{errorUbicacion}</p>
+            )}
+            <Button
+              variant={compartiendo ? "outline" : "default"}
+              className="mt-3 w-full"
+              disabled={!enRuta}
+              onClick={() => onCompartirUbicacion(!compartiendo)}
+            >
+              {compartiendo ? "Dejar de compartir mi ubicación" : "Compartir mi ubicación"}
+            </Button>
+            {compartiendo && (
+              <p className="mt-2 text-center text-xs font-semibold text-success">
+                Compartiendo tu ubicación con la empresa de esta carga.
+              </p>
+            )}
+          </div>
+        )}
+
+
         <Button
           size="lg"
           className="h-14 w-full text-base font-bold"
