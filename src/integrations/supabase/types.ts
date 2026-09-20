@@ -82,6 +82,8 @@ export type Database = {
           empresa_verificada: boolean
           estado: Database["public"]["Enums"]["estado_carga"]
           fecha: string | null
+          fecha_entrega: string | null
+          hora_retiro: string
           id: string
           km: number
           origen: string
@@ -107,6 +109,8 @@ export type Database = {
           empresa_verificada?: boolean
           estado?: Database["public"]["Enums"]["estado_carga"]
           fecha?: string | null
+          fecha_entrega?: string | null
+          hora_retiro?: string
           id?: string
           km?: number
           origen: string
@@ -132,6 +136,8 @@ export type Database = {
           empresa_verificada?: boolean
           estado?: Database["public"]["Enums"]["estado_carga"]
           fecha?: string | null
+          fecha_entrega?: string | null
+          hora_retiro?: string
           id?: string
           km?: number
           origen?: string
@@ -147,6 +153,35 @@ export type Database = {
           visibilidad?: string
         }
         Relationships: []
+      }
+      favoritos: {
+        Row: {
+          carga_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          carga_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          carga_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favoritos_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invitaciones_carga: {
         Row: {
@@ -335,6 +370,89 @@ export type Database = {
         }
         Relationships: []
       }
+      reportes: {
+        Row: {
+          carga_id: string | null
+          created_at: string
+          detalle: string
+          estado: string
+          id: string
+          motivo: string
+          nota_admin: string
+          reportado_id: string | null
+          reportado_nombre: string
+          reportante_id: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          carga_id?: string | null
+          created_at?: string
+          detalle?: string
+          estado?: string
+          id?: string
+          motivo?: string
+          nota_admin?: string
+          reportado_id?: string | null
+          reportado_nombre?: string
+          reportante_id: string
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          carga_id?: string | null
+          created_at?: string
+          detalle?: string
+          estado?: string
+          id?: string
+          motivo?: string
+          nota_admin?: string
+          reportado_id?: string | null
+          reportado_nombre?: string
+          reportante_id?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reportes_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solicitudes_eliminacion: {
+        Row: {
+          created_at: string
+          email: string
+          estado: string
+          id: string
+          motivo: string
+          origen: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          estado?: string
+          id?: string
+          motivo?: string
+          origen?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          estado?: string
+          id?: string
+          motivo?: string
+          origen?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -409,6 +527,7 @@ export type Database = {
         Returns: boolean
       }
       cupos_fundador: { Args: never; Returns: number }
+      metricas_marketplace: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
       perfil_publico: { Args: { p_id: string }; Returns: Json }
