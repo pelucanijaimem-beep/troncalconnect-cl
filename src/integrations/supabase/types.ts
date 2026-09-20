@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      alertas_internas: {
+        Row: {
+          created_at: string
+          datos: Json
+          detalle: string
+          estado: string
+          id: string
+          tipo: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          datos?: Json
+          detalle: string
+          estado?: string
+          id?: string
+          tipo: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          datos?: Json
+          detalle?: string
+          estado?: string
+          id?: string
+          tipo?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       calificaciones: {
         Row: {
           autor_id: string
@@ -183,6 +216,33 @@ export type Database = {
           },
         ]
       }
+      intentos_login: {
+        Row: {
+          bloqueado_hasta: string | null
+          clave: string
+          created_at: string
+          id: string
+          intentos: number
+          updated_at: string
+        }
+        Insert: {
+          bloqueado_hasta?: string | null
+          clave: string
+          created_at?: string
+          id?: string
+          intentos?: number
+          updated_at?: string
+        }
+        Update: {
+          bloqueado_hasta?: string | null
+          clave?: string
+          created_at?: string
+          id?: string
+          intentos?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invitaciones_carga: {
         Row: {
           carga_id: string
@@ -257,6 +317,7 @@ export type Database = {
           plan_activo: boolean
           rol: Database["public"]["Enums"]["rol_usuario"]
           rut: string | null
+          rut_normalizado: string | null
           telefono: string | null
           tipo_publicador: string
           verificado: boolean
@@ -272,6 +333,7 @@ export type Database = {
           plan_activo?: boolean
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
+          rut_normalizado?: string | null
           telefono?: string | null
           tipo_publicador?: string
           verificado?: boolean
@@ -287,6 +349,7 @@ export type Database = {
           plan_activo?: boolean
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
+          rut_normalizado?: string | null
           telefono?: string | null
           tipo_publicador?: string
           verificado?: boolean
@@ -615,10 +678,12 @@ export type Database = {
       cupos_fundador: { Args: never; Returns: number }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
+      normalizar_rut: { Args: { p_rut: string }; Returns: string }
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
       perfil_publico: { Args: { p_id: string }; Returns: Json }
       perfiles_admin: { Args: never; Returns: Json }
       reservar_cupo_fundador: { Args: never; Returns: number }
+      rut_registrado: { Args: { p_rut: string }; Returns: boolean }
       tarifa_ruta: {
         Args: { _destino: string; _origen: string }
         Returns: {
