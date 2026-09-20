@@ -15,6 +15,7 @@ import {
 
   Satellite,
   ShieldCheck,
+  Flag,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ export function LoadCard({
   onRastrear,
   onVerViaje,
   onPostular,
+  onReportar,
   yaPostulada = false,
   accesoContacto = false,
 }: {
@@ -56,6 +58,7 @@ export function LoadCard({
   onRastrear: (c: Carga) => void;
   onVerViaje: (c: Carga) => void;
   onPostular?: (c: Carga) => void;
+  onReportar?: (c: Carga) => void;
   yaPostulada?: boolean;
   /** true solo para usuarios con plan Pro activo: habilita datos de contacto. */
   accesoContacto?: boolean;
@@ -90,7 +93,11 @@ export function LoadCard({
             </span>
             <span className="inline-flex items-center gap-1">
               <CalendarDays className="h-4 w-4" />
-              {new Date(carga.fecha + "T00:00:00").toLocaleDateString("es-CL")}
+              Retiro {new Date(carga.fecha + "T00:00:00").toLocaleDateString("es-CL")}
+              {carga.horaRetiro ? ` · ${carga.horaRetiro} hrs` : ""}
+              {carga.fechaEntrega
+                ? ` · Entrega ${new Date(carga.fechaEntrega + "T00:00:00").toLocaleDateString("es-CL")}`
+                : ""}
             </span>
           </p>
         </div>
@@ -172,6 +179,18 @@ export function LoadCard({
           <Button variant="outline" className="flex-1 sm:flex-none" onClick={() => onDetalles(carga)}>
             Ver Detalles
           </Button>
+
+          {onReportar && (
+            <Button
+              variant="ghost"
+              className="flex-1 sm:flex-none"
+              title="Reportar esta publicación"
+              onClick={() => onReportar(carga)}
+            >
+              <Flag className="h-4 w-4" /> Reportar
+            </Button>
+          )}
+
 
           {rol === "camionero" ? (
             <>

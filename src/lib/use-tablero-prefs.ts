@@ -1,4 +1,5 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Pod = {
   /** Imagen de la guía de despacho firmada en base64. */
@@ -65,6 +66,12 @@ function getSnapshot() {
 
 const clave = (s: string) => s.trim().toLowerCase();
 
+/** Usuario conectado: permite guardar los favoritos también en la cuenta. */
+let usuarioFavoritos: string | null = null;
+
+const esUuid = (v: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+
 export function alternarFavorito(id: string) {
   cargar();
   const existe = datos.favoritos.includes(id);
@@ -72,7 +79,48 @@ export function alternarFavorito(id: string) {
     ...datos,
     favoritos: existe ? datos.favoritos.filter((f) => f !== id) : [id, ...datos.favoritos],
   });
+
+  if (usuarioFavoritos && esUuid(id)) {
+    const uid = usuarioFavoritos;
+    if (existe) {
+      void supabase.from("favoritos").delete().eq("user_id", uid).eq("carga_id", id);
+    } else {
+      void supabase.from("favoritos").insert({ user_id: uid, carga_id: id });
+    }
+  }
   return !existe;
+}
+
+/**
+ * Sincroniza los favoritos guardados en la cuenta con los del dispositivo,
+ * para que el transportista los encuentre desde cualquier equipo.
+ */
+export function useSincronizarFavoritos(userId: string | undefined | null) {
+  useEffect(() => {
+    usuarioFavoritos = userId ?? null;
+    if (!userId) return;
+    let vivo = true;
+    void supabase
+      .from("favoritos")
+      .select("carga_id")
+      .eq("user_id", userId)
+      .then(({ data, error }) => {
+        if (!vivo || error || !data) return;
+        cargar();
+        const remotos = data.map((f) => f.carga_id as string);
+        const locales = datos.favoritos.filter((f) => esUuid(f) && !remotos.includes(f));
+        if (locales.length) {
+          void supabase
+            .from("favoritos")
+            .insert(locales.map((carga_id) => ({ user_id: userId, carga_id })));
+        }
+        const unidos = [...new Set([...remotos, ...datos.favoritos])];
+        if (unidos.length !== datos.favoritos.length) guardar({ ...datos, favoritos: unidos });
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [userId]);
 }
 
 export function bloquearEmpresa(empresa: string) {

@@ -79,6 +79,8 @@ export function PostLoadDialog({
       valorKm,
       toneladas: Number(d.get("toneladas") ?? 0),
       fecha: String(d.get("fecha") ?? ""),
+      horaRetiro: String(d.get("horaRetiro") ?? ""),
+      fechaEntrega: String(d.get("fechaEntrega") ?? ""),
       detalle: String(d.get("detalle") ?? "") || "Sin comentarios adicionales.",
       soloVerificados: d.get("soloVerificados") === "on",
       diasPago,
@@ -166,8 +168,16 @@ export function PostLoadDialog({
               <Input id="l-valor" name="valorKm" type="number" min={1} placeholder="1200" required />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="l-fecha">Fecha de carga</Label>
+              <Label htmlFor="l-fecha">Fecha de retiro</Label>
               <Input id="l-fecha" name="fecha" type="date" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="l-hora">Hora de retiro</Label>
+              <Input id="l-hora" name="horaRetiro" type="time" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="l-entrega">Fecha estimada de entrega</Label>
+              <Input id="l-entrega" name="fechaEntrega" type="date" required />
             </div>
             <div className="space-y-1.5">
               <Label>Días para Pago</Label>

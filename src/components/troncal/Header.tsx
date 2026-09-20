@@ -7,7 +7,9 @@ import {
   CreditCard,
   BadgeCheck,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -53,6 +55,7 @@ export function Header({
   onPublicarCarga,
 }: Props) {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [eliminarOpen, setEliminarOpen] = useState(false);
   const { esAdmin } = useEsAdmin(sesion?.id);
 
   const items = (cerrarMenu: boolean) => [
@@ -139,6 +142,13 @@ export function Header({
                 <DropdownMenuItem onClick={onSalir} className="cursor-pointer">
                   <LogOut className="h-4 w-4" /> Cerrar Sesión
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setEliminarOpen(true)}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" /> Eliminar mi cuenta
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -205,6 +215,16 @@ export function Header({
                   >
                     <LogOut className="h-4 w-4" /> Cerrar Sesión
                   </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-destructive"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      setEliminarOpen(true);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" /> Eliminar mi cuenta
+                  </Button>
                 </div>
               ) : (
                 <>
@@ -220,6 +240,7 @@ export function Header({
           </SheetContent>
         </Sheet>
       </div>
+      <DeleteAccountDialog open={eliminarOpen} onOpenChange={setEliminarOpen} />
     </header>
   );
 }

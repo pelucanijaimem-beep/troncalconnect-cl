@@ -37,8 +37,10 @@ import { PodDialog } from "@/components/troncal/PodDialog";
 import {
   desbloquearEmpresa,
   estaBloqueada,
+  useSincronizarFavoritos,
   useTableroPrefs,
 } from "@/lib/use-tablero-prefs";
+import { ReportDialog, type ObjetoReporte } from "@/components/troncal/ReportDialog";
 import { VerificationDialog } from "@/components/troncal/VerificationDialog";
 import {
   RatingDialog,
@@ -56,7 +58,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { AlertPrefsDialog } from "@/components/troncal/AlertPrefsDialog";
 import { NotificationsBell } from "@/components/troncal/NotificationsBell";
 import { usePreferenciasAlerta } from "@/lib/use-alertas";
-import { avisarPostulacion } from "@/lib/notificaciones.functions";
+import { avisarEstadoCarga, avisarPostulacion } from "@/lib/notificaciones.functions";
 import { enRegion, mismaCiudad, regionesDe } from "@/lib/regiones";
 import {
   getPais,
@@ -108,6 +110,7 @@ function Index() {
   const [comparaOpen, setComparaOpen] = useState(false);
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
   const [alertasOpen, setAlertasOpen] = useState(false);
+  const [reporte, setReporte] = useState<ObjetoReporte | null>(null);
 
   const sesion = useSesion();
   const { camiones: CAMIONES } = usePublicaciones();
@@ -118,6 +121,7 @@ function Index() {
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
+  useSincronizarFavoritos(sesion?.id);
   const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
 
@@ -277,6 +281,9 @@ function Index() {
   const iniciar = (c: Carga) => {
     iniciarViaje(c.id);
     setViajeActivo(c);
+    void avisarEstadoCarga({ data: { cargaId: c.id, estado: "en_ruta" } }).catch(() => {
+      /* el aviso es complementario: el viaje ya quedó iniciado */
+    });
     toast.success("Viaje iniciado — GPS activo", {
       description: `Estás en ruta de ${c.origen} a ${c.destino}. El cargador puede seguir tu posición.`,
     });
@@ -285,6 +292,9 @@ function Index() {
   const finalizar = async (c: Carga) => {
     finalizarViaje(c.id);
     setViajeActivo(null);
+    void avisarEstadoCarga({ data: { cargaId: c.id, estado: "entregada" } }).catch(() => {
+      /* el aviso es complementario: la entrega ya quedó registrada */
+    });
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
@@ -552,6 +562,17 @@ function Index() {
                     onRastrear={rastrear}
                     onVerViaje={setViajeActivo}
                     onPostular={(carga) => void postular(carga)}
+                    onReportar={(carga) =>
+                      requiereSesion(() =>
+                        setReporte({
+                          tipo: "publicacion",
+                          cargaId: carga.id,
+                          reportadoId: carga.userId ?? null,
+                          nombre: carga.empresa,
+                          resumen: `${carga.origen} → ${carga.destino}`,
+                        }),
+                      )
+                    }
                     yaPostulada={postuladas.includes(c.id)}
                     accesoContacto={accesoContacto}
                   />
@@ -707,6 +728,7 @@ function Index() {
           void finalizar(c);
         }}
       />
+      <ReportDialog objeto={reporte} onOpenChange={(o) => !o && setReporte(null)} />
       <TermsDialog open={termsOpen} onOpenChange={setTermsOpen} />
       <VerificationDialog
         open={verificacionOpen}

@@ -138,6 +138,10 @@ export type Carga = {
   empresa: string;
   verificada: boolean;
   fecha: string;
+  /** Hora de retiro comprometida en el origen (formato 24 h). */
+  horaRetiro?: string;
+  /** Fecha estimada de entrega en destino. */
+  fechaEntrega?: string;
   detalle: string;
   telefono: string;
   /** Solo transportistas con sello TroncalCheck pueden tomar esta carga. */
