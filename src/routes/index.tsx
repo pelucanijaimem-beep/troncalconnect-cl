@@ -281,6 +281,9 @@ function Index() {
   const iniciar = (c: Carga) => {
     iniciarViaje(c.id);
     setViajeActivo(c);
+    void avisarEstadoCarga({ data: { cargaId: c.id, estado: "en_ruta" } }).catch(() => {
+      /* el aviso es complementario: el viaje ya quedó iniciado */
+    });
     toast.success("Viaje iniciado — GPS activo", {
       description: `Estás en ruta de ${c.origen} a ${c.destino}. El cargador puede seguir tu posición.`,
     });
