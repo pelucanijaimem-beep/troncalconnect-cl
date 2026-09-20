@@ -737,12 +737,26 @@ function Index() {
       <DriverTripDialog
         carga={viajeActivo}
         viaje={viajeChofer}
+        compartiendo={compartir.activo}
+        errorUbicacion={compartir.error}
+        onCompartirUbicacion={(activar) => {
+          if (activar) {
+            compartir.activar();
+            toast.success("Compartiendo tu ubicación", {
+              description: "Solo la empresa de esta carga la verá. Se apaga al finalizar el viaje.",
+            });
+            return;
+          }
+          void compartir.desactivar();
+          toast.info("Dejaste de compartir tu ubicación.");
+        }}
         onFinalizar={(c) => setPodCarga(c)}
         onOpenChange={(o) => !o && setViajeActivo(null)}
       />
       <TrackingDialog
         carga={rastreo}
         viaje={viajeRastreo}
+        ubicacionCompartida={ubicacionRastreo}
         onOpenChange={(o) => !o && setRastreo(null)}
       />
       <CompareLoadsDialog
