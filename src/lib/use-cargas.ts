@@ -146,6 +146,8 @@ export async function publicarCargaDB(entrada: {
   valorKm: number;
   toneladas: number;
   fecha: string;
+  horaRetiro: string;
+  fechaEntrega: string;
   detalle: string;
   soloVerificados: boolean;
   diasPago?: string;
@@ -169,6 +171,8 @@ export async function publicarCargaDB(entrada: {
       valor_km: entrada.valorKm,
       toneladas: entrada.toneladas,
       fecha: entrada.fecha || null,
+      hora_retiro: entrada.horaRetiro,
+      fecha_entrega: entrada.fechaEntrega || null,
       detalle: entrada.detalle,
       solo_verificados: entrada.soloVerificados,
       dias_pago: entrada.diasPago ?? "Pago a 30 días",
