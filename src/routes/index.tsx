@@ -291,6 +291,8 @@ function Index() {
   const iniciar = (c: Carga) => {
     iniciarViaje(c.id);
     setViajeActivo(c);
+    // Sugerencias de retorno vacío según el destino del viaje en curso.
+    setRetorno({ destino: c.destino, carroceria: c.carroceria, cargaId: c.id });
     void avisarEstadoCarga({ data: { cargaId: c.id, estado: "en_ruta" } }).catch(() => {
       /* el aviso es complementario: el viaje ya quedó iniciado */
     });
@@ -302,6 +304,9 @@ function Index() {
   const finalizar = async (c: Carga) => {
     finalizarViaje(c.id);
     setViajeActivo(null);
+    // Privacidad: al entregar la carga se deja de compartir la ubicación.
+    void compartir.desactivar();
+    setRetorno({ destino: c.destino, carroceria: c.carroceria, cargaId: c.id });
     void avisarEstadoCarga({ data: { cargaId: c.id, estado: "entregada" } }).catch(() => {
       /* el aviso es complementario: la entrega ya quedó registrada */
     });
