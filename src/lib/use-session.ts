@@ -11,6 +11,7 @@ export type Sesion = {
   rol: Rol;
   telefono?: string;
   planActivo: boolean;
+  cargandoPerfil?: boolean;
 };
 
 let sesion: Sesion | null = null;
@@ -26,6 +27,7 @@ function sesionBase(userId: string, email: string): Sesion {
     email,
     rol: "camionero",
     planActivo: false,
+    cargandoPerfil: true,
   };
 }
 
@@ -61,7 +63,14 @@ async function cargarPerfil(userId: string, email: string) {
     await new Promise((r) => setTimeout(r, 600));
   }
 
-  if (!data) return; // conservamos la sesión base
+  if (!data) {
+    // conservamos la sesión base, pero sin quedar en estado de carga
+    if (sesion?.id === userId) {
+      sesion = { ...sesion, cargandoPerfil: false };
+      emitir();
+    }
+    return;
+  }
 
   if (data.bloqueado) {
     sesion = null;
