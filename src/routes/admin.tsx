@@ -20,7 +20,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
 import {
-  TODOS_DOCUMENTOS,
+  documentosRequeridos,
   normalizarChecklist,
   type ClaveDocumento,
 } from "@/lib/use-verificacion";
