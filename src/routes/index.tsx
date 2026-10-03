@@ -448,14 +448,14 @@ function Index() {
 
       {sesion && (
       <main id="cargas" className="mx-auto max-w-6xl px-4 py-6">
-        <p className="mb-2 text-sm font-semibold text-primary">
+        <div className="mb-2 text-sm font-semibold text-primary">
           Panel privado de{" "}
           {sesion.cargandoPerfil ? (
             <Skeleton className="inline-block h-4 w-32 align-middle" />
           ) : (
             sesion.nombre
           )}
-        </p>
+        </div>
 
         <div className="mb-6">
           <TrustProfileCard
