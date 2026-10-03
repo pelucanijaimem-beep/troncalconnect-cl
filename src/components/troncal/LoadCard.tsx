@@ -116,7 +116,7 @@ export function LoadCard({
             aria-label={esFavorita ? "Quitar de favoritos" : "Guardar en favoritos"}
             aria-pressed={esFavorita}
             title={esFavorita ? "Quitar de favoritos" : "Guardar en favoritos"}
-            onClick={() => alternarFavorito(carga.id)}
+            onClick={() => void alternarFavorito(carga.id)}
             className="rounded-lg border border-border p-2 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
           >
             <Star className={`h-4 w-4 ${esFavorita ? "fill-primary text-primary" : ""}`} />

@@ -90,7 +90,7 @@ export function CompareLoadsDialog({
                             size="sm"
                             variant="ghost"
                             aria-label="Quitar de favoritos"
-                            onClick={() => alternarFavorito(c.id)}
+                            onClick={() => void alternarFavorito(c.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

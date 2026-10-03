@@ -1,4 +1,5 @@
 import { useEffect, useSyncExternalStore } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export type Pod = {
@@ -72,8 +73,9 @@ let usuarioFavoritos: string | null = null;
 const esUuid = (v: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 
-export function alternarFavorito(id: string) {
+export async function alternarFavorito(id: string): Promise<boolean> {
   cargar();
+  const antes = datos;
   const existe = datos.favoritos.includes(id);
   guardar({
     ...datos,
@@ -82,41 +84,52 @@ export function alternarFavorito(id: string) {
 
   if (usuarioFavoritos && esUuid(id)) {
     const uid = usuarioFavoritos;
-    if (existe) {
-      void supabase.from("favoritos").delete().eq("user_id", uid).eq("carga_id", id);
-    } else {
-      void supabase.from("favoritos").insert({ user_id: uid, carga_id: id });
+    const { error } = existe
+      ? await supabase.from("favoritos").delete().eq("user_id", uid).eq("carga_id", id)
+      : await supabase.from("favoritos").insert({ user_id: uid, carga_id: id });
+    if (error && !error.message.includes("duplicate")) {
+      guardar(antes);
+      toast.error("No pudimos actualizar tus favoritos", {
+        description: "Revisa tu conexión e inténtalo nuevamente.",
+      });
+      return existe;
     }
   }
+  toast.success(existe ? "Carga quitada de favoritos" : "Carga guardada en favoritos");
   return !existe;
 }
 
 /**
- * Sincroniza los favoritos guardados en la cuenta con los del dispositivo,
- * para que el transportista los encuentre desde cualquier equipo.
+ * Carga los favoritos guardados en la cuenta (fuente oficial) y sube los que
+ * estuvieran solo en el dispositivo.
  */
 export function useSincronizarFavoritos(userId: string | undefined | null) {
   useEffect(() => {
     usuarioFavoritos = userId ?? null;
     if (!userId) return;
     let vivo = true;
-    void supabase
-      .from("favoritos")
-      .select("carga_id")
-      .eq("user_id", userId)
-      .then(({ data, error }) => {
-        if (!vivo || error || !data) return;
-        cargar();
-        const remotos = data.map((f) => f.carga_id as string);
-        const locales = datos.favoritos.filter((f) => esUuid(f) && !remotos.includes(f));
-        if (locales.length) {
-          void supabase
-            .from("favoritos")
-            .insert(locales.map((carga_id) => ({ user_id: userId, carga_id })));
-        }
-        const unidos = [...new Set([...remotos, ...datos.favoritos])];
-        if (unidos.length !== datos.favoritos.length) guardar({ ...datos, favoritos: unidos });
-      });
+    void (async () => {
+      const { data, error } = await supabase
+        .from("favoritos")
+        .select("carga_id")
+        .eq("user_id", userId);
+      if (!vivo) return;
+      if (error || !data) {
+        toast.error("No pudimos cargar tus cargas guardadas");
+        return;
+      }
+      cargar();
+      const remotos = data.map((f) => f.carga_id as string);
+      const locales = datos.favoritos.filter((f) => esUuid(f) && !remotos.includes(f));
+      let subidos: string[] = [];
+      if (locales.length) {
+        const { error: e2 } = await supabase
+          .from("favoritos")
+          .insert(locales.map((carga_id) => ({ user_id: userId, carga_id })));
+        if (!e2) subidos = locales;
+      }
+      if (vivo) guardar({ ...datos, favoritos: [...new Set([...remotos, ...subidos])] });
+    })();
     return () => {
       vivo = false;
     };
