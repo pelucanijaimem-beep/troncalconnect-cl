@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PortAccessNotice } from "@/components/troncal/PortAccessNotice";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -447,9 +448,14 @@ function Index() {
 
       {sesion && (
       <main id="cargas" className="mx-auto max-w-6xl px-4 py-6">
-        <p className="mb-2 text-sm font-semibold text-primary">
-          Panel privado de {sesion.nombre}
-        </p>
+        <div className="mb-2 text-sm font-semibold text-primary">
+          Panel privado de{" "}
+          {sesion.cargandoPerfil ? (
+            <Skeleton className="inline-block h-4 w-32 align-middle" />
+          ) : (
+            sesion.nombre
+          )}
+        </div>
 
         <div className="mb-6">
           <TrustProfileCard

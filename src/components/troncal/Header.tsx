@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
 import type { Sesion } from "@/lib/use-session";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useEsAdmin } from "@/lib/use-admin";
 
 type Props = {
@@ -62,7 +63,7 @@ export function Header({
     { label: "Cargas", onClick: () => scrollA("cargas") },
     { label: "Publicar Camión", onClick: onPublicarCamion },
     { label: "Publicar Cargas", onClick: onPublicarCarga },
-    { label: "Recursos", onClick: () => scrollA("planes") },
+    ...(sesion ? [] : [{ label: "Recursos", onClick: () => scrollA("planes") }]),
     { label: "Soporte", onClick: () => scrollA("soporte") },
   ].map((n) => ({
     ...n,
@@ -117,9 +118,11 @@ export function Header({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-60">
                 <DropdownMenuLabel className="space-y-0.5">
-                  <span className="block truncate text-sm font-bold">{sesion.nombre}</span>
+                  <span className="block truncate text-sm font-bold">
+                    {sesion.cargandoPerfil ? <Skeleton className="h-4 w-32" /> : sesion.nombre}
+                  </span>
                   <span className="block truncate text-xs font-normal text-muted-foreground">
-                    {sesion.email}
+                    {sesion.cargandoPerfil ? <Skeleton className="h-3 w-40" /> : sesion.email}
                   </span>
                   <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary">
                     <BadgeCheck className="h-3.5 w-3.5" />
@@ -198,9 +201,12 @@ export function Header({
               {sesion ? (
                 <div className="space-y-2 rounded-lg border border-border bg-surface p-3">
                   <p className="flex items-center gap-2 text-sm font-bold text-foreground">
-                    <UserCircle2 className="h-4 w-4" /> {sesion.nombre}
+                    <UserCircle2 className="h-4 w-4" />{" "}
+                    {sesion.cargandoPerfil ? <Skeleton className="h-4 w-28" /> : sesion.nombre}
                   </p>
-                  <p className="truncate text-xs text-muted-foreground">{sesion.email}</p>
+                  <div className="truncate text-xs text-muted-foreground">
+                    {sesion.cargandoPerfil ? <Skeleton className="h-3 w-36" /> : sesion.email}
+                  </div>
                   <p className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
                     <BadgeCheck className="h-3.5 w-3.5" />
                     {sesion.planActivo ? "Plan Pro activo" : "Plan Inicial"}
