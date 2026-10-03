@@ -20,7 +20,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
 import {
-  TODOS_DOCUMENTOS,
+  documentosRequeridos,
   normalizarChecklist,
   type ClaveDocumento,
 } from "@/lib/use-verificacion";
@@ -263,21 +263,43 @@ function AdminPage() {
     if (esAdmin) void recargar();
   }, [esAdmin, recargar]);
 
+  const rolDe = (userId: string): "camionero" | "empresa" =>
+    perfiles.find((p) => p.id === userId)?.rol === "empresa" ? "empresa" : "camionero";
+
   const marcarDocumento = async (
     s: Solicitud,
     clave: ClaveDocumento,
     estado: "aprobado" | "rechazado" | "pendiente",
   ) => {
     const actual = normalizarChecklist(s.checklist);
-    const motivo = estado === "rechazado" ? (notas[s.id] ?? "") : "";
+    const motivo = estado === "rechazado" ? (notas[s.id] ?? "").trim() : "";
+    if (estado === "rechazado" && !motivo) {
+      toast.error("Escribe el motivo del rechazo antes de rechazar el documento.");
+      return;
+    }
     const nuevo = { ...actual, [clave]: { estado, motivo } };
+    const todosAprobados = documentosRequeridos(rolDe(s.user_id)).every(
+      (d) => nuevo[d.clave].estado === "aprobado",
+    );
     const { error } = await supabase
       .from("verificaciones")
-      .update({ checklist: nuevo })
+      .update(
+        todosAprobados
+          ? { checklist: nuevo, estado: "aprobado", nota_admin: "" }
+          : { checklist: nuevo, ...(s.estado === "aprobado" ? { estado: "pendiente" } : {}) },
+      )
       .eq("id", s.id);
     if (error) {
       toast.error("No se pudo actualizar el documento", { description: error.message });
       return;
+    }
+    if (todosAprobados) {
+      await supabase.from("perfiles").update({ verificado: true }).eq("id", s.user_id);
+      toast.success(`${s.nombre} obtuvo el sello TroncalCheck`, {
+        description: "Todos sus documentos requeridos quedaron aprobados.",
+      });
+    } else {
+      toast.success(estado === "rechazado" ? "Documento rechazado" : "Documento aprobado");
     }
     await recargar();
   };
@@ -459,8 +481,9 @@ function AdminPage() {
                   <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                     Checklist documento por documento
                   </p>
-                  {TODOS_DOCUMENTOS.map((d) => {
+                  {documentosRequeridos(rolDe(s.user_id)).map((d) => {
                     const item = normalizarChecklist(s.checklist)[d.clave];
+                    const ruta = (s.documentos as Record<string, string> | null)?.[d.clave];
                     return (
                       <div
                         key={d.clave}
@@ -473,6 +496,17 @@ function AdminPage() {
                           </span>
                           {item.estado === "rechazado" && item.motivo && (
                             <span className="text-xs text-destructive"> · {item.motivo}</span>
+                          )}
+                          {ruta ? (
+                            <button
+                              type="button"
+                              className="ml-2 text-xs font-semibold text-primary underline"
+                              onClick={() => void verDocumento(ruta)}
+                            >
+                              Ver archivo
+                            </button>
+                          ) : (
+                            <span className="ml-2 text-xs text-muted-foreground">Sin archivo</span>
                           )}
                         </span>
                         <span className="flex gap-1">

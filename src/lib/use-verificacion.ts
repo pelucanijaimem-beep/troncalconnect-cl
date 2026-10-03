@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { avisarDocumentosSubidos } from "@/lib/notificaciones.functions";
 
 export type EstadoVerificacion =
   | "sin_verificar"
@@ -261,6 +262,10 @@ export async function enviarDocumentos(params: {
     { onConflict: "user_id" },
   );
   if (error) return error.message;
+  // Aviso interno al equipo: un solo correo con todos los documentos subidos.
+  void avisarDocumentosSubidos({ data: { documentos: Object.keys(documentos) } }).catch(() => {
+    /* el aviso no bloquea el envío */
+  });
   await recargarVerificaciones();
   return null;
 }

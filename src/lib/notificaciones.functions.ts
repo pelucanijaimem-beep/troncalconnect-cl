@@ -3,7 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /** Envía un correo con una plantilla registrada. Nunca lanza error. */
 async function enviarCorreo(params: {
-  plantilla: "postulacion" | "coincidencia-carga";
+  plantilla: "postulacion" | "coincidencia-carga" | "nueva-verificacion";
   para: string;
   datos: Record<string, unknown>;
   idempotencyKey: string;
@@ -226,4 +226,44 @@ export const avisarEstadoCarga = createServerFn({ method: "POST" })
     }
 
     return { avisados };
+  });
+
+const ETIQUETAS_DOCUMENTO: Record<string, string> = {
+  soat: "SOAP vigente",
+  revision_tecnica: "Revisión Técnica",
+  permiso_circulacion: "Permiso de Circulación",
+  licencia: "Licencia de conducir A3/A4/A5",
+  antecedentes: "Certificado de Antecedentes",
+  rut_empresa: "RUT de la empresa (e-RUT)",
+  representante_legal: "Cédula del representante legal",
+  carpeta_tributaria: "Carpeta Tributaria Electrónica",
+  vigencia_sociedad: "Certificado de vigencia de la sociedad",
+  poliza: "Póliza de seguro de carga",
+};
+
+/** Aviso interno (un solo correo por envío) cuando un usuario sube documentos TroncalCheck. */
+export const avisarDocumentosSubidos = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { documentos: string[] }) => ({
+    documentos: (Array.isArray(input?.documentos) ? input.documentos : [])
+      .filter((d) => typeof d === "string")
+      .slice(0, 20),
+  }))
+  .handler(async ({ data, context }) => {
+    if (!data.documentos.length) return { enviado: false };
+    const { data: perfil } = await context.supabase.rpc("mi_perfil");
+    const p = (perfil ?? {}) as { nombre?: string; rut?: string | null; rol?: string };
+    const enviado = await enviarCorreo({
+      plantilla: "nueva-verificacion",
+      para: "pelucanijaimem@gmail.com",
+      datos: {
+        nombre: p.nombre || "Sin nombre",
+        rut: p.rut || "No informado",
+        tipoCuenta:
+          p.rol === "empresa" ? "Dador de Carga / Generador" : "Transportista / Operador de Flota",
+        documentos: data.documentos.map((d) => ETIQUETAS_DOCUMENTO[d] ?? d),
+      },
+      idempotencyKey: `verificacion-${context.userId}-${Date.now()}`,
+    });
+    return { enviado };
   });
