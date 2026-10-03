@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 /** Documentos con fecha de vencimiento que el transportista ingresa manualmente. */
@@ -102,11 +103,22 @@ export function useVencimientos(userId?: string) {
       return;
     }
     setCargando(true);
-    const { data } = await supabase
+    // Espera a que la sesión esté restaurada antes de leer (si no, la lectura vuelve vacía).
+    const { data: ses } = await supabase.auth.getSession();
+    if (!ses.session || ses.session.user.id !== userId) {
+      setCargando(false);
+      return;
+    }
+    const { data, error } = await supabase
       .from("vencimientos_documentales")
       .select("patente, revision_tecnica, permiso_circulacion, soap, carga_peligrosa")
       .eq("user_id", userId)
       .maybeSingle();
+    setCargando(false);
+    if (error) {
+      toast.error("No pudimos cargar tus vencimientos", { description: error.message });
+      return;
+    }
     setDatos({
       patente: data?.patente ?? "",
       revision_tecnica: data?.revision_tecnica ?? "",
@@ -114,29 +126,46 @@ export function useVencimientos(userId?: string) {
       soap: data?.soap ?? "",
       carga_peligrosa: data?.carga_peligrosa ?? "",
     });
-    setCargando(false);
   }, [userId]);
 
   useEffect(() => {
     void recargar();
+    const { data: sub } = supabase.auth.onAuthStateChange((evento) => {
+      if (evento === "SIGNED_IN" || evento === "INITIAL_SESSION") void recargar();
+    });
+    return () => sub.subscription.unsubscribe();
   }, [recargar]);
 
   const guardar = useCallback(
     async (valores: Vencimientos): Promise<string | null> => {
       if (!userId) return "Debes iniciar sesión para guardar tus vencimientos.";
-      const { error } = await supabase.from("vencimientos_documentales").upsert(
-        {
-          user_id: userId,
-          patente: valores.patente.trim(),
-          revision_tecnica: valores.revision_tecnica || null,
-          permiso_circulacion: valores.permiso_circulacion || null,
-          soap: valores.soap || null,
-          carga_peligrosa: valores.carga_peligrosa || null,
-        },
-        { onConflict: "user_id" },
-      );
+      const { data: ses } = await supabase.auth.getSession();
+      if (!ses.session) return "Tu sesión expiró. Vuelve a iniciar sesión e inténtalo nuevamente.";
+      const { data, error } = await supabase
+        .from("vencimientos_documentales")
+        .upsert(
+          {
+            user_id: userId,
+            patente: valores.patente.trim(),
+            revision_tecnica: valores.revision_tecnica || null,
+            permiso_circulacion: valores.permiso_circulacion || null,
+            soap: valores.soap || null,
+            carga_peligrosa: valores.carga_peligrosa || null,
+          },
+          { onConflict: "user_id" },
+        )
+        .select("patente, revision_tecnica, permiso_circulacion, soap, carga_peligrosa")
+        .single();
       if (error) return error.message;
-      setDatos(valores);
+      if (!data) return "El guardado no fue confirmado. Revisa tu conexión e inténtalo nuevamente.";
+      // Refleja exactamente lo que quedó guardado.
+      setDatos({
+        patente: data.patente ?? "",
+        revision_tecnica: data.revision_tecnica ?? "",
+        permiso_circulacion: data.permiso_circulacion ?? "",
+        soap: data.soap ?? "",
+        carga_peligrosa: data.carga_peligrosa ?? "",
+      });
       return null;
     },
     [userId],
