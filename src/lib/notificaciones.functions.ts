@@ -262,6 +262,11 @@ export const avisarDocumentosSubidos = createServerFn({ method: "POST" })
         tipoCuenta:
           p.rol === "empresa" ? "Dador de Carga / Generador" : "Transportista / Operador de Flota",
         documentos: data.documentos.map((d) => ETIQUETAS_DOCUMENTO[d] ?? d),
+        fecha: new Date().toLocaleString("es-CL", {
+          timeZone: "America/Santiago",
+          dateStyle: "long",
+          timeStyle: "short",
+        }),
       },
       idempotencyKey: `verificacion-${context.userId}-${Date.now()}`,
     });
