@@ -30,10 +30,20 @@ const FONDO = {
 /** Vencimientos documentales del transportista y su vehículo (ingreso manual). */
 export function DocExpiryPanel({ userId }: { userId?: string }) {
   const { datos, guardar } = useVencimientos(userId);
-  const [form, setForm] = useState<Vencimientos>(datos);
+  const [form, setFormInterno] = useState<Vencimientos>(datos);
+  const [sucio, setSucio] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
-  useEffect(() => setForm(datos), [datos]);
+  const setForm = (v: Vencimientos) => {
+    setSucio(true);
+    setFormInterno(v);
+  };
+
+  // Solo sincroniza desde la base de datos si el usuario no tiene cambios sin guardar
+  // (una recarga de sesión al volver a la pestaña no debe borrar lo que escribió).
+  useEffect(() => {
+    if (!sucio) setFormInterno(datos);
+  }, [datos, sucio]);
 
   // Avisos automáticos a 30, 15 y 7 días del vencimiento.
   useEffect(() => {
@@ -53,6 +63,7 @@ export function DocExpiryPanel({ userId }: { userId?: string }) {
       toast.error("No pudimos guardar tus vencimientos", { description: error });
       return;
     }
+    setSucio(false);
     toast.success("Vencimientos guardados", {
       description: "Te avisaremos cuando falten 30, 15 y 7 días para cada vencimiento.",
     });
