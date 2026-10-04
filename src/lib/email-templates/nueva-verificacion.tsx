@@ -7,6 +7,7 @@ interface Props {
   rut?: string
   tipoCuenta?: string
   documentos?: string[]
+  fecha?: string
 }
 
 const Email = ({
@@ -14,6 +15,7 @@ const Email = ({
   rut = 'No informado',
   tipoCuenta = 'No informado',
   documentos = [],
+  fecha = 'No informada',
 }: Props) => (
   <Html lang="es" dir="ltr">
     <Head />
@@ -26,6 +28,7 @@ const Email = ({
           <Text style={text}><strong>Nombre:</strong> {nombre}</Text>
           <Text style={text}><strong>RUT:</strong> {rut}</Text>
           <Text style={text}><strong>Tipo de cuenta:</strong> {tipoCuenta}</Text>
+          <Text style={text}><strong>Fecha y hora:</strong> {fecha}</Text>
           <Text style={text}><strong>Documentos subidos:</strong></Text>
           {documentos.length ? (
             documentos.map((d) => (
@@ -52,6 +55,7 @@ export const template = {
     rut: '12.345.678-9',
     tipoCuenta: 'Transportista / Operador de Flota',
     documentos: ['Revisión Técnica al día', 'Permiso de Circulación'],
+    fecha: '3 de octubre de 2026, 17:20',
   },
 } satisfies TemplateEntry
 
