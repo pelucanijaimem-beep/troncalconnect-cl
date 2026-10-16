@@ -4,10 +4,9 @@ import "leaflet/dist/leaflet.css";
 import type { CamionDisponible } from "@/lib/use-disponibilidad";
 import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
 import {
-  DARK_LABELS_URL,
-  DARK_TILE_ATTRIBUTION,
-  DARK_TILE_MAX_ZOOM,
-  DARK_TILE_URL,
+  STREET_TILE_ATTRIBUTION,
+  STREET_TILE_MAX_ZOOM,
+  STREET_TILE_URL,
   inyectarEstilosPulso,
 } from "./mapTheme";
 
@@ -45,12 +44,10 @@ export default function AvailabilityMap({
     inyectarEstilosPulso();
     if (!contenedor.current || mapa.current) return;
     const m = L.map(contenedor.current, { zoomControl: true }).setView(CENTRO_POR_DEFECTO, 6);
-    L.tileLayer(DARK_TILE_URL, {
-      attribution: DARK_TILE_ATTRIBUTION,
-      maxZoom: DARK_TILE_MAX_ZOOM,
-    }).addTo(m);
-    L.tileLayer(DARK_LABELS_URL, {
-      maxZoom: DARK_TILE_MAX_ZOOM,
+    L.tileLayer(STREET_TILE_URL, {
+      attribution: STREET_TILE_ATTRIBUTION,
+      subdomains: "abcd",
+      maxZoom: STREET_TILE_MAX_ZOOM,
     }).addTo(m);
     mapa.current = m;
     return () => {

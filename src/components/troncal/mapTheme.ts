@@ -30,3 +30,10 @@ export function inyectarEstilosPulso() {
 `;
   document.head.appendChild(hoja);
 }
+
+// Mapa claro con calles, ciudades y rutas (datos abiertos, apto para producción, sin API key).
+// Lo usa el mapa de "Actividad en vivo" de la portada.
+export const STREET_TILE_URL = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+export const STREET_TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+export const STREET_TILE_MAX_ZOOM = 19;
