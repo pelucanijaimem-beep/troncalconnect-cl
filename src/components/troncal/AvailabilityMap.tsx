@@ -46,7 +46,6 @@ export default function AvailabilityMap({
     const m = L.map(contenedor.current, { zoomControl: true }).setView(CENTRO_POR_DEFECTO, 6);
     L.tileLayer(STREET_TILE_URL, {
       attribution: STREET_TILE_ATTRIBUTION,
-      subdomains: "abcd",
       maxZoom: STREET_TILE_MAX_ZOOM,
     }).addTo(m);
     mapa.current = m;
