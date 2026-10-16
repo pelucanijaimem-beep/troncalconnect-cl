@@ -1,21 +1,37 @@
 import { Check, Minus } from "lucide-react";
 
-type Fila = { funcion: string; basico: boolean; avanzado: boolean; pro: boolean; nota?: string };
+type Fila = {
+  funcion: string;
+  inicial: boolean;
+  transportistaPro: boolean;
+  empresaPro: boolean;
+  nota?: string;
+};
 
 const FILAS: Fila[] = [
-  { funcion: "Búsqueda de Cargas", basico: true, avanzado: true, pro: true },
-  { funcion: "Retornos (Backhauls)", basico: false, avanzado: true, pro: true },
-  { funcion: "Calculadora $/km", basico: true, avanzado: true, pro: true },
-  { funcion: "Reputación de Empresas", basico: false, avanzado: true, pro: true },
+  { funcion: "Búsqueda de Cargas", inicial: true, transportistaPro: true, empresaPro: true },
+  { funcion: "Retornos (Backhauls)", inicial: false, transportistaPro: true, empresaPro: true },
+  { funcion: "Calculadora $/km", inicial: true, transportistaPro: true, empresaPro: true },
+  { funcion: "Reputación de Empresas", inicial: false, transportistaPro: true, empresaPro: true },
   {
     funcion: "Cobertura nacional",
-    basico: true,
-    avanzado: true,
-    pro: true,
+    inicial: true,
+    transportistaPro: true,
+    empresaPro: true,
     nota: "Todo Chile · Expansión internacional más adelante",
   },
-  { funcion: "Seguimiento GPS en ruta", basico: false, avanzado: true, pro: true },
-  { funcion: "Bloqueo de empresas o choferes", basico: false, avanzado: false, pro: true },
+  {
+    funcion: "Seguimiento GPS en ruta",
+    inicial: false,
+    transportistaPro: true,
+    empresaPro: true,
+  },
+  {
+    funcion: "Bloqueo de empresas o choferes",
+    inicial: false,
+    transportistaPro: false,
+    empresaPro: true,
+  },
 ];
 
 function Celda({ activo }: { activo: boolean }) {
@@ -49,13 +65,13 @@ export function ComparisonTable() {
                   Función
                 </th>
                 <th className="border-b border-border px-4 py-3 text-center font-semibold text-foreground">
-                  Básico
+                  Inicial
                 </th>
                 <th className="border-b border-border px-4 py-3 text-center font-semibold text-foreground">
-                  Avanzado
+                  Transportista Pro
                 </th>
                 <th className="border-b border-border px-4 py-3 text-center font-semibold text-foreground">
-                  Pro
+                  Empresa Pro
                 </th>
               </tr>
             </thead>
@@ -68,9 +84,9 @@ export function ComparisonTable() {
                       <span className="block text-xs text-muted-foreground">{f.nota}</span>
                     )}
                   </td>
-                  <Celda activo={f.basico} />
-                  <Celda activo={f.avanzado} />
-                  <Celda activo={f.pro} />
+                  <Celda activo={f.inicial} />
+                  <Celda activo={f.transportistaPro} />
+                  <Celda activo={f.empresaPro} />
                 </tr>
               ))}
             </tbody>
