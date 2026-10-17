@@ -490,7 +490,7 @@ function AdminPage() {
                   {[
                     ...documentosRequeridos(rolDe(s.user_id)),
                     // El certificado ChileValora es opcional: se muestra solo si el usuario lo subió.
-                    ...((s.documentos as Record<string, string> | null)?.chilevalora_peligrosas ||
+                    ...((s.documentos as Record<string, string> | null)?.["chilevalora_peligrosas"] ||
                     normalizarChecklist(s.checklist)["chilevalora_peligrosas"].estado !== "pendiente"
                       ? [DOC_CHILEVALORA]
                       : []),
