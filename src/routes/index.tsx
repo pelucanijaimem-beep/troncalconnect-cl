@@ -25,6 +25,7 @@ import { AuthDialog } from "@/components/troncal/AuthDialog";
 import { PostTruckDialog } from "@/components/troncal/PostTruckDialog";
 import { PostLoadDialog } from "@/components/troncal/PostLoadDialog";
 import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
+import { PostularDialog } from "@/components/troncal/PostularDialog";
 import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
@@ -114,6 +115,8 @@ function Index() {
   const [camionOpen, setCamionOpen] = useState(false);
   const [fleteOpen, setFleteOpen] = useState(false);
   const [detalle, setDetalle] = useState<Carga | null>(null);
+  const [postulando, setPostulando] = useState<Carga | null>(null);
+  const [enviandoPostulacion, setEnviandoPostulacion] = useState(false);
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
@@ -258,7 +261,7 @@ function Index() {
       resumen: `${t.origen} → ${t.destino} · ${t.carroceria} · ${t.toneladas} Ton`,
     });
 
-  const postular = async (c: Carga) => {
+  const postular = (c: Carga) => {
     if (!sesion) {
       abrirAuth("registro");
       return;
@@ -285,13 +288,22 @@ function Index() {
       });
       return;
     }
-    const error = await postularACarga(c.id, sesion.id, `${c.origen} → ${c.destino}`);
+    setPostulando(c);
+  };
+
+  const confirmarPostulacion = async (linkRastreo: string) => {
+    const c = postulando;
+    if (!c || !sesion) return;
+    setEnviandoPostulacion(true);
+    const error = await postularACarga(c.id, sesion.id, `${c.origen} → ${c.destino}`, linkRastreo);
+    setEnviandoPostulacion(false);
     if (error) {
       toast.error("No pudimos enviar tu postulación", {
         description: "Verifica que tu plan mensual esté activo e inténtalo nuevamente.",
       });
       return;
     }
+    setPostulando(null);
     agregarPostulacion(c.id);
     toast.success("Reserva enviada al instante", {
       description: `${c.empresa} recibió tu aviso con tus datos de contacto y tu sello TroncalCheck.`,
