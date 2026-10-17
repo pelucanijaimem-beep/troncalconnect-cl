@@ -88,19 +88,12 @@ export function VerificationDialog({
     const vigencia = String(d.get("chv_vigencia") ?? "");
     const archivo = (e.currentTarget.elements.namedItem("chv_archivo") as HTMLInputElement | null)
       ?.files?.[0];
-    if (!numero || !vigencia || (!archivo && !chilevalora?.adjuntado)) {
+    if (!numero || !vigencia || !archivo) {
       toast.error("Completa número, vigencia y adjunta el certificado.");
       return;
     }
     setEnviandoChv(true);
-    const error = archivo
-      ? await guardarChilevalora({ userId, numero, vigencia, archivo })
-      : await guardarChilevalora({
-          userId,
-          numero,
-          vigencia,
-          archivo: new File([], "certificado.pdf"),
-        });
+    const error = await guardarChilevalora({ userId, numero, vigencia, archivo });
     setEnviandoChv(false);
     if (error) {
       toast.error("No pudimos recibir el certificado", { description: error });
@@ -235,6 +228,85 @@ export function VerificationDialog({
             </Button>
           </DialogFooter>
         </form>
+
+        {esCamionero && (
+          <div className="space-y-4 border-t border-border pt-4">
+            <form onSubmit={(e) => void enviarChilevalora(e)} className="space-y-3">
+              <p className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                <Flame className="h-4 w-4 text-primary" /> {DOC_CHILEVALORA.label} (opcional)
+              </p>
+              <p className="text-xs text-muted-foreground">{DOC_CHILEVALORA.ayuda}</p>
+              {chilevalora?.adjuntado && (
+                <p className="inline-flex items-center gap-1 text-xs font-medium text-success">
+                  <FileCheck2 className="h-3.5 w-3.5" /> Certificado adjuntado — estado:{" "}
+                  {chilevalora.estado === "aprobado"
+                    ? "Aprobado"
+                    : chilevalora.estado === "rechazado"
+                      ? "Rechazado"
+                      : "Pendiente de revisión"}
+                  {chilevalora.vigencia
+                    ? ` · Vigente hasta ${new Date(chilevalora.vigencia + "T00:00:00").toLocaleDateString("es-CL")}`
+                    : ""}
+                </p>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="chv_numero">Número de certificado</Label>
+                  <Input
+                    id="chv_numero"
+                    name="chv_numero"
+                    placeholder="Ej. 12345678"
+                    defaultValue={chilevalora?.numero ?? ""}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="chv_vigencia">Fecha de vigencia</Label>
+                  <Input id="chv_vigencia" name="chv_vigencia" type="date" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="chv_archivo">Foto o PDF del certificado</Label>
+                <Input
+                  id="chv_archivo"
+                  name="chv_archivo"
+                  type="file"
+                  accept="image/*,.pdf"
+                  className="cursor-pointer"
+                />
+              </div>
+              <Button type="submit" variant="outline" disabled={enviandoChv}>
+                {enviandoChv ? "Enviando…" : "Enviar certificado a revisión"}
+              </Button>
+            </form>
+
+            <form onSubmit={(e) => void enviarForestal(e)} className="space-y-3">
+              <p className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                <Trees className="h-4 w-4 text-success" /> Inducción de transporte forestal
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Declara que cuentas con inducción o capacitación de transporte forestal. Es una
+                declaración simple: no requiere aprobación del equipo.
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="forestal_empresa">Empresa forestal (opcional)</Label>
+                  <Input
+                    id="forestal_empresa"
+                    name="forestal_empresa"
+                    placeholder="¿Dónde la recibiste?"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="forestal_fecha">Fecha de la inducción</Label>
+                  <Input id="forestal_fecha" name="forestal_fecha" type="date" required />
+                </div>
+              </div>
+              <Button type="submit" variant="outline" disabled={enviandoForestal}>
+                {enviandoForestal ? "Guardando…" : "Declarar inducción forestal"}
+              </Button>
+            </form>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
