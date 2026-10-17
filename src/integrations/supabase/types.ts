@@ -678,6 +678,7 @@ export type Database = {
       cupos_fundador: { Args: never; Returns: number }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
+      mi_verificacion_resumen: { Args: never; Returns: Json }
       normalizar_rut: { Args: { p_rut: string }; Returns: string }
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
       perfil_publico: { Args: { p_id: string }; Returns: Json }
