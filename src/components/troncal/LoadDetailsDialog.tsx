@@ -4,6 +4,7 @@ import {
   Lock,
   MessageCircle,
   Phone,
+  Satellite,
   Share2,
   ShieldCheck,
   Wallet,
@@ -37,7 +38,7 @@ import { useEffect } from "react";
 /** Lista de transportistas que postularon. Solo muestra nombre y sello, nunca documentos. */
 function ApplicantsPanel({ carga }: { carga: Carga }) {
   const [postulantes, setPostulantes] = useState<
-    { id: string; nombre: string; mensaje: string }[]
+    { id: string; nombre: string; mensaje: string; linkRastreo: string | null }[]
   >([]);
   const verificaciones = useVerificaciones();
 
@@ -71,6 +72,13 @@ function ApplicantsPanel({ carga }: { carga: Carga }) {
               >
                 <span className="font-semibold text-foreground">{p.nombre}</span>
                 <VerificationBadge estado={v.estado} asegurado={v.asegurado} compacto />
+                {p.linkRastreo && (
+                  <Button asChild size="sm" variant="outline" className="ml-auto">
+                    <a href={p.linkRastreo} target="_blank" rel="noreferrer noopener">
+                      <Satellite className="h-4 w-4" /> Ver ubicación en vivo del camión
+                    </a>
+                  </Button>
+                )}
               </li>
             );
           })}

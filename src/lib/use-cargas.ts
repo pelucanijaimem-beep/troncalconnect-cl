@@ -195,10 +195,18 @@ export async function completarCarga(id: string) {
 
 
 /** Postular a una carga. Requiere plan mensual activo (validado también por la base de datos). */
-export async function postularACarga(cargaId: string, userId: string, mensaje: string) {
-  const { error } = await supabase
-    .from("postulaciones")
-    .insert({ carga_id: cargaId, user_id: userId, mensaje });
+export async function postularACarga(
+  cargaId: string,
+  userId: string,
+  mensaje: string,
+  linkRastreoGps?: string,
+) {
+  const { error } = await supabase.from("postulaciones").insert({
+    carga_id: cargaId,
+    user_id: userId,
+    mensaje,
+    link_rastreo_gps: linkRastreoGps?.trim() || null,
+  });
   return error?.message ?? null;
 }
 
@@ -232,20 +240,25 @@ export function useMisPostulaciones(userId?: string) {
  */
 export async function postulantesDeCarga(
   cargaId: string,
-): Promise<{ id: string; nombre: string; mensaje: string }[]> {
+): Promise<{ id: string; nombre: string; mensaje: string; linkRastreo: string | null }[]> {
   const { data } = await supabase
     .from("postulaciones")
-    .select("user_id, mensaje")
+    .select("user_id, mensaje, link_rastreo_gps")
     .eq("carga_id", cargaId)
     .order("created_at", { ascending: true });
   const filas = data ?? [];
-  const salida: { id: string; nombre: string; mensaje: string }[] = [];
+  const salida: { id: string; nombre: string; mensaje: string; linkRastreo: string | null }[] = [];
   for (const fila of filas) {
     const { data: perfil } = await supabase.rpc("perfil_publico", {
       p_id: fila.user_id as string,
     });
     const nombre = (perfil as { nombre?: string } | null)?.nombre ?? "Transportista";
-    salida.push({ id: fila.user_id as string, nombre, mensaje: fila.mensaje ?? "" });
+    salida.push({
+      id: fila.user_id as string,
+      nombre,
+      mensaje: fila.mensaje ?? "",
+      linkRastreo: (fila.link_rastreo_gps as string | null) ?? null,
+    });
   }
   return salida;
 }

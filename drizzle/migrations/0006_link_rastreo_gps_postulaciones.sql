@@ -1,0 +1,2 @@
+ALTER TABLE public.postulaciones ADD COLUMN link_rastreo_gps text;
+COMMENT ON COLUMN public.postulaciones.link_rastreo_gps IS 'Enlace externo de rastreo GPS del camión, pegado manualmente por el transportista al postular (opcional).';
