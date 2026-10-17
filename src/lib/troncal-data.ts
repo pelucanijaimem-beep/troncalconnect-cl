@@ -126,6 +126,18 @@ export const clp = (valor: number) => money(valor, "CL");
 /** Quién puede ver una publicación: todo el tablero o solo invitados. */
 export type Visibilidad = "publica" | "privada";
 
+/** Tipo de carga según requisitos del transportista (DS N°298 para peligrosas). */
+export type TipoCarga = "general" | "peligrosa" | "forestal";
+
+export const TIPOS_CARGA: { valor: TipoCarga; label: string }[] = [
+  { valor: "general", label: "General" },
+  { valor: "peligrosa", label: "Combustibles / Sustancias peligrosas" },
+  { valor: "forestal", label: "Forestal" },
+];
+
+export const labelTipoCarga = (t?: TipoCarga) =>
+  TIPOS_CARGA.find((x) => x.valor === t)?.label ?? "General";
+
 export type Carga = {
   id: string;
   pais: PaisCodigo;
@@ -154,6 +166,8 @@ export type Carga = {
   visibilidad?: Visibilidad;
   /** Dueño de la publicación (cuando viene de la base de datos). */
   userId?: string;
+  /** Tipo de carga: las peligrosas exigen certificado ChileValora; las forestales, inducción declarada. */
+  tipoCarga?: TipoCarga;
 };
 
 export type Camion = {
