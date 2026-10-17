@@ -1,4 +1,6 @@
 # Tareas
+- [ ] Restringir lectura de archivos documentales exclusivamente a administradores y auditar vistas y respuestas públicas.
+- [ ] Verificar permisos documentales de empresa, transportista y visitante.
 - [x] Confirmar y reforzar RUT obligatorio y válido en ambos registros y en el perfil.
 - [ ] Conectar cruce de identidad verificada con revisión manual. Bloqueado: no existe integración con el proveedor; se necesita ejemplo anonimizado de resultado, sesión y firma del aviso.
 - [x] Probar rechazo visible de RUT inválido y reglas módulo 11 en cliente y base de datos.
