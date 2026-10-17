@@ -57,6 +57,13 @@
       "when": 1792255086892,
       "tag": "0007_tipo_carga_y_certificaciones",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792255155985,
+      "tag": "0008_guardar_chilevalora_rpc",
+      "breakpoints": true
     }
   ]
 }

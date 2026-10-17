@@ -22,6 +22,7 @@ export type Documentos = {
   representante_legal?: string;
   carpeta_tributaria?: string;
   vigencia_sociedad?: string;
+  chilevalora_peligrosas?: string;
 };
 
 /** Tipo de cuenta que determina qué documentos se exigen. */
@@ -41,7 +42,8 @@ export type ClaveDocumento =
   | "rut_empresa"
   | "representante_legal"
   | "carpeta_tributaria"
-  | "vigencia_sociedad";
+  | "vigencia_sociedad"
+  | "chilevalora_peligrosas";
 
 export type Checklist = Record<ClaveDocumento, ItemChecklist>;
 
@@ -104,10 +106,23 @@ export const DOCUMENTOS_EMPRESA: DefinicionDocumento[] = [
   },
 ];
 
+/**
+ * Certificado ChileValora de sustancias peligrosas (perfil P-4923-8332-002-V02).
+ * Es OPCIONAL: no se exige para el sello de identidad, pero habilita postular
+ * a cargas de combustibles / sustancias peligrosas cuando está aprobado y vigente.
+ */
+export const DOC_CHILEVALORA: DefinicionDocumento = {
+  clave: "chilevalora_peligrosas",
+  label: "Certificado ChileValora — Conductor(a) de sustancias peligrosas",
+  ayuda:
+    "Perfil P-4923-8332-002-V02. Indica el número de certificado y su fecha de vigencia, y adjunta la foto o PDF.",
+};
+
 /** Unión de ambos listados, usada por el panel de revisión interno. */
 export const TODOS_DOCUMENTOS: DefinicionDocumento[] = [
   ...DOCUMENTOS_CAMIONERO,
   ...DOCUMENTOS_EMPRESA,
+  DOC_CHILEVALORA,
 ];
 
 /** Documentos exigidos según el tipo de cuenta. */

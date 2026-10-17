@@ -741,6 +741,10 @@ export type Database = {
         Returns: boolean
       }
       cupos_fundador: { Args: never; Returns: number }
+      guardar_chilevalora: {
+        Args: { p_numero: string; p_ruta: string; p_vigencia: string }
+        Returns: undefined
+      }
       insignias_transportista: { Args: { p_id: string }; Returns: Json }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_chilevalora: { Args: never; Returns: Json }
