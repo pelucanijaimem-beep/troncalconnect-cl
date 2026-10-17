@@ -17,6 +17,7 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
+import { Route as ApiPublicIdentidadRouteImport } from './routes/api/public/identidad'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -61,6 +62,11 @@ const CargaIdRoute = CargaIdRouteImport.update({
   path: '/carga/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicIdentidadRoute = ApiPublicIdentidadRouteImport.update({
+  id: '/api/public/identidad',
+  path: '/api/public/identidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/registro'
     | '/terminos'
     | '/carga/$id'
+    | '/api/public/identidad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/registro'
     | '/terminos'
     | '/carga/$id'
+    | '/api/public/identidad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/registro'
     | '/terminos'
     | '/carga/$id'
+    | '/api/public/identidad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   RegistroRoute: typeof RegistroRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
+  ApiPublicIdentidadRoute: typeof ApiPublicIdentidadRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CargaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/identidad': {
+      id: '/api/public/identidad'
+      path: '/api/public/identidad'
+      fullPath: '/api/public/identidad'
+      preLoaderRoute: typeof ApiPublicIdentidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistroRoute: RegistroRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
+  ApiPublicIdentidadRoute: ApiPublicIdentidadRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,

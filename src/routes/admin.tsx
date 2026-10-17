@@ -60,6 +60,7 @@ type Solicitud = {
   checklist: unknown;
   nota_admin: string;
   updated_at: string;
+  requiere_revision_manual: boolean;
 };
 
 
@@ -171,7 +172,7 @@ function AdminPage() {
       supabase
         .from("verificaciones")
         .select(
-          "id, user_id, nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at",
+          "id, user_id, nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at, requiere_revision_manual",
         )
 
         .order("updated_at", { ascending: false }),
@@ -278,14 +279,14 @@ function AdminPage() {
       return;
     }
     const nuevo = { ...actual, [clave]: { estado, motivo } };
-    const todosAprobados = documentosRequeridos(rolDe(s.user_id)).every(
+    const todosAprobados = !s.requiere_revision_manual && documentosRequeridos(rolDe(s.user_id)).every(
       (d) => nuevo[d.clave].estado === "aprobado",
     );
     const { error } = await supabase
       .from("verificaciones")
       .update(
         todosAprobados
-          ? { checklist: nuevo, estado: "aprobado", nota_admin: "" }
+          ? { checklist: nuevo, estado: "aprobado", nota_admin: "", requiere_revision_manual: false }
           : { checklist: nuevo, ...(s.estado === "aprobado" ? { estado: "pendiente" } : {}) },
       )
       .eq("id", s.id);
@@ -313,6 +314,7 @@ function AdminPage() {
       .update({
         estado: aprobar ? "aprobado" : "rechazado",
         nota_admin: aprobar ? "" : nota,
+        requiere_revision_manual: false,
       })
       .eq("id", s.id);
     if (!error) {
@@ -437,6 +439,9 @@ function AdminPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="font-bold text-foreground">{s.nombre}</p>
+                    {s.requiere_revision_manual && (
+                      <p className="text-sm font-semibold text-destructive">Requiere revisión manual</p>
+                    )}
                     <p className="text-xs text-muted-foreground">
                       Enviado el {new Date(s.updated_at).toLocaleString("es-CL")}
                       {s.asegurado && " · Adjuntó póliza de seguro"}

@@ -36,6 +36,13 @@
       "when": 1792246435059,
       "tag": "0004_test_document_privacy_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792247360199,
+      "tag": "0005_identidad_callback_seguro",
+      "breakpoints": true
     }
   ]
 }

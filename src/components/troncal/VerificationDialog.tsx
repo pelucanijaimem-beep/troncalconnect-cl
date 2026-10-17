@@ -125,7 +125,12 @@ export function VerificationDialog({
             Estado actual
           </p>
           <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} />
-          {verificacion.estado === "en_revision" && (
+          {verificacion.revisionEnCurso && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Estamos revisando tu verificación, te avisaremos pronto.
+            </p>
+          )}
+          {verificacion.estado === "en_revision" && !verificacion.revisionEnCurso && (
             <p className="mt-2 text-xs text-muted-foreground">
               Tus documentos han sido recibidos. Nuestro equipo validará la información en un plazo
               máximo de 24 horas hábiles.

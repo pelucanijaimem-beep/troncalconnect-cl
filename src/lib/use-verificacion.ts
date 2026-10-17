@@ -127,6 +127,7 @@ export type Verificacion = {
   checklist: Checklist;
   actualizado: string;
   nota: string;
+  revisionEnCurso?: boolean;
 };
 
 export const VERIFICACION_VACIA: Verificacion = {
@@ -197,6 +198,7 @@ export async function recargarVerificaciones() {
       checklist: unknown;
       nota_admin: string;
       updated_at: string;
+      revision_en_curso?: boolean;
     } | null;
     if (propia) {
       nuevo[claveUsuario(propia.nombre ?? "")] = {
@@ -208,6 +210,7 @@ export async function recargarVerificaciones() {
         checklist: normalizarChecklist(propia.checklist),
         actualizado: propia.updated_at ?? "",
         nota: propia.nota_admin ?? "",
+        revisionEnCurso: Boolean(propia.revision_en_curso),
       };
     }
   }

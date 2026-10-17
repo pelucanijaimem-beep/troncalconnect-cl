@@ -486,6 +486,47 @@ export type Database = {
           },
         ]
       }
+      sesiones_identidad: {
+        Row: {
+          created_at: string
+          entorno: string
+          estado: string
+          eventos: string[]
+          rut_coincide: boolean | null
+          session_id: string
+          ultimo_evento: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entorno?: string
+          estado?: string
+          eventos?: string[]
+          rut_coincide?: boolean | null
+          session_id: string
+          ultimo_evento?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entorno?: string
+          estado?: string
+          eventos?: string[]
+          rut_coincide?: boolean | null
+          session_id?: string
+          ultimo_evento?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sesiones_identidad_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitudes_eliminacion: {
         Row: {
           created_at: string
@@ -586,6 +627,7 @@ export type Database = {
           id: string
           nombre: string
           nota_admin: string
+          requiere_revision_manual: boolean
           updated_at: string
           user_id: string
         }
@@ -598,6 +640,7 @@ export type Database = {
           id?: string
           nombre?: string
           nota_admin?: string
+          requiere_revision_manual?: boolean
           updated_at?: string
           user_id: string
         }
@@ -610,6 +653,7 @@ export type Database = {
           id?: string
           nombre?: string
           nota_admin?: string
+          requiere_revision_manual?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -683,6 +727,17 @@ export type Database = {
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
       perfil_publico: { Args: { p_id: string }; Returns: Json }
       perfiles_admin: { Args: never; Returns: Json }
+      procesar_resultado_identidad: {
+        Args: {
+          p_entorno: string
+          p_estado: string
+          p_event: string
+          p_fecha: number
+          p_rut: string
+          p_session: string
+        }
+        Returns: string
+      }
       reservar_cupo_fundador: { Args: never; Returns: number }
       rut_chileno_valido: { Args: { p_rut: string }; Returns: boolean }
       rut_registrado: { Args: { p_rut: string }; Returns: boolean }
