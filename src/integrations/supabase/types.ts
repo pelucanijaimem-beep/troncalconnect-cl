@@ -683,6 +683,7 @@ export type Database = {
       perfil_publico: { Args: { p_id: string }; Returns: Json }
       perfiles_admin: { Args: never; Returns: Json }
       reservar_cupo_fundador: { Args: never; Returns: number }
+      rut_chileno_valido: { Args: { p_rut: string }; Returns: boolean }
       rut_registrado: { Args: { p_rut: string }; Returns: boolean }
       tarifa_ruta: {
         Args: { _destino: string; _origen: string }
