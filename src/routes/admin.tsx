@@ -279,7 +279,7 @@ function AdminPage() {
       return;
     }
     const nuevo = { ...actual, [clave]: { estado, motivo } };
-    const todosAprobados = documentosRequeridos(rolDe(s.user_id)).every(
+    const todosAprobados = !s.requiere_revision_manual && documentosRequeridos(rolDe(s.user_id)).every(
       (d) => nuevo[d.clave].estado === "aprobado",
     );
     const { error } = await supabase
