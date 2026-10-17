@@ -75,6 +75,61 @@ export function VerificationDialog({
   const verificacion = useVerificacion(usuario);
   const [enviando, setEnviando] = useState(false);
   const campos = camposDe(rol);
+  const esCamionero = rol === "camionero";
+  const chilevalora = useMiChilevalora(open && esCamionero);
+  const [enviandoChv, setEnviandoChv] = useState(false);
+  const [enviandoForestal, setEnviandoForestal] = useState(false);
+
+  const enviarChilevalora = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!userId) return;
+    const d = new FormData(e.currentTarget);
+    const numero = String(d.get("chv_numero") ?? "").trim();
+    const vigencia = String(d.get("chv_vigencia") ?? "");
+    const archivo = (e.currentTarget.elements.namedItem("chv_archivo") as HTMLInputElement | null)
+      ?.files?.[0];
+    if (!numero || !vigencia || (!archivo && !chilevalora?.adjuntado)) {
+      toast.error("Completa número, vigencia y adjunta el certificado.");
+      return;
+    }
+    setEnviandoChv(true);
+    const error = archivo
+      ? await guardarChilevalora({ userId, numero, vigencia, archivo })
+      : await guardarChilevalora({
+          userId,
+          numero,
+          vigencia,
+          archivo: new File([], "certificado.pdf"),
+        });
+    setEnviandoChv(false);
+    if (error) {
+      toast.error("No pudimos recibir el certificado", { description: error });
+      return;
+    }
+    toast.success("Certificado recibido", {
+      description: "El equipo TroncalCheck lo revisará antes de habilitarte para sustancias peligrosas.",
+    });
+  };
+
+  const enviarForestal = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!userId) return;
+    const d = new FormData(e.currentTarget);
+    setEnviandoForestal(true);
+    const error = await guardarInduccionForestal({
+      userId,
+      empresa: String(d.get("forestal_empresa") ?? ""),
+      fecha: String(d.get("forestal_fecha") ?? ""),
+    });
+    setEnviandoForestal(false);
+    if (error) {
+      toast.error("No pudimos guardar tu declaración", { description: error });
+      return;
+    }
+    toast.success("Inducción forestal declarada", {
+      description: "Ya puedes postular a cargas forestales.",
+    });
+  };
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
