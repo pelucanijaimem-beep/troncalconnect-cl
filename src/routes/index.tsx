@@ -73,6 +73,16 @@ import { useCompartirUbicacion, useUbicacionViaje } from "@/lib/use-ubicacion-vi
 
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "TroncalTrack — Cargas y transportistas en Chile" },
+      { name: "description", content: "Busca y publica cargas en todo Chile con TroncalTrack. Conecta transportistas y dadores de carga con verificación de identidad." },
+      { property: "og:title", content: "TroncalTrack — Cargas y transportistas en Chile" },
+      { property: "og:description", content: "Busca y publica cargas en todo Chile con TroncalTrack. Conecta transportistas y dadores de carga con verificación de identidad." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 

@@ -16,9 +16,12 @@ export function formatearRut(valor: string): string {
 
 /** Valida el dígito verificador con módulo 11. */
 export function rutValido(valor: string): boolean {
+  // Acepta separadores habituales, pero no descarta letras ni otros caracteres.
+  if (!/^[0-9.kK\s-]+$/.test(valor)) return false;
   const limpio = normalizarRut(valor);
-  if (limpio.length < 8) return false;
+  if (!/^\d{7,8}[0-9k]$/.test(limpio)) return false;
   const cuerpo = limpio.slice(0, -1);
+  if (Number(cuerpo) === 0) return false;
   const dv = limpio.slice(-1);
   if (!/^\d+$/.test(cuerpo)) return false;
   let suma = 0;
