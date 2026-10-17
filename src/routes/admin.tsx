@@ -20,6 +20,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
 import {
+  DOC_CHILEVALORA,
   documentosRequeridos,
   normalizarChecklist,
   type ClaveDocumento,
@@ -486,7 +487,14 @@ function AdminPage() {
                   <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                     Checklist documento por documento
                   </p>
-                  {documentosRequeridos(rolDe(s.user_id)).map((d) => {
+                  {[
+                    ...documentosRequeridos(rolDe(s.user_id)),
+                    // El certificado ChileValora es opcional: se muestra solo si el usuario lo subió.
+                    ...((s.documentos as Record<string, string> | null)?.chilevalora_peligrosas ||
+                    normalizarChecklist(s.checklist).chilevalora_peligrosas.estado !== "pendiente"
+                      ? [DOC_CHILEVALORA]
+                      : []),
+                  ].map((d) => {
                     const item = normalizarChecklist(s.checklist)[d.clave];
                     const ruta = (s.documentos as Record<string, string> | null)?.[d.clave];
                     return (
