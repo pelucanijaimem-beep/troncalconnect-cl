@@ -23,9 +23,11 @@ import {
 import {
   CARROCERIAS,
   DIAS_PAGO,
+  TIPOS_CARGA,
   getPais,
   type Carroceria,
   type PaisCodigo,
+  type TipoCarga,
 } from "@/lib/troncal-data";
 import { publicarCargaDB } from "@/lib/use-cargas";
 import { avisarCoincidencias } from "@/lib/notificaciones.functions";
@@ -43,6 +45,7 @@ export function PostLoadDialog({
   pais?: PaisCodigo;
 }) {
   const [carroceria, setCarroceria] = useState("");
+  const [tipoCarga, setTipoCarga] = useState<TipoCarga | "">("");
   const [tipoPublicador, setTipoPublicador] = useState<"generador" | "intermediario">("generador");
   const [diasPago, setDiasPago] = useState<string>("Pago a 30 días");
   const [visible, setVisible] = useState(true);
@@ -62,6 +65,12 @@ export function PostLoadDialog({
     const km = Number(d.get("km") ?? 0);
     const valorKm = Number(d.get("valorKm") ?? 0);
     const tipoCamion = (carroceria || "Rampla Plana") as Carroceria;
+    if (!tipoCarga) {
+      toast.error("Selecciona el tipo de carga", {
+        description: "Indica si es General, Combustibles / Sustancias peligrosas o Forestal.",
+      });
+      return;
+    }
 
     setEnviando(true);
     const { id, error } = await publicarCargaDB({
@@ -86,6 +95,7 @@ export function PostLoadDialog({
       diasPago,
       tipoPublicador,
       visibilidad: visible ? "publica" : "privada",
+      tipoCarga,
     });
     setEnviando(false);
 
@@ -95,6 +105,7 @@ export function PostLoadDialog({
     }
 
     setCarroceria("");
+    setTipoCarga("");
     setTipoPublicador("generador");
     setDiasPago("Pago a 30 días");
     setVisible(true);
@@ -154,6 +165,33 @@ export function PostLoadDialog({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Tipo de carga</Label>
+              <Select value={tipoCarga} onValueChange={(v) => setTipoCarga(v as TipoCarga)} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIPOS_CARGA.map((t) => (
+                    <SelectItem key={t.valor} value={t.valor}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {tipoCarga === "peligrosa" && (
+                <p className="text-xs text-muted-foreground">
+                  Solo podrán verla y postular transportistas con certificado ChileValora de
+                  sustancias peligrosas aprobado y vigente (DS N°298).
+                </p>
+              )}
+              {tipoCarga === "forestal" && (
+                <p className="text-xs text-muted-foreground">
+                  Solo podrán postular transportistas que declaren contar con inducción de
+                  transporte forestal.
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-ton">Peso (Toneladas)</Label>
