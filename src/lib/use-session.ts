@@ -139,9 +139,9 @@ export async function registrarUsuario(datos: {
   password: string;
   rol: Rol;
   telefono?: string;
-  rut?: string;
+  rut: string;
 }) {
-  if (!rutValido(datos.rut ?? "")) {
+  if (!rutValido(datos.rut)) {
     return "El RUT ingresado no es válido. Revísalo e inténtalo de nuevo.";
   }
 
@@ -159,7 +159,7 @@ export async function registrarUsuario(datos: {
         nombre: datos.nombre,
         rol: datos.rol,
         telefono: datos.telefono ?? "",
-        rut: datos.rut ?? "",
+        rut: normalizarRut(datos.rut),
       },
     },
   });

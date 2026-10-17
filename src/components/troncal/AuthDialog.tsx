@@ -220,7 +220,7 @@ export function AuthDialog({
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-rut">RUT</Label>
-                    <Input id="s-rut" name="rut" placeholder="12.345.678-9" required />
+                    <Input id="s-rut" name="rut" placeholder="12.345.678-9" maxLength={16} required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="s-email">Correo electrónico</Label>

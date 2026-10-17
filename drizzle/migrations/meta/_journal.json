@@ -8,6 +8,20 @@
       "when": 1790987028757,
       "tag": "0000_grants_favoritos_vencimientos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792245920698,
+      "tag": "0001_validate_profile_registration_rut",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792246029581,
+      "tag": "0002_verify_rut_validation_rules",
+      "breakpoints": true
     }
   ]
 }
