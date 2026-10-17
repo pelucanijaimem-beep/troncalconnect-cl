@@ -22,6 +22,20 @@
       "when": 1792246029581,
       "tag": "0002_verify_rut_validation_rules",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792246394341,
+      "tag": "0003_document_files_admin_read_only",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792246435059,
+      "tag": "0004_test_document_privacy_roles",
+      "breakpoints": true
     }
   ]
 }
