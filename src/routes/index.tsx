@@ -298,6 +298,22 @@ function Index() {
       });
       return;
     }
+    if (c.tipoCarga === "peligrosa" && !misInsignias.peligrosas) {
+      toast.error("Te falta la certificación de sustancias peligrosas", {
+        description:
+          "Para postular a esta carga necesitas el certificado ChileValora de Conductor(a) de sustancias peligrosas, aprobado y vigente. Súbelo desde tu verificación TroncalCheck.",
+      });
+      setVerificacionOpen(true);
+      return;
+    }
+    if (c.tipoCarga === "forestal" && !misInsignias.forestal) {
+      toast.error("Esta carga forestal requiere inducción declarada", {
+        description:
+          "Declara tu inducción o capacitación de transporte forestal desde tu verificación TroncalCheck y podrás postular.",
+      });
+      setVerificacionOpen(true);
+      return;
+    }
     setPostulando(c);
   };
 
