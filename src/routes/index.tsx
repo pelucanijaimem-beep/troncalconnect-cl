@@ -633,7 +633,7 @@ function Index() {
                     onFinalizar={(c) => setPodCarga(c)}
                     onRastrear={rastrear}
                     onVerViaje={setViajeActivo}
-                    onPostular={(carga) => void postular(carga)}
+                    onPostular={(carga) => postular(carga)}
                     onReportar={(carga) =>
                       requiereSesion(() =>
                         setReporte({
@@ -758,6 +758,12 @@ function Index() {
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
+      <PostularDialog
+        carga={postulando}
+        enviando={enviandoPostulacion}
+        onOpenChange={(o) => !o && setPostulando(null)}
+        onConfirmar={(link) => void confirmarPostulacion(link)}
+      />
       <LoadDetailsDialog
         accesoContacto={accesoContacto}
         contactoVerificado={soyVerificado}
