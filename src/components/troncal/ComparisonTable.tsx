@@ -18,7 +18,7 @@ const FILAS: Fila[] = [
     inicial: true,
     transportistaPro: true,
     empresaPro: true,
-    nota: "Todo Chile · Expansión internacional más adelante",
+    nota: "Todo Chile",
   },
   {
     funcion: "Seguimiento GPS en ruta",

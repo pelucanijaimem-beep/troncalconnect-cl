@@ -8,7 +8,6 @@ export function LaunchBanner() {
           <MapPin className="h-4 w-4 text-primary" />
           <span>
             <strong>Cobertura: Todo Chile.</strong> De Arica a Magallanes, operamos en todo Chile.
-            La expansión internacional se implementará más adelante.
           </span>
         </p>
       </div>
