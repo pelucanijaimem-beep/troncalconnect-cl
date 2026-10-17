@@ -169,7 +169,7 @@ export function normalizarChecklist(valor: unknown): Checklist {
 
 /**
  * Recarga el estado público del sello de confianza (sin documentos ni notas)
- * y agrega los datos completos únicamente de la cuenta con sesión iniciada.
+ * y agrega el resumen propio sin rutas de archivo ni enlaces de descarga.
  */
 export async function recargarVerificaciones() {
   const { data } = await supabase.rpc("verificaciones_publicas");
@@ -188,16 +188,23 @@ export async function recargarVerificaciones() {
   const { data: sesion } = await supabase.auth.getUser();
   const userId = sesion.user?.id;
   if (userId) {
-    const { data: propia } = await supabase
-      .from("verificaciones")
-      .select("nombre, estado, asegurado, documentos, checklist, nota_admin, updated_at")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const { data: resumen } = await supabase.rpc("mi_verificacion_resumen");
+    const propia = resumen as {
+      nombre: string;
+      estado: string;
+      asegurado: boolean;
+      documentos: Partial<Record<keyof Documentos, boolean>>;
+      checklist: unknown;
+      nota_admin: string;
+      updated_at: string;
+    } | null;
     if (propia) {
       nuevo[claveUsuario(propia.nombre ?? "")] = {
         estado: estadoDesdeDB(propia.estado),
         asegurado: Boolean(propia.asegurado),
-        documentos: (propia.documentos ?? {}) as Documentos,
+        documentos: Object.fromEntries(
+          Object.entries(propia.documentos ?? {}).filter(([, adjunto]) => adjunto).map(([clave]) => [clave, "adjuntado"]),
+        ) as Documentos,
         checklist: normalizarChecklist(propia.checklist),
         actualizado: propia.updated_at ?? "",
         nota: propia.nota_admin ?? "",
