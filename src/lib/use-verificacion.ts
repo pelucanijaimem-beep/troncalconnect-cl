@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { avisarDocumentosSubidos } from "@/lib/notificaciones.functions";
 
@@ -22,6 +22,7 @@ export type Documentos = {
   representante_legal?: string;
   carpeta_tributaria?: string;
   vigencia_sociedad?: string;
+  chilevalora_peligrosas?: string;
 };
 
 /** Tipo de cuenta que determina qué documentos se exigen. */
@@ -41,7 +42,8 @@ export type ClaveDocumento =
   | "rut_empresa"
   | "representante_legal"
   | "carpeta_tributaria"
-  | "vigencia_sociedad";
+  | "vigencia_sociedad"
+  | "chilevalora_peligrosas";
 
 export type Checklist = Record<ClaveDocumento, ItemChecklist>;
 
@@ -104,10 +106,23 @@ export const DOCUMENTOS_EMPRESA: DefinicionDocumento[] = [
   },
 ];
 
+/**
+ * Certificado ChileValora de sustancias peligrosas (perfil P-4923-8332-002-V02).
+ * Es OPCIONAL: no se exige para el sello de identidad, pero habilita postular
+ * a cargas de combustibles / sustancias peligrosas cuando está aprobado y vigente.
+ */
+export const DOC_CHILEVALORA: DefinicionDocumento = {
+  clave: "chilevalora_peligrosas",
+  label: "Certificado ChileValora — Conductor(a) de sustancias peligrosas",
+  ayuda:
+    "Perfil P-4923-8332-002-V02. Indica el número de certificado y su fecha de vigencia, y adjunta la foto o PDF.",
+};
+
 /** Unión de ambos listados, usada por el panel de revisión interno. */
 export const TODOS_DOCUMENTOS: DefinicionDocumento[] = [
   ...DOCUMENTOS_CAMIONERO,
   ...DOCUMENTOS_EMPRESA,
+  DOC_CHILEVALORA,
 ];
 
 /** Documentos exigidos según el tipo de cuenta. */
@@ -312,4 +327,102 @@ export function avanceChecklist(checklist: Checklist, rol: RolVerificacion = "ca
     pendientes: items.filter((i) => i.estado === "pendiente").length,
     total: items.length,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Certificado ChileValora de sustancias peligrosas e inducción forestal
+// ---------------------------------------------------------------------------
+
+export type ChilevaloraResumen = {
+  numero: string | null;
+  vigencia: string | null;
+  estado: EstadoDocumento;
+  adjuntado: boolean;
+};
+
+export type Insignias = { peligrosas: boolean; forestal: boolean };
+
+/** Sube el certificado ChileValora y deja su revisión en pendiente para el equipo. */
+export async function guardarChilevalora(params: {
+  userId: string;
+  numero: string;
+  vigencia: string;
+  archivo: File;
+}): Promise<string | null> {
+  const ext = params.archivo.name.split(".").pop() ?? "dat";
+  const ruta = `${params.userId}/chilevalora_peligrosas-${Date.now()}.${ext}`;
+  const { error: errorSubida } = await supabase.storage
+    .from("documentos")
+    .upload(ruta, params.archivo, { upsert: true });
+  if (errorSubida) return errorSubida.message;
+  const { error } = await supabase.rpc("guardar_chilevalora", {
+    p_numero: params.numero.trim(),
+    p_vigencia: params.vigencia,
+    p_ruta: ruta,
+  });
+  if (error) return error.message;
+  void avisarDocumentosSubidos({ data: { documentos: ["chilevalora_peligrosas"] } }).catch(() => {
+    /* el aviso no bloquea el envío */
+  });
+  await recargarVerificaciones();
+  return null;
+}
+
+/** Resumen del propio certificado ChileValora (sin rutas de archivo). */
+export function useMiChilevalora(activo: boolean): ChilevaloraResumen | null {
+  const [resumen, setResumen] = useState<ChilevaloraResumen | null>(null);
+  useEffect(() => {
+    if (!activo) return;
+    let vivo = true;
+    void supabase.rpc("mi_chilevalora").then(({ data }) => {
+      if (!vivo || !data) return;
+      const d = data as ChilevaloraResumen;
+      setResumen({
+        numero: d.numero ?? null,
+        vigencia: d.vigencia ?? null,
+        estado:
+          d.estado === "aprobado" || d.estado === "rechazado" ? d.estado : "pendiente",
+        adjuntado: Boolean(d.adjuntado),
+      });
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [activo]);
+  return resumen;
+}
+
+/** Insignias públicas de un transportista (solo estados, nunca documentos). */
+export function useInsignias(userId: string | undefined | null): Insignias {
+  const [insignias, setInsignias] = useState<Insignias>({ peligrosas: false, forestal: false });
+  useEffect(() => {
+    if (!userId) return;
+    let vivo = true;
+    void supabase.rpc("insignias_transportista", { p_id: userId }).then(({ data }) => {
+      if (!vivo || !data) return;
+      const d = data as Insignias;
+      setInsignias({ peligrosas: Boolean(d.peligrosas), forestal: Boolean(d.forestal) });
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [userId]);
+  return insignias;
+}
+
+/** Declaración simple de inducción forestal (no requiere aprobación). */
+export async function guardarInduccionForestal(params: {
+  userId: string;
+  empresa: string;
+  fecha: string;
+}): Promise<string | null> {
+  const { error } = await supabase
+    .from("perfiles")
+    .update({
+      induccion_forestal: true,
+      induccion_forestal_empresa: params.empresa.trim() || null,
+      induccion_forestal_fecha: params.fecha || null,
+    })
+    .eq("id", params.userId);
+  return error?.message ?? null;
 }

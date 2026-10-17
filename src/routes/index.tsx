@@ -47,7 +47,7 @@ import {
   RatingDialog,
   type EvaluacionPendiente,
 } from "@/components/troncal/RatingDialog";
-import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
+import { getVerificacionDe, useInsignias, useVerificaciones } from "@/lib/use-verificacion";
 import { usePublicaciones } from "@/lib/use-publicaciones";
 import {
   postularACarga,
@@ -156,12 +156,20 @@ function Index() {
   const regiones = useMemo(() => regionesDe(paisActual.ciudades), [paisActual.ciudades]);
   const miVerificacion = getVerificacionDe(verificaciones, sesion?.nombre);
   const soyVerificado = miVerificacion.estado === "verificado";
+  // Insignias propias: certificado ChileValora vigente e inducción forestal declarada.
+  const misInsignias = useInsignias(rol === "camionero" ? sesion?.id : null);
 
   const cargas = useMemo(
     () =>
       CARGAS.filter(
         (c) =>
           c.pais === pais &&
+          // Las cargas de sustancias peligrosas solo las ven transportistas habilitados
+          // (certificado ChileValora aprobado y vigente) y el dueño de la publicación.
+          (c.tipoCarga !== "peligrosa" ||
+            rol !== "camionero" ||
+            c.userId === sesion?.id ||
+            misInsignias.peligrosas) &&
           coincide(c.origen, filtros.origen) &&
           coincide(c.destino, filtros.destino) &&
           enRegion(c.origen, filtros.regionOrigen) &&
@@ -187,6 +195,8 @@ function Index() {
       soyVerificado,
       prefs.bloqueadas,
       alertas.ciudadBase,
+      misInsignias.peligrosas,
+      sesion?.id,
     ],
   );
 
@@ -286,6 +296,22 @@ function Index() {
         description:
           "Suscríbete al Plan Transportista Pro ($14.990 CLP/mes) para postular a las cargas.",
       });
+      return;
+    }
+    if (c.tipoCarga === "peligrosa" && !misInsignias.peligrosas) {
+      toast.error("Te falta la certificación de sustancias peligrosas", {
+        description:
+          "Para postular a esta carga necesitas el certificado ChileValora de Conductor(a) de sustancias peligrosas, aprobado y vigente. Súbelo desde tu verificación TroncalCheck.",
+      });
+      setVerificacionOpen(true);
+      return;
+    }
+    if (c.tipoCarga === "forestal" && !misInsignias.forestal) {
+      toast.error("Esta carga forestal requiere inducción declarada", {
+        description:
+          "Declara tu inducción o capacitación de transporte forestal desde tu verificación TroncalCheck y podrás postular.",
+      });
+      setVerificacionOpen(true);
       return;
     }
     setPostulando(c);

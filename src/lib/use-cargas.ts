@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { Carga, Carroceria, PaisCodigo } from "@/lib/troncal-data";
+import type { Carga, Carroceria, PaisCodigo, TipoCarga } from "@/lib/troncal-data";
 
 export type CargaDB = Carga & {
   titulo: string;
@@ -32,6 +32,7 @@ type Fila = {
   dias_pago: string | null;
   tipo_publicador: string | null;
   visibilidad: string | null;
+  tipo_carga: string | null;
 };
 
 const aCarga = (f: Fila): CargaDB => ({
@@ -57,6 +58,10 @@ const aCarga = (f: Fila): CargaDB => ({
   diasPago: f.dias_pago ?? "Pago a 30 días",
   tipoPublicador: f.tipo_publicador === "intermediario" ? "intermediario" : "generador",
   visibilidad: f.visibilidad === "privada" ? "privada" : "publica",
+  tipoCarga:
+    f.tipo_carga === "peligrosa" || f.tipo_carga === "forestal"
+      ? (f.tipo_carga as TipoCarga)
+      : "general",
 });
 
 /** Una carga suelta por su identificador (la base de datos bloquea las privadas ajenas). */
@@ -153,6 +158,7 @@ export async function publicarCargaDB(entrada: {
   diasPago?: string;
   tipoPublicador?: "generador" | "intermediario";
   visibilidad?: "publica" | "privada";
+  tipoCarga?: TipoCarga;
 }) {
   const { data, error } = await supabase
     .from("cargas")
@@ -178,6 +184,7 @@ export async function publicarCargaDB(entrada: {
       dias_pago: entrada.diasPago ?? "Pago a 30 días",
       tipo_publicador: entrada.tipoPublicador ?? "generador",
       visibilidad: entrada.visibilidad ?? "publica",
+      tipo_carga: entrada.tipoCarga ?? "general",
     })
     .select("id")
     .single();

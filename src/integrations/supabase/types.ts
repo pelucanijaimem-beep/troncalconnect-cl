@@ -124,6 +124,7 @@ export type Database = {
           precio: number
           solo_verificados: boolean
           tipo_camion: string
+          tipo_carga: string
           tipo_publicador: string
           titulo: string
           toneladas: number
@@ -151,6 +152,7 @@ export type Database = {
           precio?: number
           solo_verificados?: boolean
           tipo_camion: string
+          tipo_carga?: string
           tipo_publicador?: string
           titulo: string
           toneladas?: number
@@ -178,6 +180,7 @@ export type Database = {
           precio?: number
           solo_verificados?: boolean
           tipo_camion?: string
+          tipo_carga?: string
           tipo_publicador?: string
           titulo?: string
           toneladas?: number
@@ -313,6 +316,9 @@ export type Database = {
           fundador: boolean
           fundador_numero: number | null
           id: string
+          induccion_forestal: boolean
+          induccion_forestal_empresa: string | null
+          induccion_forestal_fecha: string | null
           nombre: string
           plan_activo: boolean
           rol: Database["public"]["Enums"]["rol_usuario"]
@@ -329,6 +335,9 @@ export type Database = {
           fundador?: boolean
           fundador_numero?: number | null
           id: string
+          induccion_forestal?: boolean
+          induccion_forestal_empresa?: string | null
+          induccion_forestal_fecha?: string | null
           nombre?: string
           plan_activo?: boolean
           rol?: Database["public"]["Enums"]["rol_usuario"]
@@ -345,6 +354,9 @@ export type Database = {
           fundador?: boolean
           fundador_numero?: number | null
           id?: string
+          induccion_forestal?: boolean
+          induccion_forestal_empresa?: string | null
+          induccion_forestal_fecha?: string | null
           nombre?: string
           plan_activo?: boolean
           rol?: Database["public"]["Enums"]["rol_usuario"]
@@ -624,6 +636,8 @@ export type Database = {
         Row: {
           asegurado: boolean
           checklist: Json
+          chilevalora_numero: string | null
+          chilevalora_vigencia: string | null
           created_at: string
           documentos: Json
           estado: string
@@ -637,6 +651,8 @@ export type Database = {
         Insert: {
           asegurado?: boolean
           checklist?: Json
+          chilevalora_numero?: string | null
+          chilevalora_vigencia?: string | null
           created_at?: string
           documentos?: Json
           estado?: string
@@ -650,6 +666,8 @@ export type Database = {
         Update: {
           asegurado?: boolean
           checklist?: Json
+          chilevalora_numero?: string | null
+          chilevalora_vigencia?: string | null
           created_at?: string
           documentos?: Json
           estado?: string
@@ -723,7 +741,13 @@ export type Database = {
         Returns: boolean
       }
       cupos_fundador: { Args: never; Returns: number }
+      guardar_chilevalora: {
+        Args: { p_numero: string; p_ruta: string; p_vigencia: string }
+        Returns: undefined
+      }
+      insignias_transportista: { Args: { p_id: string }; Returns: Json }
       metricas_marketplace: { Args: never; Returns: Json }
+      mi_chilevalora: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
       mi_verificacion_resumen: { Args: never; Returns: Json }
       normalizar_rut: { Args: { p_rut: string }; Returns: string }
