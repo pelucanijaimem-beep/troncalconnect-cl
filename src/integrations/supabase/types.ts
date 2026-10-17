@@ -361,6 +361,7 @@ export type Database = {
           carga_id: string
           created_at: string
           id: string
+          link_rastreo_gps: string | null
           mensaje: string
           user_id: string
         }
@@ -368,6 +369,7 @@ export type Database = {
           carga_id: string
           created_at?: string
           id?: string
+          link_rastreo_gps?: string | null
           mensaje?: string
           user_id: string
         }
@@ -375,6 +377,7 @@ export type Database = {
           carga_id?: string
           created_at?: string
           id?: string
+          link_rastreo_gps?: string | null
           mensaje?: string
           user_id?: string
         }

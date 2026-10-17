@@ -43,6 +43,13 @@
       "when": 1792247360199,
       "tag": "0005_identidad_callback_seguro",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792254617460,
+      "tag": "0006_link_rastreo_gps_postulaciones",
+      "breakpoints": true
     }
   ]
 }
