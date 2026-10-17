@@ -35,9 +35,11 @@ function RegistroPage() {
   const [rol, setRol] = useState<Rol>("camionero");
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [errorRegistro, setErrorRegistro] = useState<string | null>(null);
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorRegistro(null);
     if (!aceptaTerminos) {
       toast.error("Debes aceptar los términos y condiciones", {
         description: "Marca la casilla para continuar.",
@@ -61,6 +63,7 @@ function RegistroPage() {
     setEnviando(false);
 
     if (error) {
+      setErrorRegistro(error);
       toast.error("No pudimos crear tu cuenta", { description: error });
       return;
     }
@@ -169,6 +172,9 @@ function RegistroPage() {
           >
             Registrarme gratis
           </Button>
+          {errorRegistro && (
+            <p role="alert" className="text-sm text-destructive">{errorRegistro}</p>
+          )}
 
         </form>
 
