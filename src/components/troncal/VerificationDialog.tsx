@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { FileCheck2, ShieldCheck } from "lucide-react";
+import { FileCheck2, Flame, ShieldCheck, Trees } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,8 +15,12 @@ import { Label } from "@/components/ui/label";
 import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
 import { VerificationChecklist } from "./VerificationChecklist";
 import {
+  DOC_CHILEVALORA,
   documentosRequeridos,
   enviarDocumentos,
+  guardarChilevalora,
+  guardarInduccionForestal,
+  useMiChilevalora,
   useVerificacion,
   type Documentos,
   type RolVerificacion,
