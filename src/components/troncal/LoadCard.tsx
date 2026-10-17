@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { costoCombustible, money, type Carga } from "@/lib/troncal-data";
+import { costoCombustible, labelTipoCarga, money, type Carga } from "@/lib/troncal-data";
 import {
   alternarFavorito,
   bloquearEmpresa,
@@ -131,6 +131,11 @@ export function LoadCard({
         <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-muted-foreground">
           <Fuel className="h-3.5 w-3.5" /> Diésel estimado: {money(diesel.costo, carga.pais)}
         </span>
+        {carga.tipoCarga && carga.tipoCarga !== "general" && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 font-semibold text-primary">
+            {labelTipoCarga(carga.tipoCarga)}
+          </span>
+        )}
         <RouteRateInfo origen={carga.origen} destino={carga.destino} pais={carga.pais} />
       </div>
 

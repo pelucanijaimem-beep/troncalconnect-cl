@@ -32,8 +32,29 @@ import {
 import { invitarACarga, postulantesDeCarga } from "@/lib/use-cargas";
 import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
 import { VerificationBadge } from "./VerificationBadge";
-import { getVerificacionDe, useVerificaciones } from "@/lib/use-verificacion";
+import { getVerificacionDe, useInsignias, useVerificaciones } from "@/lib/use-verificacion";
 import { useEffect } from "react";
+import { Flame, Trees } from "lucide-react";
+
+/** Insignias de habilitación del postulante: solo estados, nunca documentos ni números. */
+function InsigniasPostulante({ userId }: { userId: string }) {
+  const insignias = useInsignias(userId);
+  if (!insignias.peligrosas && !insignias.forestal) return null;
+  return (
+    <>
+      {insignias.peligrosas && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
+          <Flame className="h-3.5 w-3.5" /> Habilitado para sustancias peligrosas
+        </span>
+      )}
+      {insignias.forestal && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
+          <Trees className="h-3.5 w-3.5" /> Inducción forestal
+        </span>
+      )}
+    </>
+  );
+}
 
 /** Lista de transportistas que postularon. Solo muestra nombre y sello, nunca documentos. */
 function ApplicantsPanel({ carga }: { carga: Carga }) {
@@ -72,6 +93,7 @@ function ApplicantsPanel({ carga }: { carga: Carga }) {
               >
                 <span className="font-semibold text-foreground">{p.nombre}</span>
                 <VerificationBadge estado={v.estado} asegurado={v.asegurado} compacto />
+                <InsigniasPostulante userId={p.id} />
                 {p.linkRastreo && (
                   <Button asChild size="sm" variant="outline" className="ml-auto">
                     <a href={p.linkRastreo} target="_blank" rel="noreferrer noopener">
