@@ -194,9 +194,7 @@ export function Header({
                   Planes
                 </Link>
               </nav>
-              <p className="px-2 text-xs text-muted-foreground">
-                Operamos en Chile. La expansión internacional se implementará más adelante.
-              </p>
+              <p className="px-2 text-xs text-muted-foreground">Operamos en Chile.</p>
               <RoleSwitcher rol={rol} onChange={onRolChange} />
               {sesion ? (
                 <div className="space-y-2 rounded-lg border border-border bg-surface p-3">
