@@ -25,7 +25,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Tiene costo usar la plataforma?",
-    a: "El Plan Inicial es gratuito e incluye el tablero con actualización diferida y hasta 2 publicaciones de carga al mes. Para contacto directo, alertas en tiempo real y publicación ilimitada, ofrecemos los planes Transportista Pro ($14.990 CLP/mes) y Empresa Pro ($29.990 CLP/mes).",
+    a: "El Plan Inicial es gratuito e incluye el tablero con actualización diferida y hasta 2 publicaciones de carga al mes. Para contacto directo, alertas en tiempo real y más publicaciones, ofrecemos los planes Transportista Pro ($14.990 CLP/mes), Empresa Pyme ($49.990 CLP/mes) y Empresa Pro ($89.990 CLP/mes).",
   },
   {
     q: "¿Cómo sé que el otro usuario es confiable?",
