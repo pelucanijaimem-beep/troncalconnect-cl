@@ -29,7 +29,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Cómo sé que el otro usuario es confiable?",
-    a: "Todas las cuentas pasan por verificación de datos (RUT, teléfono y correo). Además puedes revisar el historial de la publicación y contactar por teléfono o WhatsApp antes de comprometer el viaje.",
+    a: "Cada cuenta pasa por TroncalCheck, nuestro sistema de verificación de identidad en convenio con Didit: comprobamos tu RUT, revisamos tus documentos y confirmamos tu identidad con una cámara en tiempo real — el mismo nivel de rigurosidad que usan los bancos y LinkedIn para verificar a sus usuarios, no basta con solo escribir un dato en un formulario. Además puedes revisar el historial de la publicación y contactar por teléfono o WhatsApp antes de comprometer el viaje.",
   },
 ];
 
