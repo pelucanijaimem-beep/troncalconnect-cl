@@ -1,11 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-export type PlanPago = "transportista" | "empresa";
+export type PlanPago = "transportista" | "pyme" | "empresa";
 
 const PLANES: Record<PlanPago, { titulo: string; precio: number }> = {
   transportista: { titulo: "TroncalTrack · Transportista Pro (mensual)", precio: 14990 },
-  empresa: { titulo: "TroncalTrack · Empresa Pro (mensual)", precio: 29990 },
+  pyme: { titulo: "TroncalTrack · Empresa Pyme (mensual)", precio: 49990 },
+  empresa: { titulo: "TroncalTrack · Empresa Pro (mensual)", precio: 89990 },
 };
 
 export type RespuestaPago =
@@ -20,7 +21,7 @@ export const crearPagoPlan = createServerFn({ method: "POST" })
   .inputValidator((data) =>
     z
       .object({
-        plan: z.enum(["transportista", "empresa"]),
+        plan: z.enum(["transportista", "pyme", "empresa"]),
         email: z.string().email().optional(),
         origen: z.string().url().optional(),
       })

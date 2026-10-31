@@ -4,19 +4,45 @@ type Fila = {
   funcion: string;
   inicial: boolean;
   transportistaPro: boolean;
+  empresaPyme: boolean;
   empresaPro: boolean;
   nota?: string;
 };
 
 const FILAS: Fila[] = [
-  { funcion: "Búsqueda de Cargas", inicial: true, transportistaPro: true, empresaPro: true },
-  { funcion: "Retornos (Backhauls)", inicial: false, transportistaPro: true, empresaPro: true },
-  { funcion: "Calculadora $/km", inicial: true, transportistaPro: true, empresaPro: true },
-  { funcion: "Reputación de Empresas", inicial: false, transportistaPro: true, empresaPro: true },
+  {
+    funcion: "Búsqueda de Cargas",
+    inicial: true,
+    transportistaPro: true,
+    empresaPyme: true,
+    empresaPro: true,
+  },
+  {
+    funcion: "Retornos (Backhauls)",
+    inicial: false,
+    transportistaPro: true,
+    empresaPyme: true,
+    empresaPro: true,
+  },
+  {
+    funcion: "Calculadora $/km",
+    inicial: true,
+    transportistaPro: true,
+    empresaPyme: true,
+    empresaPro: true,
+  },
+  {
+    funcion: "Reputación de Empresas",
+    inicial: false,
+    transportistaPro: true,
+    empresaPyme: true,
+    empresaPro: true,
+  },
   {
     funcion: "Cobertura nacional",
     inicial: true,
     transportistaPro: true,
+    empresaPyme: true,
     empresaPro: true,
     nota: "Todo Chile",
   },
@@ -24,12 +50,29 @@ const FILAS: Fila[] = [
     funcion: "Seguimiento GPS en ruta",
     inicial: false,
     transportistaPro: true,
+    empresaPyme: true,
+    empresaPro: true,
+  },
+  {
+    funcion: "Publicación ilimitada de cargas",
+    inicial: false,
+    transportistaPro: false,
+    empresaPyme: false,
+    empresaPro: true,
+    nota: "Inicial: hasta 2/mes · Empresa Pyme: hasta 15/mes",
+  },
+  {
+    funcion: "Soporte multiusuario (hasta 3 ejecutivos)",
+    inicial: false,
+    transportistaPro: false,
+    empresaPyme: false,
     empresaPro: true,
   },
   {
     funcion: "Bloqueo de empresas o choferes",
     inicial: false,
     transportistaPro: false,
+    empresaPyme: false,
     empresaPro: true,
   },
 ];
@@ -71,6 +114,9 @@ export function ComparisonTable() {
                   Transportista Pro
                 </th>
                 <th className="border-b border-border px-4 py-3 text-center font-semibold text-foreground">
+                  Empresa Pyme
+                </th>
+                <th className="border-b border-border px-4 py-3 text-center font-semibold text-foreground">
                   Empresa Pro
                 </th>
               </tr>
@@ -86,6 +132,7 @@ export function ComparisonTable() {
                   </td>
                   <Celda activo={f.inicial} />
                   <Celda activo={f.transportistaPro} />
+                  <Celda activo={f.empresaPyme} />
                   <Celda activo={f.empresaPro} />
                 </tr>
               ))}

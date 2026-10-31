@@ -34,13 +34,13 @@ export const Route = createFileRoute("/planes")({
       {
         name: "description",
         content:
-          "Elige tu plan TroncalTrack: Inicial gratis, Transportista Pro con sello TroncalCheck por $14.990 CLP/mes, o Empresa Pro por $29.990 CLP/mes. 20% de descuento pagando anual.",
+          "Elige tu plan TroncalTrack: Inicial gratis, Transportista Pro con sello TroncalCheck por $14.990 CLP/mes, Empresa Pyme por $49.990 o Empresa Pro por $89.990 CLP/mes. 20% de descuento pagando anual.",
       },
       { property: "og:title", content: "Planes y Membresías en CLP — TroncalTrack" },
       {
         property: "og:description",
         content:
-          "Plan Inicial gratuito, Transportista Pro + TroncalCheck y Empresa Pro. Precios en CLP con 20% de descuento anual.",
+          "Plan Inicial gratuito, Transportista Pro + TroncalCheck, Empresa Pyme y Empresa Pro. Precios en CLP con 20% de descuento anual.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -59,7 +59,7 @@ type Plan = {
   destacado?: boolean;
   cta: string;
   href: string;
-  plan?: "transportista" | "empresa";
+  plan?: "transportista" | "pyme" | "empresa";
   whatsapp?: string;
   icono: typeof Truck;
   features: Feature[];
@@ -112,30 +112,58 @@ const PLANES: Plan[] = [
     ],
   },
   {
-    id: "empresa",
-    nombre: "Empresa Pro",
-    subtitulo: "Para generadores de carga y empresas logísticas.",
-    precioMensual: 29990,
-    cta: "Suscribirme como Empresa",
+    id: "pyme",
+    nombre: "Empresa Pyme",
+    subtitulo: "Para comercializadoras y distribuidoras que no mueven camiones todos los días.",
+    precioMensual: 49990,
+    cta: "Suscribirme como Empresa Pyme",
     href: "/registro",
-    plan: "empresa",
+    plan: "pyme",
     whatsapp:
-      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($29.990/mes).",
+      "Hola, quiero activar el plan Empresa Pyme de TroncalTrack ($49.990/mes).",
     icono: Building2,
     features: [
-      { texto: "Publicación ilimitada de fletes y cargas", icono: "especial" },
+      { texto: "Hasta 15 publicaciones de carga al mes", icono: "especial" },
       {
-        texto: "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
+        texto: "Contacto directo con transportistas (Teléfono / WhatsApp)",
         icono: "especial",
       },
       {
         texto: "Perfil corporativo verificado con logo y contacto de logística",
         icono: "especial",
       },
+      { texto: "Alertas de camiones disponibles en tus rutas", icono: "especial" },
+    ],
+  },
+  {
+    id: "empresa",
+    nombre: "Empresa Pro",
+    subtitulo: "Para generadores de carga y empresas logísticas.",
+    precioMensual: 89990,
+    cta: "Suscribirme como Empresa",
+    href: "/registro",
+    plan: "empresa",
+    whatsapp:
+      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($89.990/mes).",
+    icono: Building2,
+    features: [
+      { texto: "Publicación ilimitada de fletes y cargas", icono: "especial" },
+      {
+        texto: "Acceso prioritario a la base de transportistas verificados con TroncalCheck",
+        icono: "especial",
+      },
+      {
+        texto: "Soporte multiusuario: hasta 3 ejecutivos de tu empresa en paralelo",
+        icono: "especial",
+      },
+      {
+        texto: "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
+        icono: "especial",
+      },
       { texto: "Soporte prioritario", icono: "especial" },
       {
         texto:
-          "Cupo Empresa Fundadora (primeras 20 empresas): precio congelado de por vida, posicionamiento prioritario permanente e insignia «Empresa Fundadora» en tu perfil corporativo",
+          "Cupo Empresa Fundadora (primeras 20 empresas): precio congelado de por vida a $49.990 (en vez de $89.990), posicionamiento prioritario permanente e insignia «Empresa Fundadora» en tu perfil corporativo",
         icono: "especial",
       },
     ],
@@ -161,7 +189,7 @@ const FAQ_SUSCRIPCION = [
   },
   {
     q: "¿En qué consiste el cupo Empresa Fundadora?",
-    a: "Las primeras 20 empresas que contraten un plan pago quedan como Empresa Fundadora: mantienen de por vida el valor actual de Empresa Pro ($29.990 CLP/mes), obtienen posicionamiento prioritario permanente en las búsquedas de transportistas y una insignia «Empresa Fundadora» visible en su perfil corporativo.",
+    a: "Las primeras 20 empresas que contraten Empresa Pro quedan como Empresa Fundadora: mantienen de por vida el precio congelado de $49.990 CLP/mes (en vez de $89.990), obtienen posicionamiento prioritario permanente en las búsquedas de transportistas y una insignia «Empresa Fundadora» visible en su perfil corporativo.",
   },
   {
     q: "¿El Plan Inicial gratuito tiene vencimiento?",
@@ -264,7 +292,7 @@ function PlanesPage() {
       {/* Tarjetas de planes */}
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-4 py-12">
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {PLANES.map((plan) => {
               const Icono = plan.icono;
               const mensualConDescuento = plan.precioMensual * 0.8;

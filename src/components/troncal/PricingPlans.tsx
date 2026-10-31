@@ -45,9 +45,28 @@ const PLANES = [
     ],
   },
   {
+    id: "pyme",
+    nombre: "Empresa Pyme",
+    precio: "$49.990",
+    periodo: "CLP / mes",
+    descripcion: "Para comercializadoras y distribuidoras que no mueven camiones todos los días.",
+    icono: Building2,
+    cta: "Suscribirme como Empresa Pyme",
+    href: "/registro",
+    plan: "pyme" as const,
+    whatsapp:
+      "Hola, quiero activar el plan Empresa Pyme de TroncalTrack ($49.990/mes).",
+    features: [
+      "Hasta 15 publicaciones de carga al mes",
+      "Contacto directo con transportistas (Teléfono / WhatsApp)",
+      "Perfil corporativo verificado con logo y contacto de logística",
+      "Alertas de camiones disponibles en tus rutas",
+    ],
+  },
+  {
     id: "empresa",
     nombre: "Empresa Pro",
-    precio: "$29.990",
+    precio: "$89.990",
     periodo: "CLP / mes",
     descripcion: "Para generadores de carga y empresas logísticas.",
     icono: Building2,
@@ -55,13 +74,14 @@ const PLANES = [
     href: "/registro",
     plan: "empresa" as const,
     whatsapp:
-      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($29.990/mes).",
+      "Hola, quiero activar el plan Empresa Pro de TroncalTrack ($89.990/mes).",
     features: [
       "Publicación ilimitada de fletes y cargas",
+      "Acceso prioritario a la base de transportistas verificados con TroncalCheck",
+      "Soporte multiusuario: hasta 3 ejecutivos de tu empresa en paralelo",
       "Filtro exclusivo para asignar cargas solo a Transportistas Verificados",
-      "Perfil corporativo verificado con logo y contacto de logística",
       "Soporte prioritario",
-      "Cupo Empresa Fundadora: precio congelado de por vida y posicionamiento prioritario permanente",
+      "Cupo Empresa Fundadora: precio congelado de por vida a $49.990 (en vez de $89.990) y posicionamiento prioritario permanente",
     ],
   },
 ];
@@ -97,12 +117,13 @@ export function PricingPlans({ onRegistro }: { onRegistro: () => void }) {
         {quedan !== null && quedan > 0 && (
           <div className="mt-5 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-bold text-primary sm:text-base">
             <Crown className="h-5 w-5 shrink-0" />
-            Empresa Fundadora: quedan {quedan} de {total} cupos. Precio congelado de por vida,
-            posicionamiento prioritario permanente e insignia en tu perfil corporativo.
+            Empresa Fundadora: quedan {quedan} de {total} cupos. Precio congelado de por vida a
+            $49.990 (en vez de $89.990), posicionamiento prioritario permanente e insignia en tu
+            perfil corporativo.
           </div>
         )}
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {PLANES.map((p) => (
             <article
               key={p.id}
