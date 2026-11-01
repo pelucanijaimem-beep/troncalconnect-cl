@@ -14,6 +14,8 @@ export function parseLimitePlan(
   mensaje: string,
 ): { limite: number; plan: string } | null {
   const m = mensaje.match(/LIMITE_PLAN:(\d+):(\w+)/);
-  if (!m) return null;
-  return { limite: Number(m[1]), plan: NOMBRES_PLAN[m[2]] ?? m[2] };
+  const limite = m?.[1];
+  const tier = m?.[2];
+  if (!limite || !tier) return null;
+  return { limite: Number(limite), plan: NOMBRES_PLAN[tier] ?? tier };
 }
