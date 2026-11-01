@@ -1,4 +1,5 @@
 # Tareas
+- [ ] Actualizar matriz comercial en Vista Previa: generadores y flotas, UF diaria con respaldo, fundador 20%, lanzamiento y FAQ; no publicar ni automatizar cobros.
 - [x] Solicitar publicación de recuperación y diagnóstico seguro de Didit; 52 pruebas aprobadas, compilación correcta y página pública reset-password responde HTTP 200 (no prueba que terminó el despliegue).
 - [x] Consultar Didit sin crear sesiones: HTTP 200, clave aceptada y workflow configurado publicado/no archivado; añadir registro seguro de HTTP y categoría sin cuerpos privados.
 - [ ] Confirmar rechazo de creación de sesión Didit en producción; bloqueado: intento nuevo del usuario después de publicación; logs anteriores no conservaron status ni cuerpo.
