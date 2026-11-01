@@ -14,3 +14,4 @@
 - Identity callbacks verify a full-body HMAC and signed fresh timestamp; process stored server-created session mappings atomically and idempotently, never bind accounts from callback metadata.
 - Matching identity keeps the existing documentary approval flow; mismatches are administrator-only review flags, and sandbox events never grant or revoke real verification.
 - Read document files only through administrator-authorized Storage access; owner upload forms consume the path-free verification summary RPC to retain attachment status without exposing download paths.
+- Contact messages use a shared validation schema and an optional-session server function with an RLS-scoped client; only administrators can read messages or update the read flag, to protect visitor correspondence.

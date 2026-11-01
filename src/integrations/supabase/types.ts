@@ -275,6 +275,39 @@ export type Database = {
           },
         ]
       }
+      mensajes_contacto: {
+        Row: {
+          correo: string
+          created_at: string
+          id: string
+          leido: boolean
+          mensaje: string
+          nombre: string
+          tipo: string
+          user_id: string | null
+        }
+        Insert: {
+          correo: string
+          created_at?: string
+          id?: string
+          leido?: boolean
+          mensaje: string
+          nombre: string
+          tipo: string
+          user_id?: string | null
+        }
+        Update: {
+          correo?: string
+          created_at?: string
+          id?: string
+          leido?: boolean
+          mensaje?: string
+          nombre?: string
+          tipo?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notificaciones: {
         Row: {
           created_at: string
