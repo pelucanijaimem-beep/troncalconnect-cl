@@ -13,7 +13,7 @@ vi.mock("@/integrations/supabase/client.server", () => ({ supabaseAdmin: { from:
 vi.mock("@supabase/supabase-js", () => ({ createClient: mocks.createClient }));
 import { iniciarSesionConRut } from "./auth.functions";
 
-const call = iniciarSesionConRut as unknown as (input: { data: { rut: string; password: string } }) => Promise<Record<string, string>>;
+const call = iniciarSesionConRut as unknown as (input: { data: { rut: string; password: string } }) => Promise<{ error?: string; access_token?: string; refresh_token?: string }>;
 const run = (rut = "12.345.678-5") => call({ data: { rut, password: "test-password" } });
 
 function query(result: unknown) {
