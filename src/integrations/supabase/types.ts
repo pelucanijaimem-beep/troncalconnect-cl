@@ -190,6 +190,27 @@ export type Database = {
         }
         Relationships: []
       }
+      estado_acceso_ia: {
+        Row: {
+          actualizado_at: string
+          estado: number
+          funcion: string
+          mensaje: string
+        }
+        Insert: {
+          actualizado_at?: string
+          estado: number
+          funcion: string
+          mensaje: string
+        }
+        Update: {
+          actualizado_at?: string
+          estado?: number
+          funcion?: string
+          mensaje?: string
+        }
+        Relationships: []
+      }
       favoritos: {
         Row: {
           carga_id: string
