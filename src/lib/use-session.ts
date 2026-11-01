@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { iniciarSesionConRut } from "@/lib/auth.functions";
 import { normalizarRut, rutValido } from "@/lib/rut";
+import { esEnlaceRecuperacion, validarNuevaPassword } from "@/lib/password-recovery";
 import type { Rol } from "@/components/troncal/RoleSwitcher";
 
 export type Sesion = {
@@ -16,6 +17,8 @@ export type Sesion = {
 
 let sesion: Sesion | null = null;
 let iniciado = false;
+let recuperandoPassword = false;
+const RECUPERACION_KEY = "troncal-recuperacion-password";
 const oyentes = new Set<() => void>();
 
 const emitir = () => oyentes.forEach((f) => f());
@@ -98,6 +101,9 @@ async function cargarPerfil(userId: string, email: string) {
 function iniciar() {
   if (iniciado || typeof window === "undefined") return;
   iniciado = true;
+  recuperandoPassword = esEnlaceRecuperacion(window.location.hash, window.location.search) ||
+    window.sessionStorage.getItem(RECUPERACION_KEY) === "1";
+  if (recuperandoPassword) window.sessionStorage.setItem(RECUPERACION_KEY, "1");
 
   void supabase.auth.getSession().then(({ data }) => {
     const u = data.session?.user;
@@ -105,12 +111,18 @@ function iniciar() {
   });
 
   supabase.auth.onAuthStateChange((evento, s) => {
+    if (evento === "PASSWORD_RECOVERY") {
+      recuperandoPassword = true;
+      window.sessionStorage.setItem(RECUPERACION_KEY, "1");
+      emitir();
+    }
     const u = s?.user;
     if (!u) {
       // Solo cerramos la sesión ante una salida real; un refresco de token
       // descartado no debe expulsar al usuario recién ingresado.
       if (evento === "SIGNED_OUT") {
         sesion = null;
+        finalizarRecuperacionPassword();
         emitir();
       }
       return;
@@ -204,10 +216,41 @@ export async function iniciarSesionRut(rut: string, password: string) {
 }
 
 export async function recuperarPassword(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/`,
-  });
-  return error?.message ?? null;
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return error?.message ?? null;
+  } catch {
+    return "No pudimos enviar el correo. Inténtalo nuevamente.";
+  }
+}
+
+export function finalizarRecuperacionPassword() {
+  recuperandoPassword = false;
+  if (typeof window !== "undefined") window.sessionStorage.removeItem(RECUPERACION_KEY);
+  emitir();
+}
+
+export function useRecuperacionPassword() {
+  return useSyncExternalStore(subscribe, () => recuperandoPassword, () => false);
+}
+
+export async function actualizarPasswordRecuperada(password: string, confirmacion: string) {
+  const errorValidacion = validarNuevaPassword(password, confirmacion);
+  if (errorValidacion) return errorValidacion;
+  if (!recuperandoPassword) return "Abre el enlace de recuperación enviado a tu correo.";
+  try {
+    const { error: errorUsuario, data } = await supabase.auth.getUser();
+    if (errorUsuario || !data.user) return "El enlace venció o no es válido. Solicita uno nuevo.";
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) return error.message;
+    finalizarRecuperacionPassword();
+    window.history.replaceState(null, "", window.location.pathname);
+    return null;
+  } catch {
+    return "No pudimos guardar la contraseña. Inténtalo nuevamente.";
+  }
 }
 
 export async function cerrarSesion() {
