@@ -92,6 +92,13 @@
       "when": 1793498006625,
       "tag": "0012_notificaciones_insert_propio",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793506211074,
+      "tag": "0013_identidad_resultados_v2_atomicos",
+      "breakpoints": true
     }
   ]
 }

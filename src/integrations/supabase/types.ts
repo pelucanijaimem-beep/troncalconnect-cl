@@ -816,6 +816,17 @@ export type Database = {
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
       perfil_publico: { Args: { p_id: string }; Returns: Json }
       perfiles_admin: { Args: never; Returns: Json }
+      procesar_identidad_v2: {
+        Args: {
+          p_decision: Json
+          p_entorno: string
+          p_estado: string
+          p_event: string
+          p_fecha: number
+          p_session: string
+        }
+        Returns: string
+      }
       procesar_resultado_identidad: {
         Args: {
           p_entorno: string
@@ -826,6 +837,10 @@ export type Database = {
           p_session: string
         }
         Returns: string
+      }
+      registrar_sesion_identidad_v2: {
+        Args: { p_session: string; p_user: string }
+        Returns: undefined
       }
       reservar_cupo_fundador: { Args: never; Returns: number }
       rut_chileno_valido: { Args: { p_rut: string }; Returns: boolean }
