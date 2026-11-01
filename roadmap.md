@@ -1,4 +1,5 @@
 # Tareas
+- [ ] Diagnosticar excepción del acceso con RUT en producción, corregir la causa y comprobar respuestas; acceso real pendiente de credenciales autorizadas.
 - [x] Integrar identidad al formulario actual, conservar columnas y triggers, recibir firma V2 y guardar resultados mediante sesiones vinculadas en servidor; 27 pruebas aprobadas, formulario y error sin secreto comprobados.
 - [ ] Activar y probar identidad real; clave de API e identificador de flujo guardados; bloqueado: secreto de firma y publicación del receptor.
 - [x] Crear formulario de soporte/sugerencias público, persistencia privada y revisión administrativa; envíos con/sin sesión, precarga editable, filtro y leído persistente comprobados.
