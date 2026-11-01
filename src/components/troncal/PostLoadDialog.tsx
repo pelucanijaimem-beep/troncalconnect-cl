@@ -100,17 +100,10 @@ export function PostLoadDialog({
     setEnviando(false);
 
     if (error) {
-      const limite = error.match(/LIMITE_PLAN:(\d+):(\w+)/);
+      const limite = parseLimitePlan(error);
       if (limite) {
-        const nombres: Record<string, string> = {
-          inicial: "Inicial",
-          empresa_pyme: "Empresa Pyme",
-          empresa_pro: "Empresa Pro",
-          transportista_pro: "Transportista Pro",
-        };
-        const plan = nombres[limite[2]] ?? limite[2];
         toast.error(
-          `Alcanzaste el límite de ${limite[1]} publicaciones este mes con tu plan ${plan}.`,
+          `Alcanzaste el límite de ${limite.limite} publicaciones este mes con tu plan ${limite.plan}.`,
           {
             description: "Mejora a Empresa Pro para publicar sin límite.",
             action: {
