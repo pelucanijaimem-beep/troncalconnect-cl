@@ -675,6 +675,13 @@ export type Database = {
           chilevalora_numero: string | null
           chilevalora_vigencia: string | null
           created_at: string
+          didit_actualizado_at: string | null
+          didit_decision: Json | null
+          didit_estado: string | null
+          didit_nombre_completo: string | null
+          didit_rut_coincide: boolean | null
+          didit_rut_extraido: string | null
+          didit_session_id: string | null
           documentos: Json
           estado: string
           id: string
@@ -690,6 +697,13 @@ export type Database = {
           chilevalora_numero?: string | null
           chilevalora_vigencia?: string | null
           created_at?: string
+          didit_actualizado_at?: string | null
+          didit_decision?: Json | null
+          didit_estado?: string | null
+          didit_nombre_completo?: string | null
+          didit_rut_coincide?: boolean | null
+          didit_rut_extraido?: string | null
+          didit_session_id?: string | null
           documentos?: Json
           estado?: string
           id?: string
@@ -705,6 +719,13 @@ export type Database = {
           chilevalora_numero?: string | null
           chilevalora_vigencia?: string | null
           created_at?: string
+          didit_actualizado_at?: string | null
+          didit_decision?: Json | null
+          didit_estado?: string | null
+          didit_nombre_completo?: string | null
+          didit_rut_coincide?: boolean | null
+          didit_rut_extraido?: string | null
+          didit_session_id?: string | null
           documentos?: Json
           estado?: string
           id?: string
