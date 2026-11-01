@@ -8,7 +8,7 @@ export const enviarMensajeContacto = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => contactoSchema.parse(input))
   .handler(async ({ data }) => {
     const url = process.env["SUPABASE_URL"];
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
     if (!url || !key) throw new Error("No pudimos enviar tu mensaje. Intenta nuevamente más tarde.");
     const authorization = getRequestHeader("Authorization");
     const client = createClient<Database>(url, key, {

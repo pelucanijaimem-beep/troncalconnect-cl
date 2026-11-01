@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/lib/require-session";
 
 /**
  * Solicitud pública de eliminación de cuenta: cualquier persona puede pedirla

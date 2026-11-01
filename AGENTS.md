@@ -17,3 +17,4 @@
 - Contact messages use a shared validation schema and an optional-session server function with an RLS-scoped client; only administrators can read messages or update the read flag, to protect visitor correspondence.
 - Identity uses authenticated server functions and public signed site callbacks, not new Edge Functions; V2 canonical JSON includes a signed fresh timestamp, and service-only atomic RPCs bind stored sessions and defer RUT comparison to existing triggers.
 - RUT login uses separate privileged lookup and publishable authentication clients; fail closed on rate-limit storage errors and log only stages/error codes, because credentials and profile data must never enter diagnostics.
+- App server functions use the local require-session middleware and resolve the server publishable key first, then its public VITE fallback inside handlers; preserve the server URL and generated integration files to avoid preview proxy failures and overwritten fixes.

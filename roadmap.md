@@ -1,4 +1,5 @@
 # Tareas
+- [ ] Añadir respaldo de clave pública en acceso, contacto y middleware local autenticado sin editar archivos administrados; ejecutar pruebas de respaldo y rechazo de sesiones inválidas. Publicación y prueba real de Didit quedan a cargo del usuario.
 - [x] Revisar logs de producción y probar acceso con RUT con/sin formato; respuestas controladas con contraseña incorrecta, 11 pruebas aprobadas; añadir diagnóstico seguro, validación de configuración y separación entre acceso y lectura de perfil.
 - [x] Probar acceso real en producción con las credenciales autorizadas: respuesta HTTP 200 y formulario cerrado por la rama de sesión iniciada, sin error de indisponibilidad. No guardar credenciales ni tokens.
 - [ ] Confirmar causa raíz del fallo anterior; bloqueado: los registros accesibles no contienen mensajes [acceso-rut] ni la excepción reportada, y el intento real autorizado ahora tuvo éxito. No aplicar una corrección especulativa.

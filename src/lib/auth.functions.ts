@@ -129,7 +129,7 @@ export const iniciarSesionConRut = createServerFn({ method: "POST" })
 
     etapa = "configurar_cliente_acceso";
     const url = process.env["SUPABASE_URL"];
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"] || import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
     if (!url || !key) {
       console.error("[acceso-rut] configuración incompleta", {
         urlDisponible: Boolean(url), claveDisponible: Boolean(key),

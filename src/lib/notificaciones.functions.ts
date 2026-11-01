@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/lib/require-session";
 
 /** Envía un correo con una plantilla registrada. Nunca lanza error. */
 async function enviarCorreo(params: {

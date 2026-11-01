@@ -30,11 +30,20 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv("SUPABASE_URL", "https://example.test");
   vi.stubEnv("SUPABASE_PUBLISHABLE_KEY", "sb_publishable_test");
+  vi.stubEnv("VITE_SUPABASE_PUBLISHABLE_KEY", "");
   vi.spyOn(console, "error").mockImplementation(() => {});
   mocks.createClient.mockReturnValue({ auth: { signInWithPassword: mocks.signIn } });
 });
 
 describe("acceso con RUT", () => {
+  it("usa la clave pública de respaldo si falta la variable de servidor", async () => {
+    vi.stubEnv("SUPABASE_PUBLISHABLE_KEY", "");
+    vi.stubEnv("VITE_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_fallback");
+    mocks.from.mockReturnValueOnce(query({ data: [], error: null })).mockReturnValueOnce(query({ data: { email: "test@example.test" }, error: null })).mockReturnValue(query({ error: null }));
+    mocks.signIn.mockResolvedValue({ data: { session: { access_token: "a", refresh_token: "r" } }, error: null });
+    expect(await run()).toEqual({ access_token: "a", refresh_token: "r" });
+    expect(mocks.createClient.mock.calls[0]?.[1]).toBe("sb_publishable_fallback");
+  });
   it.each(["12.345.678-5", "123456785"])("normaliza %s y devuelve tokens serializables", async (rut) => {
     const profile = query({ data: { email: "test@example.test" }, error: null });
     mocks.from.mockReturnValueOnce(query({ data: [], error: null })).mockReturnValueOnce(profile).mockReturnValue(query({ error: null }));
