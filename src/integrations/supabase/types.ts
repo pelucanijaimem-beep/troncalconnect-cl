@@ -354,6 +354,7 @@ export type Database = {
           induccion_forestal_fecha: string | null
           nombre: string
           plan_activo: boolean
+          plan_tier: string
           rol: Database["public"]["Enums"]["rol_usuario"]
           rut: string | null
           rut_normalizado: string | null
@@ -373,6 +374,7 @@ export type Database = {
           induccion_forestal_fecha?: string | null
           nombre?: string
           plan_activo?: boolean
+          plan_tier?: string
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
           rut_normalizado?: string | null
@@ -392,6 +394,7 @@ export type Database = {
           induccion_forestal_fecha?: string | null
           nombre?: string
           plan_activo?: boolean
+          plan_tier?: string
           rol?: Database["public"]["Enums"]["rol_usuario"]
           rut?: string | null
           rut_normalizado?: string | null
@@ -773,12 +776,17 @@ export type Database = {
         Args: { _carga_id: string; _user_id: string }
         Returns: boolean
       }
+      cargas_publicadas_mes_actual: {
+        Args: { _user_id: string }
+        Returns: number
+      }
       cupos_fundador: { Args: never; Returns: number }
       guardar_chilevalora: {
         Args: { p_numero: string; p_ruta: string; p_vigencia: string }
         Returns: undefined
       }
       insignias_transportista: { Args: { p_id: string }; Returns: Json }
+      limite_publicaciones_mes: { Args: { _tier: string }; Returns: number }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_chilevalora: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }

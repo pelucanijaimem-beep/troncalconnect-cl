@@ -30,6 +30,7 @@ import {
   type TipoCarga,
 } from "@/lib/troncal-data";
 import { publicarCargaDB } from "@/lib/use-cargas";
+import { parseLimitePlan } from "@/lib/limite-plan";
 import { avisarCoincidencias } from "@/lib/notificaciones.functions";
 import { useSesion } from "@/lib/use-session";
 import { VisibilitySwitch } from "./VisibilitySwitch";
@@ -100,7 +101,23 @@ export function PostLoadDialog({
     setEnviando(false);
 
     if (error) {
-      toast.error("No pudimos publicar el flete", { description: error });
+      const limite = parseLimitePlan(error);
+      if (limite) {
+        toast.error(
+          `Alcanzaste el límite de ${limite.limite} publicaciones este mes con tu plan ${limite.plan}.`,
+          {
+            description: "Mejora a Empresa Pro para publicar sin límite.",
+            action: {
+              label: "Ver planes",
+              onClick: () => {
+                window.location.href = "/planes";
+              },
+            },
+          },
+        );
+      } else {
+        toast.error("No pudimos publicar el flete", { description: error });
+      }
       return;
     }
 
