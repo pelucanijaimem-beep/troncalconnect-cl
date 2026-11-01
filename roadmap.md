@@ -1,4 +1,6 @@
 # Tareas
+- [x] Revisar logs de producción y probar acceso con RUT con/sin formato; respuestas controladas con contraseña incorrecta, 11 pruebas aprobadas; añadir diagnóstico seguro, validación de configuración y separación entre acceso y lectura de perfil.
+- [ ] Confirmar causa raíz del error reportado y acceso correcto en producción; bloqueado: los logs disponibles no contienen la excepción, falta publicar diagnóstico y repetir el intento real del usuario.
 - [x] Integrar identidad al formulario actual, conservar columnas y triggers, recibir firma V2 y guardar resultados mediante sesiones vinculadas en servidor; 27 pruebas aprobadas, formulario y error sin secreto comprobados.
 - [ ] Activar y probar identidad real; clave de API e identificador de flujo guardados; bloqueado: secreto de firma y publicación del receptor.
 - [x] Crear formulario de soporte/sugerencias público, persistencia privada y revisión administrativa; envíos con/sin sesión, precarga editable, filtro y leído persistente comprobados.

@@ -177,17 +177,28 @@ export async function iniciarSesionEmail(email: string, password: string) {
 /** Inicia sesión con RUT y contraseña (el correo queda solo para recuperación). */
 export async function iniciarSesionRut(rut: string, password: string) {
   if (!normalizarRut(rut)) return "RUT o contraseña incorrectos.";
+  let etapa = "solicitud";
   try {
     const res = await iniciarSesionConRut({ data: { rut, password } });
     if ("error" in res) return res.error;
+    etapa = "establecer_sesion";
     const { error } = await supabase.auth.setSession({
       access_token: res.access_token,
       refresh_token: res.refresh_token,
     });
     if (error) return error.message;
-    await refrescarSesion();
+    // La autenticación ya terminó: una lectura de perfil fallida no la invalida.
+    try {
+      await refrescarSesion();
+    } catch {
+      console.warn("[acceso-rut] no se pudo actualizar el perfil tras iniciar sesión");
+    }
     return null;
-  } catch {
+  } catch (error) {
+    console.error("[acceso-rut] fallo de cliente", {
+      etapa,
+      tipo: error instanceof Error ? error.name : "Error desconocido",
+    });
     return "No pudimos conectar con el servidor. Inténtalo nuevamente.";
   }
 }
