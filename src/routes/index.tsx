@@ -302,9 +302,9 @@ function Index() {
       return;
     }
     if (!sesion.planActivo) {
-      toast.error("Necesitas un plan mensual activo", {
+      toast.error("Necesitas activar tu acceso de transporte", {
         description:
-          "Suscríbete al Plan Transportista Pro ($14.990 CLP/mes) para postular a las cargas.",
+          "Camión Independiente es gratis permanente y las flotas son gratis durante el lanzamiento. Coordina la activación por WhatsApp.",
       });
       return;
     }

@@ -1,4 +1,5 @@
 # Tareas
+- [x] Actualizar matriz comercial en Vista Previa: siete planes en dos líneas, UF diaria con respaldo explícito, fundador 20%, lanzamiento y FAQ. Comparativa y aviso de activación coherentes; 20 pruebas aprobadas y flujo público comprobado en navegador (UF real, respaldo, FAQ, WhatsApp y registro), sin errores. No publicar, automatizar cobros ni modificar reglas existentes de acceso/publicación.
 - [x] Solicitar publicación de recuperación y diagnóstico seguro de Didit; 52 pruebas aprobadas, compilación correcta y página pública reset-password responde HTTP 200 (no prueba que terminó el despliegue).
 - [x] Consultar Didit sin crear sesiones: HTTP 200, clave aceptada y workflow configurado publicado/no archivado; añadir registro seguro de HTTP y categoría sin cuerpos privados.
 - [ ] Confirmar rechazo de creación de sesión Didit en producción; bloqueado: intento nuevo del usuario después de publicación; logs anteriores no conservaron status ni cuerpo.
