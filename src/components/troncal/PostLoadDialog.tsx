@@ -100,7 +100,30 @@ export function PostLoadDialog({
     setEnviando(false);
 
     if (error) {
-      toast.error("No pudimos publicar el flete", { description: error });
+      const limite = error.match(/LIMITE_PLAN:(\d+):(\w+)/);
+      if (limite) {
+        const nombres: Record<string, string> = {
+          inicial: "Inicial",
+          empresa_pyme: "Empresa Pyme",
+          empresa_pro: "Empresa Pro",
+          transportista_pro: "Transportista Pro",
+        };
+        const plan = nombres[limite[2]] ?? limite[2];
+        toast.error(
+          `Alcanzaste el límite de ${limite[1]} publicaciones este mes con tu plan ${plan}.`,
+          {
+            description: "Mejora a Empresa Pro para publicar sin límite.",
+            action: {
+              label: "Ver planes",
+              onClick: () => {
+                window.location.href = "/planes";
+              },
+            },
+          },
+        );
+      } else {
+        toast.error("No pudimos publicar el flete", { description: error });
+      }
       return;
     }
 
