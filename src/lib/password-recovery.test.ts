@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { esEnlaceRecuperacion, validarNuevaPassword } from "./password-recovery";
 
 const mocks = vi.hoisted(() => ({ reset: vi.fn(), update: vi.fn(), getUser: vi.fn(), getSession: vi.fn(), rpc: vi.fn(), signOut: vi.fn(), listener: undefined as undefined | ((event: string, session: unknown) => void) }));
@@ -17,14 +17,24 @@ beforeEach(() => {
   mocks.rpc.mockResolvedValue({ data: { nombre: "Prueba", bloqueado: false }, error: null });
   mocks.signOut.mockResolvedValue({ error: null });
   const storage = new Map<string, string>();
-  vi.stubGlobal("window", { location: { origin: "https://troncaltrack.com", hash: "", search: "", pathname: "/" }, sessionStorage: { getItem: (k: string) => storage.get(k), setItem: (k: string, v: string) => storage.set(k, v), removeItem: (k: string) => storage.delete(k) }, history: { replaceState: vi.fn() } });
+  vi.stubGlobal("window", { alert: vi.fn(), location: { origin: "https://troncaltrack.com", hash: "", search: "", pathname: "/" }, sessionStorage: { getItem: (k: string) => storage.get(k), setItem: (k: string, v: string) => storage.set(k, v), removeItem: (k: string) => storage.delete(k) }, history: { replaceState: vi.fn() } });
   mocks.reset.mockResolvedValue({ error: null });
   mocks.update.mockResolvedValue({ error: null });
   mocks.getUser.mockResolvedValue({ data: { user: { id: "test" } }, error: null });
   mocks.listener = undefined;
 });
 
+afterEach(async () => { await new Promise((resolve) => setTimeout(resolve, 20)); });
+
 describe("recuperación de contraseña", () => {
+  it("mantiene el cierre de sesión para cuentas bloqueadas fuera de recuperación", async () => {
+    mocks.rpc.mockResolvedValue({ data: { bloqueado: true }, error: null });
+    const session = await import("./use-session");
+    session.useSesion();
+    mocks.listener?.("SIGNED_IN", { user: { id: "test" } });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(mocks.signOut).toHaveBeenCalledTimes(1);
+  });
   it("no carga ni expulsa un perfil bloqueado durante PASSWORD_RECOVERY", async () => {
     mocks.rpc.mockResolvedValue({ data: { bloqueado: true }, error: null });
     const session = await import("./use-session");
