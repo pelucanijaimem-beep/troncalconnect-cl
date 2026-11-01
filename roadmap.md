@@ -1,4 +1,6 @@
 # Tareas
+- [ ] Integrar identidad al formulario actual, conservar columnas y triggers, recibir firma V2 y guardar resultados mediante sesiones vinculadas en servidor.
+- [ ] Activar y probar identidad real; bloqueado: clave de API, secreto de firma y publicación del receptor.
 - [x] Crear formulario de soporte/sugerencias público, persistencia privada y revisión administrativa; envíos con/sin sesión, precarga editable, filtro y leído persistente comprobados.
 - [ ] Activar aviso opcional por correo; conexión lista, envío preparado; bloqueado: dominio troncaltrack.com sin verificar en el servicio de envío.
 - [x] Restringir lectura de archivos documentales exclusivamente a administradores y auditar vistas y respuestas públicas.
