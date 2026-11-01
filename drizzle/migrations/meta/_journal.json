@@ -64,6 +64,13 @@
       "when": 1792255155985,
       "tag": "0008_guardar_chilevalora_rpc",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793491922177,
+      "tag": "0009_mensajes_contacto_privados",
+      "breakpoints": true
     }
   ]
 }
