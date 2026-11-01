@@ -15,6 +15,7 @@ import { Route as EliminarCuentaRouteImport } from './routes/eliminar-cuenta'
 import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as RegistroRouteImport } from './routes/registro'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
 import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
@@ -51,6 +52,11 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
 const RegistroRoute = RegistroRouteImport.update({
   id: '/registro',
   path: '/registro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TerminosRoute = TerminosRouteImport.update({
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/planes'
     | '/privacidad'
     | '/registro'
+    | '/reset-password'
     | '/terminos'
     | '/carga/$id'
     | '/api/public/didit-webhook'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/planes'
     | '/privacidad'
     | '/registro'
+    | '/reset-password'
     | '/terminos'
     | '/carga/$id'
     | '/api/public/didit-webhook'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/planes'
     | '/privacidad'
     | '/registro'
+    | '/reset-password'
     | '/terminos'
     | '/carga/$id'
     | '/api/public/didit-webhook'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   PlanesRoute: typeof PlanesRoute
   PrivacidadRoute: typeof PrivacidadRoute
   RegistroRoute: typeof RegistroRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       path: '/registro'
       fullPath: '/registro'
       preLoaderRoute: typeof RegistroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terminos': {
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlanesRoute: PlanesRoute,
   PrivacidadRoute: PrivacidadRoute,
   RegistroRoute: RegistroRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,

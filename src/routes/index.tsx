@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PortAccessNotice } from "@/components/troncal/PortAccessNotice";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing } from "lucide-react";
+import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing, Sparkles } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/troncal/Header";
@@ -20,6 +20,7 @@ import { LaunchBanner } from "@/components/troncal/LaunchBanner";
 import { SearchFilters, type Filtros } from "@/components/troncal/SearchFilters";
 import { EquipmentPills } from "@/components/troncal/EquipmentPills";
 import { LoadCard } from "@/components/troncal/LoadCard";
+import { LoadMatchingDialog } from "@/components/troncal/LoadMatchingDialog";
 import { TruckCard } from "@/components/troncal/TruckCard";
 import { AuthDialog } from "@/components/troncal/AuthDialog";
 import { PostTruckDialog } from "@/components/troncal/PostTruckDialog";
@@ -132,6 +133,7 @@ function Index() {
   }, []);
   const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
   const [comparaOpen, setComparaOpen] = useState(false);
+  const [matchingOpen, setMatchingOpen] = useState(false);
   const [podCarga, setPodCarga] = useState<Carga | null>(null);
   const [alertasOpen, setAlertasOpen] = useState(false);
   const [reporte, setReporte] = useState<ObjetoReporte | null>(null);
@@ -574,6 +576,9 @@ function Index() {
                 <Button variant="outline" onClick={() => setAlertasOpen(true)}>
                   <BellRing className="h-4 w-4" /> Mis alertas de coincidencia
                 </Button>
+                <Button variant="outline" onClick={() => setMatchingOpen(true)}>
+                  <Sparkles className="h-4 w-4" /> Buscar cargas con IA
+                </Button>
               </>
 
             ) : (
@@ -602,6 +607,7 @@ function Index() {
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
           onConfigurarRetorno={() => setAlertasOpen(true)}
         />
+        {esCamionero && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} cargas={cargas} onDetalles={setDetalle} />}
 
 
         <div className="mt-4">

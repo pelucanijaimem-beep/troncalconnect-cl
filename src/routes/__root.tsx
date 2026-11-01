@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { PasswordRecoveryDialog } from "@/components/troncal/PasswordRecoveryDialog";
 
 function NotFoundComponent() {
   return (
@@ -95,10 +96,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "La plataforma profesional para transportistas, dadores de carga y comisionistas. Comienza gratis, sin vencimiento.",
       },
-      { property: "og:image", content: "https://troncaltrack.com/og-image.jpg" },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "TroncalTrack — Logistics Solutions" },
       { property: "og:locale", content: "es_CL" },
       { name: "twitter:card", content: "summary_large_image" },
       {
@@ -110,7 +107,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "La plataforma profesional para transportistas, dadores de carga y comisionistas. Comienza gratis, sin vencimiento.",
       },
-      { name: "twitter:image", content: "https://troncaltrack.com/og-image.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -154,6 +150,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <PasswordRecoveryDialog />
     </QueryClientProvider>
   );
 }
