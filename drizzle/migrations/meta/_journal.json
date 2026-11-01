@@ -71,6 +71,13 @@
       "when": 1793491922177,
       "tag": "0009_mensajes_contacto_privados",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793493552615,
+      "tag": "0010_contacto_privilegios_minimos",
+      "breakpoints": true
     }
   ]
 }
