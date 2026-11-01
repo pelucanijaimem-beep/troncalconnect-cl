@@ -15,19 +15,43 @@ export const identityEventSchema = z.object({
     status: z.string().max(80).optional(),
     id_verifications: z.array(z.object({
       document_number: z.string().max(80).nullish(),
+      personal_number: z.string().max(80).nullish(),
+      document_type: z.string().max(80).nullish(),
+      full_name: z.string().max(300).nullish(),
+      first_name: z.string().max(150).nullish(),
+      last_name: z.string().max(150).nullish(),
       status: z.string().max(80).optional(),
-    })).max(30).optional(),
-  }).nullish(),
+    }).passthrough()).max(30).optional(),
+  }).passthrough().nullish(),
 });
 
-/** Firma de cuerpo completo: no admite la variante que solo firma el sobre. */
+export function canonicalIdentityJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalIdentityJson).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    const object = value as Record<string, unknown>;
+    return `{${Object.keys(object).sort().map(key => `${JSON.stringify(key)}:${canonicalIdentityJson(object[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value) ?? "null";
+}
+
+export function identityStatus(status: string): string {
+  return status.trim().toLowerCase().replace(/\s+/g, "_");
+}
+
+/** Firma canónica de cuerpo completo, incluida la fecha firmada. */
 export function verifyIdentitySignature(raw: string, headers: Headers, secret: string, now = Date.now()): boolean {
   const timestamp = headers.get("x-timestamp") ?? "";
-  const signature = headers.get("x-signature") ?? "";
-  if (!/^\d{10}$/.test(timestamp) || !/^[a-fA-F0-9]{64}$/.test(signature)) return false;
+  if (!/^\d{10}$/.test(timestamp)) return false;
   if (Math.abs(Math.floor(now / 1000) - Number(timestamp)) > 300) return false;
-  const expected = createHmac("sha256", secret).update(raw, "utf8").digest();
-  return timingSafeEqual(expected, Buffer.from(signature, "hex"));
+  try {
+    const payload: unknown = JSON.parse(raw);
+    if (!payload || typeof payload !== "object" || !("timestamp" in payload) || payload.timestamp !== Number(timestamp)) return false;
+    const expected = createHmac("sha256", secret).update(canonicalIdentityJson(payload), "utf8").digest();
+    return ["x-signature-v2", "x-signature-v2-previous"].some(header => {
+      const signature = headers.get(header) ?? "";
+      return /^[a-fA-F0-9]{64}$/.test(signature) && timingSafeEqual(expected, Buffer.from(signature, "hex"));
+    });
+  } catch { return false; }
 }
 
 export function identityRutMatches(registered: string, extracted: string): boolean {

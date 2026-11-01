@@ -125,6 +125,11 @@ function Index() {
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
   const [verificacionOpen, setVerificacionOpen] = useState(false);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("verificacion") === "identidad") {
+      setVerificacionOpen(true);
+    }
+  }, []);
   const [evaluacion, setEvaluacion] = useState<EvaluacionPendiente | null>(null);
   const [comparaOpen, setComparaOpen] = useState(false);
   const [podCarga, setPodCarga] = useState<Carga | null>(null);

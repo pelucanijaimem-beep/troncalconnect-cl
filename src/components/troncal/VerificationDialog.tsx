@@ -1,4 +1,7 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { consultarMiIdentidad, iniciarVerificacionIdentidad } from "@/lib/identity.functions";
+import { identityStatusLabel } from "@/lib/identity-status";
 import { toast } from "sonner";
 import { FileCheck2, Flame, ShieldCheck, Trees } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -79,6 +82,50 @@ export function VerificationDialog({
   const chilevalora = useMiChilevalora(open && esCamionero);
   const [enviandoChv, setEnviandoChv] = useState(false);
   const [enviandoForestal, setEnviandoForestal] = useState(false);
+  const iniciarIdentidad = useServerFn(iniciarVerificacionIdentidad);
+  const consultarIdentidad = useServerFn(consultarMiIdentidad);
+  const [identidad, setIdentidad] = useState<{ estado: string | null; coincide: boolean | null }>({ estado: null, coincide: null });
+  const [errorIdentidad, setErrorIdentidad] = useState("");
+  const [iniciandoIdentidad, setIniciandoIdentidad] = useState(false);
+
+  useEffect(() => {
+    if (!open || !userId) return;
+    let vivo = true;
+    const actualizar = async () => {
+      try {
+        const result = await consultarIdentidad();
+        if (!vivo) return;
+        if (result.error) { setErrorIdentidad(result.error); return; }
+        setIdentidad({ estado: result.estado ?? null, coincide: result.coincide ?? null });
+      } catch { if (vivo) setErrorIdentidad("No pudimos consultar tu estado de identidad."); }
+    };
+    void actualizar();
+    window.addEventListener("focus", actualizar);
+    const timer = window.setInterval(() => void actualizar(), 15000);
+    return () => { vivo = false; window.clearInterval(timer); window.removeEventListener("focus", actualizar); };
+  }, [open, userId, consultarIdentidad]);
+
+  const verificarIdentidad = async () => {
+    if (!userId || iniciandoIdentidad) return;
+    const ventana = window.open("about:blank", "_blank");
+    if (ventana) ventana.opener = null;
+    setIniciandoIdentidad(true);
+    setErrorIdentidad("");
+    try {
+      const result = await iniciarIdentidad();
+      if (result.error || !result.url) {
+        ventana?.close();
+        setErrorIdentidad(result.error ?? "No pudimos iniciar tu verificación de identidad.");
+        return;
+      }
+      setIdentidad({ estado: "in_progress", coincide: null });
+      if (ventana) ventana.location.replace(result.url);
+      else setErrorIdentidad("Permite abrir una pestaña nueva e inténtalo nuevamente.");
+    } catch {
+      ventana?.close();
+      setErrorIdentidad("No pudimos iniciar tu verificación de identidad. Inténtalo nuevamente.");
+    } finally { setIniciandoIdentidad(false); }
+  };
 
   const enviarChilevalora = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -196,6 +243,18 @@ export function VerificationDialog({
         </div>
 
         <VerificationChecklist checklist={verificacion.checklist} rol={rol} />
+
+        <div className="space-y-2 border-t border-border pt-4">
+          <p className="text-sm font-semibold">Identidad</p>
+          <p className={identidad.coincide === false ? "text-sm text-destructive" : "text-sm text-muted-foreground"}>
+            {identityStatusLabel(identidad.estado, identidad.coincide)}
+          </p>
+          <Button type="button" variant="outline" disabled={!userId || iniciandoIdentidad} onClick={() => void verificarIdentidad()}>
+            <ShieldCheck className="h-4 w-4" />
+            {iniciandoIdentidad ? "Iniciando verificación…" : "Verificar identidad con Didit"}
+          </Button>
+          {errorIdentidad && <p role="alert" className="text-sm text-destructive">{errorIdentidad}</p>}
+        </div>
 
         <form onSubmit={enviar} className="space-y-4">
           {campos.map((c) => (
