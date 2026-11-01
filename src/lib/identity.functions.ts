@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/lib/require-session";
 import { rutValido } from "./rut";
+import { identityApiFailure } from "./identity-api-errors";
 
 /** El vínculo se crea únicamente desde una cuenta autenticada, nunca desde el aviso. */
 export const iniciarVerificacionIdentidad = createServerFn({ method: "POST" })
@@ -22,7 +23,14 @@ export const iniciarVerificacionIdentidad = createServerFn({ method: "POST" })
       body: JSON.stringify({ workflow_id: workflow, vendor_data: context.userId, language: "es", callback: "https://troncalconnect-cl.lovable.app/?verificacion=identidad" }),
       signal: AbortSignal.timeout(12000),
     });
-    if (!response.ok) return { error: "No pudimos iniciar la verificación. Inténtalo nuevamente." };
+    if (!response.ok) {
+      const failure = identityApiFailure(response.status);
+      console.error("[identidad] solicitud rechazada", { etapa: "crear_sesion", status: response.status, categoria: failure.categoria });
+      // No guardar ni devolver la respuesta del proveedor: puede incluir
+      // identificadores personales o valores de configuración privados.
+      await response.body?.cancel();
+      return { error: failure.error };
+    }
     const parsed = z.object({ session_id: z.string().uuid(), url: z.string().url() }).safeParse(await response.json());
     if (!parsed.success) return { error: "No pudimos iniciar la verificación." };
     const url = new URL(parsed.data.url);
@@ -31,7 +39,8 @@ export const iniciarVerificacionIdentidad = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.rpc("registrar_sesion_identidad_v2", { p_session: parsed.data.session_id, p_user: context.userId });
     if (error) return { error: "No pudimos vincular la verificación con tu cuenta." };
     return { url: parsed.data.url, session_id: parsed.data.session_id };
-    } catch {
+    } catch (error) {
+      console.error("[identidad] conexión fallida", { etapa: "crear_sesion", categoria: error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError") ? "tiempo_agotado" : "conexion_o_respuesta" });
       return { error: "No pudimos conectar con la verificación de identidad. Inténtalo nuevamente." };
     }
   });
