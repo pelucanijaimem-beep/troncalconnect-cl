@@ -30,6 +30,8 @@ import { TrackingDialog } from "@/components/troncal/TrackingDialog";
 import { DriverTripDialog } from "@/components/troncal/DriverTripDialog";
 import { AvailabilityPanel } from "@/components/troncal/AvailabilityPanel";
 import { ContactDialog, type Contacto } from "@/components/troncal/ContactDialog";
+import { ContactSupportDialog } from "@/components/troncal/ContactSupportDialog";
+import type { TipoContacto } from "@/lib/contacto-schema";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
@@ -118,6 +120,7 @@ function Index() {
   const [postulando, setPostulando] = useState<Carga | null>(null);
   const [enviandoPostulacion, setEnviandoPostulacion] = useState(false);
   const [contacto, setContacto] = useState<Contacto | null>(null);
+  const [tipoContacto, setTipoContacto] = useState<TipoContacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
@@ -759,29 +762,24 @@ function Index() {
             >
               Preguntas frecuentes
             </a>
-            <a
-              href="mailto:soporte@troncaltrack.com"
-              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
-            >
+            <Button variant="link" onClick={() => setTipoContacto("soporte")} className="h-auto justify-start p-0 font-medium text-foreground hover:text-primary">
               Soporte
-            </a>
+            </Button>
             <button
               onClick={() => abrirAuth("registro")}
               className="cursor-pointer text-left font-medium text-foreground hover:text-primary hover:underline"
             >
               Registro
             </button>
-            <a
-              href="mailto:sugerencias@troncaltrack.com?subject=Sugerencia%20para%20TroncalTrack"
-              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
-            >
+            <Button variant="link" onClick={() => setTipoContacto("sugerencia")} className="h-auto justify-start p-0 font-medium text-foreground hover:text-primary">
               Sugerencias
-            </a>
+            </Button>
           </div>
         </div>
       </footer>
 
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
+      {tipoContacto && <ContactSupportDialog tipoInicial={tipoContacto} onClose={() => setTipoContacto(null)} />}
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
       <PostularDialog

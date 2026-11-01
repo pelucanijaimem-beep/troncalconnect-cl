@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
+import { AdminContactMessages } from "@/components/troncal/AdminContactMessages";
 import {
   DOC_CHILEVALORA,
   documentosRequeridos,
@@ -427,6 +428,7 @@ function AdminPage() {
           </p>
         </header>
 
+        <AdminContactMessages />
         <Seccion
           titulo={`Solicitudes de Verificación (${pendientes.length} pendientes)`}
           descripcion="Revisa los documentos adjuntos y aprueba o rechaza la solicitud."
