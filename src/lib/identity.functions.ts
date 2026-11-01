@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireSupabaseAuth } from "@/lib/require-session";
 import { rutValido } from "./rut";
 
 /** El vínculo se crea únicamente desde una cuenta autenticada, nunca desde el aviso. */
