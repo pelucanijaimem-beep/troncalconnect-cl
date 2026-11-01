@@ -1,4 +1,6 @@
 # Tareas
+- [x] Corregir cierre inmediato del formulario de recuperación: aislar perfil, descartar consultas antiguas, ignorar TOKEN_REFRESHED, posponer consultas fuera del callback y conservar formulario ante pérdida de sesión; 43 pruebas aprobadas y formulario con enlace inválido comprobado en navegador. Logs reales: renovaciones repetidas, tres 429 y enlace reutilizado; no confirman cuenta bloqueada.
+- [ ] Confirmar recuperación corregida desde correo nuevo en producción; bloqueado: publicar y probar enlace nuevo del usuario; no cambiar contraseñas existentes como prueba.
 - [x] Agregar búsqueda de cargas compatibles con IA desde descripción del camión y ruta; respetar permisos, vigencia y contacto por plan. Llamada real de IA con entrada de prueba válida.
 - [x] Corregir recuperación con destino público, detección PASSWORD_RECOVERY y enlaces antiguos, contraseña y confirmación. 37 pruebas aprobadas; formulario y rechazo de sesión vencida comprobados sin errores.
 - [ ] Verificar búsqueda en tablero con sesión real y recuperación desde correo hasta acceso con nueva contraseña en producción. Bloqueado: no hay sesión autorizada disponible para el solicitante; publicar y probar desde su cuenta. No modificar contraseña de cuentas existentes como prueba.

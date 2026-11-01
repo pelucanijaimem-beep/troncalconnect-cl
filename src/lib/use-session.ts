@@ -18,6 +18,8 @@ export type Sesion = {
 let sesion: Sesion | null = null;
 let iniciado = false;
 let recuperandoPassword = false;
+let versionSesion = 0;
+let perfilProgramado: ReturnType<typeof setTimeout> | undefined;
 const RECUPERACION_KEY = "troncal-recuperacion-password";
 const oyentes = new Set<() => void>();
 
@@ -35,6 +37,8 @@ function sesionBase(userId: string, email: string): Sesion {
 }
 
 async function cargarPerfil(userId: string, email: string) {
+  if (recuperandoPassword) return;
+  const version = versionSesion;
   // La sesión se marca como iniciada de inmediato: si la consulta del perfil
   // falla (red, permisos o desfase de reloj), el usuario igual queda logueado.
   if (sesion?.id !== userId) {
@@ -54,6 +58,7 @@ async function cargarPerfil(userId: string, email: string) {
   let data: Perfil = null;
 
   for (let intento = 0; intento < 2; intento += 1) {
+    if (recuperandoPassword || version !== versionSesion) return;
     try {
       const res = await supabase.rpc("mi_perfil");
       if (!res.error) {
@@ -65,6 +70,9 @@ async function cargarPerfil(userId: string, email: string) {
     }
     await new Promise((r) => setTimeout(r, 600));
   }
+
+  // Una consulta anterior no puede cerrar ni reemplazar una sesión de recuperación.
+  if (recuperandoPassword || version !== versionSesion) return;
 
   if (!data) {
     // conservamos la sesión base, pero sin quedar en estado de carga
@@ -105,29 +113,38 @@ function iniciar() {
     window.sessionStorage.getItem(RECUPERACION_KEY) === "1";
   if (recuperandoPassword) window.sessionStorage.setItem(RECUPERACION_KEY, "1");
 
-  void supabase.auth.getSession().then(({ data }) => {
-    const u = data.session?.user;
-    if (u) void cargarPerfil(u.id, u.email ?? "");
-  });
-
   supabase.auth.onAuthStateChange((evento, s) => {
     if (evento === "PASSWORD_RECOVERY") {
+      versionSesion += 1;
       recuperandoPassword = true;
+      sesion = null;
       window.sessionStorage.setItem(RECUPERACION_KEY, "1");
       emitir();
-    }
-    const u = s?.user;
-    if (!u) {
-      // Solo cerramos la sesión ante una salida real; un refresco de token
-      // descartado no debe expulsar al usuario recién ingresado.
-      if (evento === "SIGNED_OUT") {
-        sesion = null;
-        finalizarRecuperacionPassword();
-        emitir();
-      }
       return;
     }
-    void cargarPerfil(u.id, u.email ?? "");
+    if (evento === "SIGNED_OUT") {
+      versionSesion += 1;
+      sesion = null;
+      // Si el enlace vence, el formulario debe permanecer y mostrar el error
+      // al guardar, no desaparecer. Esto no conserva una sesión autenticada.
+      emitir();
+      return;
+    }
+    if (recuperandoPassword) return;
+    if (evento !== "SIGNED_IN" && evento !== "INITIAL_SESSION" && evento !== "USER_UPDATED") return;
+    const u = s?.user;
+    if (!u) return;
+    const version = versionSesion;
+    // El callback de auth corre bajo su bloqueo interno. Consultar aquí puede
+    // provocar renovaciones recursivas; hacerlo en una tarea posterior.
+    if (perfilProgramado !== undefined) clearTimeout(perfilProgramado);
+    perfilProgramado = setTimeout(() => {
+      perfilProgramado = undefined;
+      if (recuperandoPassword || version !== versionSesion) return;
+      void cargarPerfil(u.id, u.email ?? "").catch(() => {
+        console.warn("[sesion] no se pudo actualizar el perfil");
+      });
+    }, 0);
   });
 }
 
@@ -247,6 +264,11 @@ export async function actualizarPasswordRecuperada(password: string, confirmacio
     if (error) return error.message;
     finalizarRecuperacionPassword();
     window.history.replaceState(null, "", window.location.pathname);
+    // Después de guardar se retoman las reglas habituales del perfil,
+    // incluido el bloqueo de cuentas, sin ejecutarlas durante la recuperación.
+    setTimeout(() => { void refrescarSesion().catch(() => {
+      console.warn("[sesion] no se pudo actualizar el perfil");
+    }); }, 0);
     return null;
   } catch {
     return "No pudimos guardar la contraseña. Inténtalo nuevamente.";
