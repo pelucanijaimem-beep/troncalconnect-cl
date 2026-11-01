@@ -1,4 +1,5 @@
 # Tareas
+- [ ] Corregir cierre inmediato del formulario de recuperación; revisar intento real, evitar carga de perfil y renovaciones recursivas durante recuperación y probar regresiones.
 - [x] Agregar búsqueda de cargas compatibles con IA desde descripción del camión y ruta; respetar permisos, vigencia y contacto por plan. Llamada real de IA con entrada de prueba válida.
 - [x] Corregir recuperación con destino público, detección PASSWORD_RECOVERY y enlaces antiguos, contraseña y confirmación. 37 pruebas aprobadas; formulario y rechazo de sesión vencida comprobados sin errores.
 - [ ] Verificar búsqueda en tablero con sesión real y recuperación desde correo hasta acceso con nueva contraseña en producción. Bloqueado: no hay sesión autorizada disponible para el solicitante; publicar y probar desde su cuenta. No modificar contraseña de cuentas existentes como prueba.
