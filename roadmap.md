@@ -1,8 +1,9 @@
 # Tareas
-- [ ] Publicar recuperación corregida y comprobar correo, formulario y confirmación; no modificar contraseña de cuentas existentes sin un entorno de prueba autorizado.
-- [ ] Diagnosticar rechazo real de Didit, verificar credenciales/flujo mediante respuestas oficiales y añadir diagnóstico seguro si los logs no conservan la respuesta.
+- [x] Solicitar publicación de recuperación y diagnóstico seguro de Didit; 52 pruebas aprobadas, compilación correcta y página pública reset-password responde HTTP 200 (no prueba que terminó el despliegue).
+- [x] Consultar Didit sin crear sesiones: HTTP 200, clave aceptada y workflow configurado publicado/no archivado; añadir registro seguro de HTTP y categoría sin cuerpos privados.
+- [ ] Confirmar rechazo de creación de sesión Didit en producción; bloqueado: intento nuevo del usuario después de publicación; logs anteriores no conservaron status ni cuerpo.
 - [x] Corregir cierre inmediato del formulario de recuperación: aislar perfil, descartar consultas antiguas, ignorar TOKEN_REFRESHED, posponer consultas fuera del callback y conservar formulario ante pérdida de sesión; 43 pruebas aprobadas y formulario con enlace inválido comprobado en navegador. Logs reales: renovaciones repetidas, tres 429 y enlace reutilizado; no confirman cuenta bloqueada.
-- [ ] Confirmar recuperación corregida desde correo nuevo en producción; bloqueado: publicar y probar enlace nuevo del usuario; no cambiar contraseñas existentes como prueba.
+- [ ] Confirmar recuperación corregida desde correo nuevo en producción; bloqueado: usuario eligió probar con su cuenta y debe abrir correo nuevo, elegir contraseña y avisar del resultado; no compartir enlace ni contraseña.
 - [x] Agregar búsqueda de cargas compatibles con IA desde descripción del camión y ruta; respetar permisos, vigencia y contacto por plan. Llamada real de IA con entrada de prueba válida.
 - [x] Corregir recuperación con destino público, detección PASSWORD_RECOVERY y enlaces antiguos, contraseña y confirmación. 37 pruebas aprobadas; formulario y rechazo de sesión vencida comprobados sin errores.
 - [ ] Verificar búsqueda en tablero con sesión real y recuperación desde correo hasta acceso con nueva contraseña en producción. Bloqueado: no hay sesión autorizada disponible para el solicitante; publicar y probar desde su cuenta. No modificar contraseña de cuentas existentes como prueba.
