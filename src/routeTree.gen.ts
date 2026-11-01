@@ -17,6 +17,7 @@ import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
+import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
 import { Route as ApiPublicIdentidadRouteImport } from './routes/api/public/identidad'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -62,6 +63,11 @@ const CargaIdRoute = CargaIdRouteImport.update({
   path: '/carga/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDiditWebhookRoute = ApiPublicDiditWebhookRouteImport.update({
+  id: '/api/public/didit-webhook',
+  path: '/api/public/didit-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicIdentidadRoute = ApiPublicIdentidadRouteImport.update({
   id: '/api/public/identidad',
   path: '/api/public/identidad',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/registro': typeof RegistroRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/registro'
     | '/terminos'
     | '/carga/$id'
+    | '/api/public/didit-webhook'
     | '/api/public/identidad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/registro'
     | '/terminos'
     | '/carga/$id'
+    | '/api/public/didit-webhook'
     | '/api/public/identidad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/registro'
     | '/terminos'
     | '/carga/$id'
+    | '/api/public/didit-webhook'
     | '/api/public/identidad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   RegistroRoute: typeof RegistroRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
+  ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
   ApiPublicIdentidadRoute: typeof ApiPublicIdentidadRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CargaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/didit-webhook': {
+      id: '/api/public/didit-webhook'
+      path: '/api/public/didit-webhook'
+      fullPath: '/api/public/didit-webhook'
+      preLoaderRoute: typeof ApiPublicDiditWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/identidad': {
       id: '/api/public/identidad'
       path: '/api/public/identidad'
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistroRoute: RegistroRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
+  ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,
   ApiPublicIdentidadRoute: ApiPublicIdentidadRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,

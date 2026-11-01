@@ -6,7 +6,6 @@ import { rutValido } from "./rut";
 /** El vínculo se crea únicamente desde una cuenta autenticada, nunca desde el aviso. */
 export const iniciarVerificacionIdentidad = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ callback: z.string().url().max(500) }))
   .handler(async ({ context }) => {
     const key = process.env["DIDIT_API_KEY"];
     const workflow = process.env["DIDIT_WORKFLOW_ID"];
