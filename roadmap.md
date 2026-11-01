@@ -1,4 +1,6 @@
 # Tareas
+- [ ] Agregar búsqueda de cargas compatibles con IA desde descripción del camión y ruta, respetando visibilidad y contacto por plan; probar llamada real y tablero.
+- [ ] Corregir recuperación de contraseña con destino público, detección de recuperación, nueva contraseña y confirmación; correr pruebas y comprobar formulario.
 - [x] Añadir respaldo de clave pública en acceso, contacto y middleware local autenticado sin editar archivos administrados; 24 pruebas aprobadas, compilación correcta. Conserva URL de servidor, JWT validado y permisos del usuario.
 - [ ] Publicar el respaldo y probar acceso y botón Didit reales; bloqueado: publicación y nueva prueba autorizada del usuario. La causa del fallo histórico no se confirmó mediante registros, aunque el escenario de clave ausente ahora está cubierto.
 - [x] Revisar logs de producción y probar acceso con RUT con/sin formato; respuestas controladas con contraseña incorrecta, 11 pruebas aprobadas; añadir diagnóstico seguro, validación de configuración y separación entre acceso y lectura de perfil.
