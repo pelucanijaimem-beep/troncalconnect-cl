@@ -48,9 +48,9 @@ export function ContactSupportDialog({ tipoInicial, onClose }: { tipoInicial: Ti
         <Tabs value={tipo} onValueChange={(v) => { if (v === "soporte" || v === "sugerencia") setTipo(v); }}>
           <TabsList className="grid w-full grid-cols-2"><TabsTrigger disabled={enviando} value="soporte">Soporte</TabsTrigger><TabsTrigger disabled={enviando} value="sugerencia">Sugerencia</TabsTrigger></TabsList>
         </Tabs>
-        <div className="space-y-2"><Label htmlFor="contacto-nombre">Nombre</Label><Input id="contacto-nombre" autoComplete="name" required maxLength={100} value={nombre} disabled={enviando} onChange={(e) => { setNombreEditado(true); setNombre(e.target.value); }} /></div>
-        <div className="space-y-2"><Label htmlFor="contacto-correo">Correo</Label><Input id="contacto-correo" type="email" autoComplete="email" required maxLength={255} value={correo} disabled={enviando} onChange={(e) => setCorreo(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor="contacto-mensaje">Mensaje</Label><Textarea id="contacto-mensaje" required minLength={10} maxLength={5000} rows={5} value={mensaje} disabled={enviando} onChange={(e) => setMensaje(e.target.value)} /></div>
+        <div className="space-y-2"><Label htmlFor="contacto-nombre">Nombre</Label><Input id="contacto-nombre" autoComplete="name" required maxLength={100} value={nombre} disabled={enviando} onChange={(e) => { setError(""); setNombreEditado(true); setNombre(e.target.value); }} /></div>
+        <div className="space-y-2"><Label htmlFor="contacto-correo">Correo</Label><Input id="contacto-correo" type="email" autoComplete="email" required maxLength={255} value={correo} disabled={enviando} onChange={(e) => { setError(""); setCorreo(e.target.value); }} /></div>
+        <div className="space-y-2"><Label htmlFor="contacto-mensaje">Mensaje</Label><Textarea id="contacto-mensaje" required minLength={10} maxLength={5000} rows={5} value={mensaje} disabled={enviando} onChange={(e) => { setError(""); setMensaje(e.target.value); }} /></div>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <Button type="submit" disabled={enviando} className="w-full">{enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}{enviando ? "Enviando…" : "Enviar mensaje"}</Button>
       </form>

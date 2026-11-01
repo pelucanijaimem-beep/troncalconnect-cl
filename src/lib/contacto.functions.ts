@@ -31,5 +31,7 @@ export const enviarMensajeContacto = createServerFn({ method: "POST" })
     }
     const { error } = await client.from("mensajes_contacto").insert({ ...data, user_id: userId });
     if (error) throw new Error("No pudimos guardar tu mensaje. Intenta nuevamente.");
+    const { avisarMensajeContacto } = await import("./contacto-email.server");
+    await avisarMensajeContacto(data);
     return { ok: true };
   });

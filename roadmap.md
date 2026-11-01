@@ -1,6 +1,6 @@
 # Tareas
-- [ ] Crear formulario de soporte/sugerencias público, persistencia privada y revisión administrativa; probar envío y lectura.
-- [ ] Activar aviso opcional por correo; pendiente conexión de envío y confirmar dominio remitente compatible.
+- [x] Crear formulario de soporte/sugerencias público, persistencia privada y revisión administrativa; envíos con/sin sesión, precarga editable, filtro y leído persistente comprobados.
+- [ ] Activar aviso opcional por correo; conexión lista, envío preparado; bloqueado: dominio troncaltrack.com sin verificar en el servicio de envío.
 - [x] Restringir lectura de archivos documentales exclusivamente a administradores y auditar vistas y respuestas públicas.
 - [x] Probar permisos de lectura documental como usuario sin privilegios, visitante, dueño no administrador y administrador en la base de datos.
 - [ ] Probar descarga y revisión en el panel con sesión real; bloqueado: no se pudo obtener una sesión autorizada del solicitante, debe iniciar sesión en la vista previa.
