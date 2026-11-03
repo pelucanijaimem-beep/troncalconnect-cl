@@ -1,54 +1,49 @@
 import { describe, expect, it } from "vitest";
-import { calcularFlota, convertirUF, DESCUENTO_FUNDADOR, leerUFDelDia, MESES_LANZAMIENTO, PLANES_GENERADORES, PLANES_TRANSPORTE, precioFundador, UF_RESPALDO } from "./pricing";
+import { calcularDador, patenteValida, calcularFlota, convertirUF, DESCUENTO_FUNDADOR, leerUFDelDia, MESES_LANZAMIENTO, PLANES_GENERADORES, PLANES_TRANSPORTE, precioFundador, UF_RESPALDO } from "./pricing";
 
-describe("Matriz comercial", () => {
-  it("Starter cuesta 1,3 UF con 15 publicaciones y 1 administrador", () => {
-    expect(PLANES_GENERADORES[0]).toMatchObject({ uf: 1.3, publicaciones: 15, usuarios: 1 });
+describe("Membresías en CLP", () => {
+  it("un camión es gratis para siempre", () => { expect(calcularFlota(1)?.totalClp).toBe(0); });
+  it("Flota Mediana cobra 4990 por camión de 2 a 20", () => {
+    expect(calcularFlota(2)?.totalClp).toBe(9980);
+    expect(calcularFlota(5)?.totalClp).toBe(24950);
+    expect(calcularFlota(20)?.totalClp).toBe(99800);
   });
-  it("Pro cuesta 3,2 UF con 60 publicaciones y 3 usuarios", () => {
-    expect(PLANES_GENERADORES[1]).toMatchObject({ uf: 3.2, publicaciones: 60, usuarios: 3 });
+  it("Enterprise aplica 3500 a todos los camiones desde 21", () => {
+    expect(calcularFlota(21)?.totalClp).toBe(73500);
+    expect(calcularFlota(300)?.totalClp).toBe(1050000);
   });
-  it("Enterprise parte en 10 UF y tiene publicaciones ilimitadas", () => {
-    expect(PLANES_GENERADORES[2]).toMatchObject({ uf: 10, desde: true, publicaciones: Infinity });
+  it("cobra por patentes registradas y no por actividad", () => {
+    expect(calcularFlota(300)?.totalClp).not.toBe(calcularFlota(200)?.totalClp);
   });
-  it("Un camión es gratis permanente, independiente de lanzamiento", () => {
-    expect(PLANES_TRANSPORTE[0]).toMatchObject({ uf: 0, min: 1, max: 1 });
-    expect(calcularFlota(1)?.totalUf).toBe(0);
+  it("Empresa Pyme cuesta 49990 e incluye 10 publicaciones y un usuario", () => {
+    expect(PLANES_GENERADORES[0]).toMatchObject({ clp: 49990, publicaciones: 10, usuarios: 1 });
+    expect(calcularDador("empresa_pyme", 1)?.totalClp).toBe(49990);
+    expect(calcularDador("empresa_pyme", 2)).toBeNull();
   });
-  it("Pyme aplica 0,25 UF a los 2–9 activos", () => {
-    expect(calcularFlota(2)?.totalUf).toBe(0.5);
-    expect(calcularFlota(9)?.totalUf).toBe(2.25);
+  it("Premium cuesta 149990 por licencia activa con publicaciones ilimitadas", () => {
+    expect(PLANES_GENERADORES[1]).toMatchObject({ clp: 149990, publicaciones: Infinity });
+    expect(calcularDador("corporativo_premium", 2)?.totalClp).toBe(299980);
+    expect(calcularDador("corporativo_premium", 5)?.totalClp).toBe(749950);
   });
-  it("Mediana aplica 0,17 UF a los 10–49 activos", () => {
-    expect(calcularFlota(10)?.totalUf).toBe(1.7);
-    expect(calcularFlota(49)?.totalUf).toBe(8.33);
-  });
-  it("Enterprise aplica 0,08 UF desde 50 activos", () => {
-    expect(calcularFlota(50)?.totalUf).toBe(4);
-    expect(calcularFlota(200)?.totalUf).toBe(16);
-  });
-  it("500 declarados y solo 200 activos pagan por 200, no 500", () => {
-    const empresa = { declarados: 500, activos: 200 };
-    expect(calcularFlota(empresa.activos)?.totalUf).toBe(16);
-    expect(calcularFlota(empresa.activos)?.totalUf).not.toBe(calcularFlota(empresa.declarados)?.totalUf);
-  });
-  it("Fundador descuenta 20% al precio real de generadores", () => {
+  it("mantiene Fundador 20% sobre los nuevos precios", () => {
     expect(DESCUENTO_FUNDADOR).toBe(0.2);
-    expect(PLANES_GENERADORES.map(p => precioFundador(p.uf))).toEqual([1.04, 2.56, 8]);
+    expect(calcularFlota(5)?.fundadorClp).toBe(19960);
+    expect(calcularDador("empresa_pyme", 1)?.fundadorClp).toBe(39992);
   });
-  it("Fundador de 5 activos paga 1 UF y de 200 paga 12,8 UF", () => {
-    expect(calcularFlota(5)?.fundadorUf).toBe(1);
-    expect(calcularFlota(200)?.fundadorUf).toBe(12.8);
-  });
-  it("Lanzamiento dura cuatro meses sin alterar la tarifa normal", () => {
+  it("mantiene cuatro meses de lanzamiento sin cambiar tarifa normal", () => {
     expect(MESES_LANZAMIENTO).toBe(4);
-    expect(calcularFlota(5)?.totalUf).toBe(1.25);
+    expect(calcularFlota(5)?.totalClp).toBe(24950);
   });
-  it("Sin camiones activos no hay cobro; rechaza cantidades inválidas", () => {
-    expect(calcularFlota(0)?.totalUf).toBe(0);
-    expect(calcularFlota(-1)).toBeNull();
-    expect(calcularFlota(1.5)).toBeNull();
-    expect(calcularFlota(NaN)).toBeNull();
+  it("rechaza conteos inválidos", () => {
+    for (const n of [-1, 1.5, NaN, Infinity]) expect(calcularFlota(n)).toBeNull();
+    for (const n of [0, -1, 1.5, NaN]) expect(calcularDador("corporativo_premium", n)).toBeNull();
+    expect(calcularDador("plan_inventado", 1)).toBeNull();
+  });
+  it("valida patentes chilenas y normaliza guiones", () => {
+    expect(patenteValida("BCDF-12")).toBe(true);
+    expect(patenteValida("AB1234")).toBe(true);
+    expect(patenteValida("ABCDE")).toBe(false);
+    expect(patenteValida("BCDF12<script>")).toBe(false);
   });
 });
 
