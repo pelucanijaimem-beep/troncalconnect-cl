@@ -7,16 +7,16 @@ export const PLANES_GENERADORES = [
   { id: "empresa_pyme", nombre: "Empresa Pyme", clp: 49990, publicaciones: 10, usuarios: 1,
     features: ["1 usuario administrador", "Hasta 10 publicaciones de carga al mes", "Primer mes gratis"] },
   { id: "corporativo_premium", nombre: "Corporativo Premium", clp: 149990, publicaciones: Infinity, usuarios: null,
-    features: ["Cobro por usuario / licencia activa", "Publicaciones de carga ilimitadas", "Transportistas con identidad verificada", "Tracking GPS multi-flota en viajes autorizados", "Primer mes gratis"] },
+    features: ["Tarifa por usuario / licencia activa", "Publicaciones de carga ilimitadas", "Transportistas con identidad verificada", "Primer mes gratis"] },
 ] as const;
 
 export const PLANES_TRANSPORTE = [
   { id: "camionero_solitario", nombre: "Camionero Solitario", clp: 0, min: 1, max: 1,
-    features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Tracking GPS para tu camión", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
+    features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
   { id: "flota_mediana", nombre: "Flota Mediana", clp: 4990, min: 2, max: 20,
-    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "Tracking GPS en tus viajes", "4 meses gratis durante el lanzamiento"] },
+    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "4 meses gratis durante el lanzamiento"] },
   { id: "flota_enterprise", nombre: "Flota Enterprise", clp: 3500, min: 21, max: Infinity,
-    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "Tracking GPS de tu flota", "4 meses gratis durante el lanzamiento"] },
+    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "4 meses gratis durante el lanzamiento"] },
 ] as const;
 
 export function precioFundador(uf: number): number {
