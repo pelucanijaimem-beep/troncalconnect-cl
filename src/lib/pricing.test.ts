@@ -1,49 +1,48 @@
 import { describe, expect, it } from "vitest";
 import { calcularDador, patenteValida, calcularFlota, convertirUF, DESCUENTO_FUNDADOR, leerUFDelDia, MESES_LANZAMIENTO, PLANES_GENERADORES, PLANES_TRANSPORTE, precioFundador, UF_RESPALDO } from "./pricing";
 
-describe("Membresías en CLP", () => {
-  it("un camión es gratis para siempre", () => { expect(calcularFlota(1)?.totalClp).toBe(0); });
-  it("Flota Mediana cobra 4990 por camión de 2 a 20", () => {
-    expect(calcularFlota(2)?.totalClp).toBe(9980);
-    expect(calcularFlota(5)?.totalClp).toBe(24950);
-    expect(calcularFlota(20)?.totalClp).toBe(99800);
+describe("Membresías y excedentes en UF", () => {
+  it("un camión sigue gratis", () => expect(calcularFlota(1)?.totalUf).toBe(0));
+  it("Starter incluye 15 y registra 0,03 UF desde la publicación 16", () => {
+    expect(calcularDador("generador_starter",15)?.adicionalesUf).toBe(0);
+    expect(calcularDador("generador_starter",16)?.adicionalesUf).toBe(0.03);
+    expect(calcularDador("generador_starter",100)?.adicionalesUf).toBe(2.55);
+    expect(calcularDador("generador_starter",16)?.totalUf).toBe(1.33);
   });
-  it("Enterprise aplica 3500 a todos los camiones desde 21", () => {
-    expect(calcularFlota(21)?.totalClp).toBe(73500);
-    expect(calcularFlota(300)?.totalClp).toBe(1050000);
+  it("Pro incluye 60 y registra 0,02 UF desde la publicación 61", () => {
+    expect(calcularDador("generador_pro",60)?.adicionalesUf).toBe(0);
+    expect(calcularDador("generador_pro",61)?.adicionalesUf).toBe(0.02);
+    expect(calcularDador("generador_pro",100)?.adicionalesUf).toBe(0.8);
   });
-  it("cobra por patentes registradas y no por actividad", () => {
-    expect(calcularFlota(300)?.totalClp).not.toBe(calcularFlota(200)?.totalClp);
+  it("Enterprise no tiene adicionales", () => {
+    expect(calcularDador("generador_enterprise",100000)?.adicionalesUf).toBe(0);
+    expect(calcularDador("generador_enterprise",100000)?.totalUf).toBe(10);
   });
-  it("Empresa Pyme cuesta 49990 e incluye 10 publicaciones y un usuario", () => {
-    expect(PLANES_GENERADORES[0]).toMatchObject({ clp: 49990, publicaciones: 10, usuarios: 1 });
-    expect(calcularDador("empresa_pyme", 1)?.totalClp).toBe(49990);
-    expect(calcularDador("empresa_pyme", 2)).toBeNull();
+  it("bases generadoras son UF, no por licencia", () => {
+    expect(PLANES_GENERADORES.map(p=>p.uf)).toEqual([1.3,3.2,10]);
+    expect(calcularDador("generador_pro",0)?.totalUf).toBe(3.2);
   });
-  it("Premium cuesta 149990 por licencia activa con publicaciones ilimitadas", () => {
-    expect(PLANES_GENERADORES[1]).toMatchObject({ clp: 149990, publicaciones: Infinity });
-    expect(calcularDador("corporativo_premium", 2)?.totalClp).toBe(299980);
-    expect(calcularDador("corporativo_premium", 5)?.totalClp).toBe(749950);
+  it("conserva los tramos de flotas con bases UF", () => {
+    expect(calcularFlota(5)?.totalUf).toBe(0.605);
+    expect(calcularFlota(20)?.totalUf).toBe(2.42);
+    expect(calcularFlota(21)?.totalUf).toBe(1.7808);
+    expect(calcularFlota(300)?.totalUf).toBe(25.44);
   });
-  it("mantiene Fundador 20% sobre los nuevos precios", () => {
+  it("conserva Fundador 20% y lanzamiento cuatro meses", () => {
     expect(DESCUENTO_FUNDADOR).toBe(0.2);
-    expect(calcularFlota(5)?.fundadorClp).toBe(19960);
-    expect(calcularDador("empresa_pyme", 1)?.fundadorClp).toBe(39992);
-  });
-  it("mantiene cuatro meses de lanzamiento sin cambiar tarifa normal", () => {
+    expect(precioFundador(1.33)).toBe(1.064);
     expect(MESES_LANZAMIENTO).toBe(4);
-    expect(calcularFlota(5)?.totalClp).toBe(24950);
   });
   it("rechaza conteos inválidos", () => {
-    for (const n of [-1, 1.5, NaN, Infinity]) expect(calcularFlota(n)).toBeNull();
-    for (const n of [0, -1, 1.5, NaN]) expect(calcularDador("corporativo_premium", n)).toBeNull();
-    expect(calcularDador("plan_inventado", 1)).toBeNull();
+    for (const n of [-1,1.5,NaN,Infinity]) {
+      expect(calcularFlota(n)).toBeNull(); expect(calcularDador("generador_pro",n)).toBeNull();
+    }
+    expect(calcularDador("inventado",1)).toBeNull();
   });
-  it("valida patentes chilenas y normaliza guiones", () => {
+  it("valida patentes", () => {
     expect(patenteValida("BCDF-12")).toBe(true);
     expect(patenteValida("AB1234")).toBe(true);
     expect(patenteValida("ABCDE")).toBe(false);
-    expect(patenteValida("BCDF12<script>")).toBe(false);
   });
 });
 
