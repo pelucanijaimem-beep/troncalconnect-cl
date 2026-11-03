@@ -93,6 +93,7 @@ export function AuthDialog({
     }
 
     onOpenChange(false);
+    if (tipo === "registro") window.location.assign("/membresia");
     toast.success(
       tipo === "registro" ? "¡Cuenta creada! Ya puedes ver las cargas en vivo." : "Sesión iniciada.",
       { description: "Tu tablero privado está activo." },

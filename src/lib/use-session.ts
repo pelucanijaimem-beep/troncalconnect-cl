@@ -95,13 +95,15 @@ async function cargarPerfil(userId: string, email: string) {
     return;
   }
 
+  const { data: accesoMembresia } = await supabase.rpc("tiene_plan_activo", { _user_id: userId });
+  if (recuperandoPassword || version !== versionSesion) return;
   sesion = {
     id: userId,
     nombre: data.nombre || email.split("@")[0] || "Usuario",
     email: data.email || email,
     rol: (data.rol as Rol) ?? "camionero",
     ...(data.telefono ? { telefono: data.telefono } : {}),
-    planActivo: Boolean(data.plan_activo),
+    planActivo: Boolean(data.plan_activo || accesoMembresia),
   };
   emitir();
 }

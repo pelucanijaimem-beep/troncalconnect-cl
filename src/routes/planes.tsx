@@ -38,6 +38,7 @@ function PlanesPage() {
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"><ArrowLeft className="h-4 w-4" /> TroncalTrack · Volver al inicio</Link>
           <h1 className="mt-5 text-3xl font-extrabold text-foreground sm:text-4xl">Planes y Membresías</h1>
           <p className="mt-3 max-w-3xl text-sm text-muted-foreground sm:text-base">Transportistas y Dadores de Carga: membresías en pesos chilenos, según camiones registrados o licencias activas. 0% de comisión por viaje coordinado.</p>
+          <Button asChild variant="outline" className="mt-4"><Link to="/membresia">Mi membresía</Link></Button>
         </div>
       </header>
       <section className="border-b border-border">
