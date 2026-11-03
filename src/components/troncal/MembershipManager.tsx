@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { consultarMembresia, gestionarMembresia, type Membresia } from "@/lib/membresia.functions";
-import { formatoCLP, patenteValida } from "@/lib/pricing";
+import { formatoCLP, patenteValida, WHATSAPP_PLANES } from "@/lib/pricing";
 import { refrescarSesion, useSesion } from "@/lib/use-session";
 
 export function MembershipManager() {
@@ -48,7 +48,7 @@ export function MembershipManager() {
         <ul className="divide-y divide-border">{m.camiones_detalle.map(c => <li className="flex items-center justify-between py-3" key={c.id}><span className="font-semibold text-foreground">{c.patente}</span><Button disabled={cargando} variant="ghost" size="icon" aria-label={`Quitar camión ${c.patente}`} title="Quitar camión" onClick={() => void guardar("quitar_camion", c.id)}><Trash2 className="h-4 w-4" /></Button></li>)}</ul>
         {m.segmento === "dador" && <ul className="divide-y divide-border">{m.miembros_detalle.filter(u => u.activo).map((u, i) => <li className="flex items-center justify-between py-3" key={u.id}><span className="text-foreground">{u.user_id === sesion.id ? "Tu cuenta · Administrador" : `Coordinador ${i + 1}`}</span>{u.user_id !== sesion.id && <Button disabled={cargando} size="icon" variant="ghost" aria-label={`Desactivar coordinador ${i + 1}`} title="Desactivar licencia" onClick={() => void guardar("quitar_usuario", u.id)}><Trash2 className="h-4 w-4" /></Button>}</li>)}</ul>}
       </>}
-      <p className="border-t border-border pt-4 text-sm text-muted-foreground">El cobro automático todavía no está habilitado. No se realizará ningún cargo desde esta pantalla.</p>
+      <div className="border-t border-border pt-4"><p className="text-sm text-muted-foreground">Activación manual por WhatsApp y pago por transferencia. No hay cobros automáticos habilitados ni se realizará ningún cargo desde esta pantalla.</p><Button asChild variant="outline" className="mt-3"><a href={`https://wa.me/${WHATSAPP_PLANES}?text=${encodeURIComponent("Hola, quiero consultar la activación manual de mi membresía de TroncalTrack y el pago por transferencia.")}`} target="_blank" rel="noopener noreferrer"><MessageCircle className="h-4 w-4" />Consultar activación</a></Button></div>
     </>}
   </div>;
 }

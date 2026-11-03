@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, Crown, Gift, Truck, Building2 } from "lucide-react";
+import { Check, Crown, Gift, Truck, Building2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCuposFundador } from "@/lib/use-fundadores";
-import { calcularFlota, calcularDador, formatoCLP, PLANES_GENERADORES, PLANES_TRANSPORTE } from "@/lib/pricing";
+import { calcularFlota, calcularDador, formatoCLP, PLANES_GENERADORES, PLANES_TRANSPORTE, WHATSAPP_PLANES } from "@/lib/pricing";
 
 export function PricingMatrix() {
   const { quedan, total } = useCuposFundador();
@@ -17,6 +17,7 @@ export function PricingMatrix() {
   const grupos = [{ id: "transportista", planes: PLANES_TRANSPORTE }, { id: "dador", planes: PLANES_GENERADORES }];
   return <>
     <p className="mb-5 text-lg font-bold text-primary">0% de comisión por viaje coordinado. Sin corte de cola de intermediarios.</p>
+    <p className="mb-5 text-sm text-muted-foreground">Activación manual por WhatsApp y pago por transferencia. No hay cobros automáticos habilitados.</p>
     <Tabs defaultValue="transportista">
       <TabsList className="grid h-auto w-full grid-cols-2">
         <TabsTrigger value="transportista" className="min-h-12 whitespace-normal"><Truck className="mr-2 h-4 w-4 shrink-0" />Transportistas</TabsTrigger>
@@ -32,7 +33,7 @@ export function PricingMatrix() {
             <p className="mt-1 text-sm text-muted-foreground">{grupo.id === "transportista" && plan.clp > 0 ? "por camión registrado / mes" : plan.id === "corporativo_premium" ? "por usuario activo / mes" : "/ mes"}</p>
             {plan.clp > 0 && <p className="mt-3 text-sm font-semibold text-primary">Fundador: {formatoCLP(Math.round(plan.clp * 0.8))} · −20% de por vida</p>}
             <ul className="my-5 flex-1 space-y-3">{plan.features.map(feature => <li key={feature} className="flex gap-2 text-sm text-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span>{feature}</span></li>)}</ul>
-            <Button asChild variant={plan.clp === 0 ? "default" : "outline"} className="h-auto min-h-10 whitespace-normal py-2"><Link to="/registro">{plan.clp === 0 ? "Registrarme gratis" : "Crear cuenta"}</Link></Button>
+            <Button asChild variant={plan.clp === 0 ? "default" : "outline"} className="h-auto min-h-10 whitespace-normal py-2">{plan.clp === 0 ? <Link to="/registro">Registrarme gratis</Link> : <a href={`https://wa.me/${WHATSAPP_PLANES}?text=${encodeURIComponent(`Hola, quiero activar manualmente el plan ${plan.nombre} de TroncalTrack y consultar el pago por transferencia.`)}`} target="_blank" rel="noopener noreferrer"><MessageCircle className="h-4 w-4 shrink-0" />Activar por WhatsApp</a>}</Button>
           </article>)}
         </div>
         <div className="mt-6 grid gap-4 border-y border-border py-5 sm:grid-cols-2">
