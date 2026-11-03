@@ -4,37 +4,44 @@ export const MESES_LANZAMIENTO = 4;
 export const WHATSAPP_PLANES = "56947926230";
 
 export const PLANES_GENERADORES = [
-  { id: "generador-starter", nombre: "Generador Starter", uf: 1.3, publicaciones: 15, usuarios: 1, desde: false,
-    features: ["Hasta 15 publicaciones de carga al mes", "1 usuario administrador"] },
-  { id: "generador-pro", nombre: "Generador Pro", uf: 3.2, publicaciones: 60, usuarios: 3, desde: false,
-    features: ["Hasta 60 publicaciones de carga al mes", "3 usuarios", "Filtro exclusivo de transportistas verificados", "Soporte prioritario"] },
-  { id: "generador-enterprise", nombre: "Generador Enterprise", uf: 10, publicaciones: Infinity, usuarios: null, desde: true,
-    features: ["Publicaciones ilimitadas", "Integración API (SAP / Oracle)", "Panel multi-sucursal", "Analítica de tarifa por km", "Cotización personalizada"] },
+  { id: "empresa_pyme", nombre: "Empresa Pyme", clp: 49990, publicaciones: 10, usuarios: 1,
+    features: ["1 usuario administrador", "Hasta 10 publicaciones de carga al mes", "Primer mes gratis"] },
+  { id: "corporativo_premium", nombre: "Corporativo Premium", clp: 149990, publicaciones: Infinity, usuarios: null,
+    features: ["Cobro por usuario / licencia activa", "Publicaciones de carga ilimitadas", "Transportistas con identidad verificada", "Tracking GPS multi-flota en viajes autorizados", "Primer mes gratis"] },
 ] as const;
 
 export const PLANES_TRANSPORTE = [
-  { id: "independiente", nombre: "Camión Independiente", uf: 0, min: 1, max: 1,
-    features: ["1 camión", "Acceso a búsqueda de cargas", "Perfil verificado TroncalCheck, tras aprobación documental", "Gratis de forma permanente"] },
-  { id: "flota-pyme", nombre: "Flota Pyme", uf: 0.25, min: 2, max: 9,
-    features: ["De 2 a 9 camiones activos", "1 chofer con cuenta registrada por camión", "Solo pagas por camiones activos ese mes", "Activación y gestión por WhatsApp"] },
-  { id: "flota-mediana", nombre: "Flota Mediana", uf: 0.17, min: 10, max: 49,
-    features: ["De 10 a 49 camiones activos", "1 chofer con cuenta registrada por camión", "Solo pagas por camiones activos ese mes", "Activación y gestión por WhatsApp"] },
-  { id: "flota-enterprise", nombre: "Flota Enterprise", uf: 0.08, min: 50, max: Infinity,
-    features: ["50 o más camiones activos", "1 chofer con cuenta registrada por camión", "Solo pagas por camiones activos ese mes", "Cotización y contrato anual"] },
+  { id: "camionero_solitario", nombre: "Camionero Solitario", clp: 0, min: 1, max: 1,
+    features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Tracking GPS para tu camión", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
+  { id: "flota_mediana", nombre: "Flota Mediana", clp: 4990, min: 2, max: 20,
+    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "Tracking GPS en tus viajes", "4 meses gratis durante el lanzamiento"] },
+  { id: "flota_enterprise", nombre: "Flota Enterprise", clp: 3500, min: 21, max: Infinity,
+    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "Tracking GPS de tu flota", "4 meses gratis durante el lanzamiento"] },
 ] as const;
 
 export function precioFundador(uf: number): number {
   return Math.round(uf * (1 - DESCUENTO_FUNDADOR) * 10000) / 10000;
 }
 
-export function calcularFlota(camionesActivos: number) {
-  if (!Number.isSafeInteger(camionesActivos) || camionesActivos < 0) return null;
-  const plan = PLANES_TRANSPORTE.find(p => camionesActivos >= p.min && camionesActivos <= p.max);
-  if (camionesActivos === 0) return { plan: null, totalUf: 0, fundadorUf: 0 };
+export function calcularFlota(camionesRegistrados: number) {
+  if (!Number.isSafeInteger(camionesRegistrados) || camionesRegistrados < 0) return null;
+  const plan = PLANES_TRANSPORTE.find(p => camionesRegistrados >= p.min && camionesRegistrados <= p.max);
+  if (camionesRegistrados === 0) return { plan: null, totalClp: 0, fundadorClp: 0 };
   if (!plan) return null;
-  const totalUf = Math.round(camionesActivos * plan.uf * 10000) / 10000;
-  return { plan, totalUf, fundadorUf: precioFundador(totalUf) };
+  const totalClp = camionesRegistrados * plan.clp;
+  return { plan, totalClp, fundadorClp: Math.round(totalClp * (1 - DESCUENTO_FUNDADOR)) };
 }
+
+export function calcularDador(planId: string, licencias: number) {
+  if (!Number.isSafeInteger(licencias) || licencias < 1) return null;
+  const plan = PLANES_GENERADORES.find(p => p.id === planId);
+  if (!plan || (plan.usuarios !== null && licencias > plan.usuarios)) return null;
+  const totalClp = plan.clp * licencias;
+  return { plan, totalClp, fundadorClp: Math.round(totalClp * (1 - DESCUENTO_FUNDADOR)) };
+}
+
+export function normalizarPatente(value: string) { return value.toUpperCase().replace(/[\s-]/g, ""); }
+export function patenteValida(value: string) { return /^(?:[A-Z]{2}\d{4}|[B-DF-HJ-LP-RT-VW-Z]{4}\d{2})$/.test(normalizarPatente(value)); }
 
 export function convertirUF(uf: number, valorUF: number): number {
   return Math.round(uf * valorUF);
