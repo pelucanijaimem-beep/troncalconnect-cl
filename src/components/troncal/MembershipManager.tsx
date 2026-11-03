@@ -21,8 +21,7 @@ export function MembershipManager() {
   const [error, setError] = useState("");
   const [valor, setValor] = useState("");
   useEffect(() => {
-    const tarifa = m ? (m.segmento === "transportista" ? calcularFlota(m.camiones)?.totalClp : calcularDador(m.plan, 0)?.totalClp) ?? 0 : 0;
-  if (!sesion) return;
+    if (!sesion) return;
     let vigente = true;
     setCargando(true);
     consultar().then(r => { if (vigente) { setM(r.membresia); setError(r.error ?? ""); } })
