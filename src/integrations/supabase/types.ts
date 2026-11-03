@@ -445,6 +445,7 @@ export type Database = {
           nombre: string
           pago_hasta: string | null
           plan: string
+          plan_uf: string
           propietario_id: string
           prueba_hasta: string
           segmento: string
@@ -456,6 +457,7 @@ export type Database = {
           nombre: string
           pago_hasta?: string | null
           plan?: string
+          plan_uf?: string
           propietario_id: string
           prueba_hasta?: string
           segmento: string
@@ -467,6 +469,7 @@ export type Database = {
           nombre?: string
           pago_hasta?: string | null
           plan?: string
+          plan_uf?: string
           propietario_id?: string
           prueba_hasta?: string
           segmento?: string
@@ -613,6 +616,72 @@ export type Database = {
           nombre?: string
           origenes?: string[]
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      publicaciones_contadores: {
+        Row: {
+          cantidad: number
+          facturacion_id: string
+          mes: string
+        }
+        Insert: {
+          cantidad?: number
+          facturacion_id: string
+          mes: string
+        }
+        Update: {
+          cantidad?: number
+          facturacion_id?: string
+          mes?: string
+        }
+        Relationships: []
+      }
+      publicaciones_uso: {
+        Row: {
+          carga_id: string
+          facturacion_id: string
+          fundador: boolean
+          historica: boolean
+          importe_uf: number
+          incluidas: number | null
+          mes: string
+          ordinal: number
+          organizacion_id: string | null
+          plan: string
+          publicada_at: string
+          tarifa_uf: number
+          user_id: string
+        }
+        Insert: {
+          carga_id: string
+          facturacion_id: string
+          fundador?: boolean
+          historica?: boolean
+          importe_uf?: number
+          incluidas?: number | null
+          mes: string
+          ordinal: number
+          organizacion_id?: string | null
+          plan: string
+          publicada_at?: string
+          tarifa_uf?: number
+          user_id: string
+        }
+        Update: {
+          carga_id?: string
+          facturacion_id?: string
+          fundador?: boolean
+          historica?: boolean
+          importe_uf?: number
+          incluidas?: number | null
+          mes?: string
+          ordinal?: number
+          organizacion_id?: string | null
+          plan?: string
+          publicada_at?: string
+          tarifa_uf?: number
           user_id?: string
         }
         Relationships: []
@@ -939,6 +1008,10 @@ export type Database = {
         Args: { p_accion: string; p_valor?: string }
         Returns: Json
       }
+      gestionar_membresia_uf: {
+        Args: { p_accion: string; p_valor?: string }
+        Returns: Json
+      }
       guardar_chilevalora: {
         Args: { p_numero: string; p_ruta: string; p_vigencia: string }
         Returns: undefined
@@ -947,7 +1020,9 @@ export type Database = {
       limite_publicaciones_mes: { Args: { _tier: string }; Returns: number }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_chilevalora: { Args: never; Returns: Json }
+      mi_consumo_publicaciones: { Args: never; Returns: Json }
       mi_membresia: { Args: never; Returns: Json }
+      mi_membresia_uf: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
       mi_verificacion_resumen: { Args: never; Returns: Json }
       normalizar_rut: { Args: { p_rut: string }; Returns: string }
