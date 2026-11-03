@@ -32,8 +32,7 @@ import {
 import { publicarCargaDB } from "@/lib/use-cargas";
 import { useServerFn } from "@tanstack/react-start";
 import { consultarConsumoPublicaciones, type ConsumoPublicaciones } from "@/lib/membresia.functions";
-import { formatoUF, convertirUF, formatoCLP } from "@/lib/pricing";
-import { useUF } from "@/lib/use-uf";
+import { importePublicacionesCLP, formatoCLP } from "@/lib/pricing";
 import { avisarCoincidencias } from "@/lib/notificaciones.functions";
 import { useSesion } from "@/lib/use-session";
 import { VisibilitySwitch } from "./VisibilitySwitch";
@@ -56,7 +55,6 @@ export function PostLoadDialog({
   const [enviando, setEnviando] = useState(false);
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
-  const uf = useUF();
   const consultarConsumo = useServerFn(consultarConsumoPublicaciones);
   const [consumo, setConsumo] = useState<ConsumoPublicaciones | null>(null);
   const [errorConsumo, setErrorConsumo] = useState("");
@@ -300,7 +298,7 @@ export function PostLoadDialog({
           </label>
           <VisibilitySwitch id="l-visibilidad" visible={visible} onChange={setVisible} />
           <div aria-live="polite" className="border-t border-border pt-3 text-sm text-muted-foreground">
-            {consumo ? <><p>{consumo.publicadas} publicaciones este mes · {consumo.incluidas ?? "Ilimitadas"} incluidas.</p><p className="mt-1 font-semibold text-foreground">{consumo.siguiente_adicional ? `Publicación adicional: +${formatoUF(consumo.adicional_uf)} UF · ≈ ${formatoCLP(convertirUF(consumo.adicional_uf, uf.valor))} CLP${uf.respaldo ? " (UF de respaldo)" : ""}` : "Esta publicación está incluida en tu plan."}</p><p className="mt-1">Los adicionales quedan registrados para facturación manual. No se bloquea por cuota ni se cobra automáticamente. El consumo definitivo se calcula al publicar.</p></> : <p>{errorConsumo || "Consultando publicaciones…"}</p>}
+            {consumo ? <><p>{consumo.publicadas} publicaciones este mes · {consumo.incluidas ?? "Ilimitadas"} incluidas.</p><p className="mt-1 font-semibold text-foreground">{consumo.siguiente_adicional ? `Publicación adicional: +${formatoCLP(importePublicacionesCLP(consumo.plan, consumo.adicional_uf))}` : "Esta publicación está incluida en tu plan."}</p><p className="mt-1">Los adicionales quedan registrados para facturación manual. No se bloquea por cuota ni se cobra automáticamente. El consumo definitivo se calcula al publicar.</p></> : <p>{errorConsumo || "Consultando publicaciones…"}</p>}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={enviando} className="w-full sm:w-auto">

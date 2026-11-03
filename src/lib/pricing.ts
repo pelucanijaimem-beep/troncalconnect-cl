@@ -4,20 +4,20 @@ export const MESES_LANZAMIENTO = 4;
 export const WHATSAPP_PLANES = "56947926230";
 
 export const PLANES_GENERADORES = [
-  { id: "generador_starter", nombre: "Generador Starter", uf: 1.3, publicaciones: 15, adicionalUf: 0.03, desde: false,
-    features: ["15 publicaciones incluidas al mes", "Publicación adicional: +0,03 UF", "Sin bloqueo por superar la cuota", "Primer mes gratis en la membresía base"] },
-  { id: "generador_pro", nombre: "Generador Pro", uf: 3.2, publicaciones: 60, adicionalUf: 0.02, desde: false,
-    features: ["60 publicaciones incluidas al mes", "Publicación adicional: +0,02 UF", "Sin bloqueo por superar la cuota", "Primer mes gratis en la membresía base"] },
-  { id: "generador_enterprise", nombre: "Generador Enterprise", uf: 10, publicaciones: Infinity, adicionalUf: 0, desde: true,
+  { id: "generador_starter", nombre: "Generador Starter", uf: 1.3, clp: 53990, adicionalClp: 1290, publicaciones: 15, adicionalUf: 0.03, desde: false,
+    features: ["15 publicaciones incluidas al mes", "Publicación adicional: +$1.290", "Sin bloqueo por superar la cuota", "Primer mes gratis en la membresía base"] },
+  { id: "generador_pro", nombre: "Generador Pro", uf: 3.2, clp: 131990, adicionalClp: 790, publicaciones: 60, adicionalUf: 0.02, desde: false,
+    features: ["60 publicaciones incluidas al mes", "Publicación adicional: +$790", "Sin bloqueo por superar la cuota", "Primer mes gratis en la membresía base"] },
+  { id: "generador_enterprise", nombre: "Generador Enterprise", uf: 10, clp: 412990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: true,
     features: ["Publicaciones ilimitadas", "Sin cargos por publicaciones adicionales", "Cotización y activación manual"] },
 ] as const;
 
 export const PLANES_TRANSPORTE = [
-  { id: "camionero_solitario", nombre: "Camionero Solitario", uf: 0, min: 1, max: 1, desde: false,
+  { id: "camionero_solitario", nombre: "Camionero Solitario", uf: 0, clp: 0, min: 1, max: 1, desde: false,
     features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
-  { id: "flota_mediana", nombre: "Flota Mediana", uf: 0.121, min: 2, max: 20, desde: false,
+  { id: "flota_mediana", nombre: "Flota Mediana", uf: 0.121, clp: 4990, min: 2, max: 20, desde: false,
     features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "4 meses gratis durante el lanzamiento"] },
-  { id: "flota_enterprise", nombre: "Flota Enterprise", uf: 0.0848, min: 21, max: Infinity, desde: false,
+  { id: "flota_enterprise", nombre: "Flota Enterprise", uf: 0.0848, clp: 3500, min: 21, max: Infinity, desde: false,
     features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "4 meses gratis durante el lanzamiento"] },
 ] as const;
 
@@ -27,10 +27,11 @@ export function precioFundador(uf: number): number {
 export function calcularFlota(camiones: number) {
   if (!Number.isSafeInteger(camiones) || camiones < 0) return null;
   const plan = PLANES_TRANSPORTE.find(p => camiones >= p.min && camiones <= p.max);
-  if (camiones === 0) return { plan: null, totalUf: 0, fundadorUf: 0 };
+  if (camiones === 0) return { plan: null, totalClp: 0, fundadorClp: 0, totalUf: 0, fundadorUf: 0 };
   if (!plan) return null;
   const totalUf = Math.round(camiones * plan.uf * 10000) / 10000;
-  return { plan, totalUf, fundadorUf: precioFundador(totalUf) };
+  const totalClp = camiones * plan.clp;
+  return { plan, totalClp, fundadorClp: Math.round(totalClp * (1 - DESCUENTO_FUNDADOR)), totalUf, fundadorUf: precioFundador(totalUf) };
 }
 export function calcularDador(planId: string, publicaciones: number) {
   if (!Number.isSafeInteger(publicaciones) || publicaciones < 0) return null;
@@ -39,7 +40,9 @@ export function calcularDador(planId: string, publicaciones: number) {
   const excedentes = Math.max(0, publicaciones - plan.publicaciones);
   const adicionalesUf = Math.round(excedentes * plan.adicionalUf * 10000) / 10000;
   const totalUf = Math.round((plan.uf + adicionalesUf) * 10000) / 10000;
-  return { plan, excedentes, adicionalesUf, totalUf, fundadorUf: precioFundador(totalUf) };
+  const adicionalesClp = excedentes * plan.adicionalClp;
+  const totalClp = plan.clp + adicionalesClp;
+  return { plan, excedentes, adicionalesClp, totalClp, fundadorClp: Math.round(totalClp * (1 - DESCUENTO_FUNDADOR)), adicionalesUf, totalUf, fundadorUf: precioFundador(totalUf) };
 }
 export function normalizarPatente(value: string) { return value.toUpperCase().replace(/[\s-]/g, ""); }
 export function patenteValida(value: string) { return /^(?:[A-Z]{2}\d{4}|[B-DF-HJ-LP-RT-VW-Z]{4}\d{2})$/.test(normalizarPatente(value)); }
@@ -59,7 +62,14 @@ export function leerUFDelDia(payload: unknown, ahora = new Date()): { valor: num
   }
   return null;
 }
-export function enlacePlan(nombre: string, precioUf: number, desde = false, porCamion = false): string {
-  const mensaje = `Hola, quiero ${desde ? "cotizar" : "activar"} el plan ${nombre} de TroncalTrack (${desde ? "desde " : ""}${formatoUF(precioUf)} UF${porCamion ? " por camión registrado" : ""}/mes). Quisiera coordinar la activación manual por transferencia y consultar los cupos Empresa Fundadora.`;
+export function enlacePlan(nombre: string, precioClp: number, desde = false, porCamion = false): string {
+  const mensaje = `Hola, quiero ${desde ? "cotizar" : "activar"} el plan ${nombre} de TroncalTrack (${desde ? "desde " : ""}${formatoCLP(precioClp)} CLP${porCamion ? " por camión registrado" : ""}/mes). Quisiera coordinar la activación manual por transferencia y consultar los cupos Empresa Fundadora.`;
   return `https://wa.me/${WHATSAPP_PLANES}?text=${encodeURIComponent(mensaje)}`;
+}
+
+// Preserve stored publication snapshots; project their existing discounts onto fixed peso rates.
+export function importePublicacionesCLP(planId: string, importeRegistrado: number): number {
+  const plan = PLANES_GENERADORES.find(p => p.id === planId);
+  if (!plan || plan.adicionalUf === 0) return 0;
+  return Math.round(importeRegistrado / plan.adicionalUf * plan.adicionalClp);
 }

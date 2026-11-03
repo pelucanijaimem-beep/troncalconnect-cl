@@ -7,7 +7,7 @@ export function PricingPlans(_props: { onRegistro: () => void }) {
       <div className="mx-auto max-w-6xl px-4 py-12">
         <h2 className="text-2xl font-extrabold text-foreground sm:text-3xl">Planes y Membresías</h2>
         <p className="mb-6 mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">
-          Transportistas por camión registrado y Generadores de Carga por publicaciones. Tarifas base en UF con equivalente diario en pesos. 0% de comisión por viaje coordinado.
+          Transportistas por camión registrado y Generadores de Carga por publicaciones. Precios fijos en pesos chilenos (CLP). 0% de comisión por viaje coordinado.
         </p>
         <PricingMatrix />
         <p className="mt-6 text-center text-sm text-muted-foreground">
