@@ -190,6 +190,21 @@ export type Database = {
         }
         Relationships: []
       }
+      configuracion_membresias: {
+        Row: {
+          clave: string
+          lanzamiento_flotas: boolean
+        }
+        Insert: {
+          clave: string
+          lanzamiento_flotas?: boolean
+        }
+        Update: {
+          clave?: string
+          lanzamiento_flotas?: boolean
+        }
+        Relationships: []
+      }
       estado_acceso_ia: {
         Row: {
           actualizado_at: string
@@ -359,6 +374,103 @@ export type Database = {
           tipo?: string
           titulo?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      organizacion_camiones: {
+        Row: {
+          created_at: string
+          id: string
+          organizacion_id: string
+          patente: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organizacion_id: string
+          patente: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organizacion_id?: string
+          patente?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizacion_camiones_organizacion_id_fkey"
+            columns: ["organizacion_id"]
+            isOneToOne: false
+            referencedRelation: "organizaciones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizacion_miembros: {
+        Row: {
+          activo: boolean
+          created_at: string
+          id: string
+          organizacion_id: string
+          user_id: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          organizacion_id: string
+          user_id: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          organizacion_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizacion_miembros_organizacion_id_fkey"
+            columns: ["organizacion_id"]
+            isOneToOne: false
+            referencedRelation: "organizaciones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizaciones: {
+        Row: {
+          created_at: string
+          id: string
+          nombre: string
+          pago_hasta: string | null
+          plan: string
+          propietario_id: string
+          prueba_hasta: string
+          segmento: string
+          suscripcion_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nombre: string
+          pago_hasta?: string | null
+          plan?: string
+          propietario_id: string
+          prueba_hasta?: string
+          segmento: string
+          suscripcion_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nombre?: string
+          pago_hasta?: string | null
+          plan?: string
+          propietario_id?: string
+          prueba_hasta?: string
+          segmento?: string
+          suscripcion_id?: string | null
         }
         Relationships: []
       }
@@ -823,6 +935,10 @@ export type Database = {
         Returns: number
       }
       cupos_fundador: { Args: never; Returns: number }
+      gestionar_membresia: {
+        Args: { p_accion: string; p_valor?: string }
+        Returns: Json
+      }
       guardar_chilevalora: {
         Args: { p_numero: string; p_ruta: string; p_vigencia: string }
         Returns: undefined
@@ -831,6 +947,7 @@ export type Database = {
       limite_publicaciones_mes: { Args: { _tier: string }; Returns: number }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_chilevalora: { Args: never; Returns: Json }
+      mi_membresia: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
       mi_verificacion_resumen: { Args: never; Returns: Json }
       normalizar_rut: { Args: { p_rut: string }; Returns: string }
