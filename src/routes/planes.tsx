@@ -9,9 +9,9 @@ export const Route = createFileRoute("/planes")({
   head: () => ({
     meta: [
       { title: "Membresías para Transportistas y Dadores de Carga — TroncalTrack" },
-      { name: "description", content: "Membresías en pesos chilenos por camión registrado o licencia activa. Un camión gratis para siempre y 0% de comisión por viaje coordinado." },
+      { name: "description", content: "Membresías en UF por camión registrado o publicaciones, con equivalente diario en pesos. Un camión gratis para siempre y 0% de comisión por viaje coordinado." },
       { property: "og:title", content: "Membresías para Transportistas y Dadores de Carga — TroncalTrack" },
-      { property: "og:description", content: "Un camión gratis; flotas desde $3.500 por camión registrado y dadores desde $49.990 al mes. Fundador 20% de por vida." },
+      { property: "og:description", content: "Un camión gratis; generadores desde 1,3 UF al mes y publicaciones adicionales sin bloqueo. Fundador 20% de por vida." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -20,15 +20,16 @@ export const Route = createFileRoute("/planes")({
 });
 
 const FAQ_SUSCRIPCION = [
-  { q: "¿Qué plan corresponde a mi operación?", a: "Transportistas: Camionero Solitario es gratis para siempre con 1 camión; Flota Mediana cubre de 2 a 20 y Flota Enterprise más de 20. Dadores de Carga: Empresa Pyme incluye 1 administrador y 10 publicaciones mensuales; Corporativo Premium permite publicaciones ilimitadas y cobra por licencia activa." },
-  { q: "¿Cómo se cobra por camión?", a: "Se cuentan las patentes registradas en la organización, no solo las que viajaron durante el mes. De 2 a 20 camiones: $4.990 por cada uno; más de 20: $3.500 por cada uno de todos los camiones. 5 camiones cuestan $24.950 mensuales y 300 cuestan $1.050.000. Un camión es gratis para siempre." },
-  { q: "¿Cómo se cobra por licencia?", a: "Empresa Pyme cuesta $49.990 al mes e incluye 1 administrador y hasta 10 publicaciones. Corporativo Premium cuesta $149.990 mensuales por cada usuario activo de la organización: 2 coordinadores cuestan $299.980. Las publicaciones son ilimitadas en Premium." },
-  { q: "¿Qué promociones se mantienen?", a: "Los dos planes de Dadores de Carga tienen el primer mes de prueba gratis desde la creación de su organización. Flota Mediana y Enterprise mantienen los cuatro meses gratis del período de lanzamiento, sin fecha de corte anunciada. Camionero Solitario continúa gratis para siempre." },
-  { q: "¿Cómo funciona Empresa Fundadora?", a: "Los cupos Fundador conservan el 20% de descuento de por vida sobre el precio normal del tramo y las unidades reales. Una flota de 5 camiones paga $19.960 en lugar de $24.950 después de la promoción. El beneficio no es un precio fijo congelado ni un descuento anual." },
-  { q: "¿Puedo gestionar camiones y coordinadores?", a: "Desde Mi membresía puedes registrar patentes y, en Corporativo Premium, agregar cuentas existentes de Dadores de Carga como licencias activas. La tarifa mensual se recalcula al guardar cada cambio, sin generar cargos. Empresa Pyme admite solo un usuario." },
-  { q: "¿Cómo activo y pago mi membresía?", a: "La activación es manual por WhatsApp y el pago se coordina por transferencia. No hay cobros automáticos habilitados. Registrar camiones o usuarios no genera un cargo automático." },
-  { q: "¿Cuándo se activa el sello TroncalCheck?", a: "La verificación de identidad con Didit compara el RUT con tu registro. El sello TroncalCheck requiere además la aprobación documental. Las empresas ven estados e insignias, nunca archivos de identidad o documentos privados." },
-  { q: "¿Cobran comisión por flete?", a: "No. TroncalTrack tiene 0% de comisión por viaje coordinado, sin cobro por transacción al transportista y sin corte de cola de intermediarios. Solo pagas la membresía que corresponda." },
+  { q: "¿Qué incluyen los planes de Generadores de Carga?", a: "Starter: 1,3 UF al mes y 15 publicaciones incluidas. Pro: 3,2 UF al mes y 60 incluidas. Enterprise: desde 10 UF al mes, publicaciones ilimitadas y cotización manual. No cobramos por licencia de usuario." },
+  { q: "¿Qué pasa si supero las publicaciones incluidas?", a: "Puedes seguir publicando sin bloqueo por cuota. Starter registra +0,03 UF por cada publicación adicional y Pro +0,02 UF. Enterprise no tiene adicionales. Se guarda el conteo y el importe en UF para facturación manual; todavía no hay cobros automáticos." },
+  { q: "¿Cómo se cuentan las publicaciones?", a: "Se cuentan por mes calendario de Chile para toda la organización, incluidas las privadas. Eliminar una carga no borra su consumo registrado. Las publicaciones anteriores al inicio del registro se conservan sin cargos retroactivos; las ya eliminadas no pueden reconstruirse." },
+  { q: "¿Cómo se cobra por camión?", a: "Un camión es gratis para siempre. De 2 a 20 camiones registrados: 0,121 UF por camión al mes; desde 21: 0,0848 UF por cada camión. Se mantienen los tramos por patentes registradas. Estas bases convierten las últimas tarifas CLP usando la referencia de UF 41.252,94." },
+  { q: "¿Por qué el equivalente en pesos cambia?", a: "La tarifa base está fijada en UF. Su equivalente diario en pesos se consulta al indicador público. Si no está disponible la UF del día, mostramos un valor de respaldo explícito y referencial; la facturación se coordina manualmente." },
+  { q: "¿Qué promociones se mantienen?", a: "Generadores mantienen el primer mes gratis en la membresía base; los adicionales quedan registrados para facturación manual. Las flotas conservan los cuatro meses gratis durante el lanzamiento, sin fecha de corte anunciada. Un camión es gratis siempre." },
+  { q: "¿Cómo funciona Empresa Fundadora?", a: "Se mantiene el 20% de descuento de por vida sobre la tarifa normal de tu tramo en UF. Los adicionales registran también el descuento cuando corresponde. No es un precio fijo congelado." },
+  { q: "¿Cómo activo y pago mi membresía?", a: "La activación es manual por WhatsApp y el pago se coordina por transferencia. No hay cobros automáticos habilitados. Los excedentes se registran, no se cobran automáticamente." },
+  { q: "¿Cuándo se activa el sello TroncalCheck?", a: "La identidad con Didit compara el RUT con tu registro. TroncalCheck requiere además aprobación documental. Las empresas ven estados e insignias, nunca documentos privados." },
+  { q: "¿Cobran comisión por flete?", a: "No. TroncalTrack tiene 0% de comisión por viaje coordinado y no cobra por transacción al transportista." },
 ];
 
 function PlanesPage() {
@@ -38,7 +39,7 @@ function PlanesPage() {
         <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"><ArrowLeft className="h-4 w-4" /> TroncalTrack · Volver al inicio</Link>
           <h1 className="mt-5 text-3xl font-extrabold text-foreground sm:text-4xl">Planes y Membresías</h1>
-          <p className="mt-3 max-w-3xl text-sm text-muted-foreground sm:text-base">Transportistas y Dadores de Carga: membresías en pesos chilenos, según camiones registrados o licencias activas. 0% de comisión por viaje coordinado.</p>
+          <p className="mt-3 max-w-3xl text-sm text-muted-foreground sm:text-base">Transportistas y Dadores de Carga: membresías en UF con equivalente diario en pesos, según camiones registrados o publicaciones. 0% de comisión por viaje coordinado.</p>
           <Button asChild variant="outline" className="mt-4"><Link to="/membresia">Mi membresía</Link></Button>
         </div>
       </header>
