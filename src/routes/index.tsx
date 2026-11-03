@@ -304,8 +304,9 @@ function Index() {
     if (!sesion.planActivo) {
       toast.error("Necesitas activar tu acceso de transporte", {
         description:
-          "Camión Independiente es gratis permanente y las flotas son gratis durante el lanzamiento. Coordina la activación por WhatsApp.",
+          "Camionero Solitario es gratis para siempre y las flotas son gratis durante el lanzamiento. Registra tus patentes en Mi membresía.",
       });
+      navigate({ to: "/membresia" });
       return;
     }
     if (c.tipoCarga === "peligrosa" && !misInsignias.peligrosas) {

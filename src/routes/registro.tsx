@@ -72,7 +72,7 @@ function RegistroPage() {
       description: "Te redirigimos a tu tablero privado.",
     });
 
-    navigate({ to: "/" });
+    navigate({ to: "/membresia" });
   };
 
 
@@ -84,7 +84,7 @@ function RegistroPage() {
             Crear cuenta en TroncalTrack
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Regístrate gratis y empieza a publicar o buscar cargas en minutos.
+            Crea tu cuenta y registra los camiones o coordinadores de tu organización. 0% de comisión por viaje coordinado.
           </p>
         </div>
 
