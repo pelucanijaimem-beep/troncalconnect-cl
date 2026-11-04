@@ -35,4 +35,4 @@
 - [x] Preparar recepción firmada de identidad y cruce de RUT con sesión vinculada en servidor; dirección: /api/public/identidad. Firma, comparación y receptor probados sin credenciales reales.
 - [ ] Activar y probar aviso real de identidad. Bloqueado: publicar /api/public/didit-webhook y configurar destino y secreto compartido; clave de API e identificador del flujo guardados y botón conectado. Prueba autenticada bloqueada: no se pudo obtener sesión autorizada del solicitante.
 - [x] Probar rechazo visible de RUT inválido y reglas módulo 11 en cliente y base de datos.
-- [ ] Probar registro válido y persistencia con cuenta de pruebas autorizada; no se crearon cuentas ni se modificaron perfiles existentes.
+- [ ] Probar registro válido y persistencia con cuenta de pruebas autorizada; no se crearon cuentas ni se modificaron perfiles existentes.- [x] Chat por carga empresa↔transportista postulado, aviso en vivo, sin teléfonos en rastreo/detalle; avisos con app cerrada: Próximamente.
