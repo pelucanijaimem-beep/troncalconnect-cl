@@ -27,7 +27,7 @@ export const buscarCargasCompatibles = createServerFn({ method: "POST" })
     const habilitado = z.object({ peligrosas: z.boolean() }).safeParse(insignias.data);
     const hoy = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Santiago", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
     let cargas = (consulta.data ?? []).filter((c) => cargaElegible(c, context.userId, verificado.success && verificado.data.estado === "verificado", habilitado.success && habilitado.data.peligrosas, hoy));
-    let referencia = null;
+    let referencia: ReturnType<typeof referenciaUbicacion> = null;
     if (data.pregunta && usaMiUbicacion(data.descripcion)) {
       const { data: preferencias, error } = await context.supabase.from("preferencias_alertas").select("ciudad_base").eq("user_id", context.userId).maybeSingle();
       if (error && !data.ubicacion) return { error: "No pudimos consultar tu ciudad base. Indica una ciudad en tu pregunta.", status: 503 };
