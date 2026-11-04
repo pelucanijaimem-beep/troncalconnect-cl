@@ -3,7 +3,6 @@ import {
   Fuel,
   Lock,
   MessageCircle,
-  Phone,
   Satellite,
   Share2,
   ShieldCheck,
@@ -183,7 +182,9 @@ export function LoadDetailsDialog({
   accesoContacto = false,
   contactoVerificado = false,
   esDueno = false,
+  onEnviarMensaje,
 }: {
+  onEnviarMensaje?: (carga: Carga) => void;
   carga: Carga | null;
   onOpenChange: (o: boolean) => void;
   /** true solo con plan Pro activo: muestra el nombre de la empresa. */
@@ -332,30 +333,17 @@ export function LoadDetailsDialog({
 
             <DialogFooter className="gap-2">
               {puedeVerTelefono ? (
-                <>
-                  <Button asChild className="w-full sm:w-auto">
-                    <a href={`tel:${carga.telefono.replace(/\s/g, "")}`}>
-                      <Phone className="h-4 w-4" /> Llamar {carga.telefono}
-                    </a>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full sm:w-auto">
-                    <a
-                      href={`https://wa.me/${carga.telefono.replace(/[^0-9]/g, "")}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <MessageCircle className="h-4 w-4" /> WhatsApp
-                    </a>
-                  </Button>
-                </>
+                <Button className="w-full sm:w-auto" onClick={() => onEnviarMensaje?.(carga)}>
+                  <MessageCircle className="h-4 w-4" /> Enviar mensaje
+                </Button>
               ) : accesoContacto ? (
                 <div className="w-full rounded-lg border border-border bg-surface p-3 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-1 font-semibold text-foreground">
-                    <Lock className="h-4 w-4" /> Teléfono reservado
+                    <Lock className="h-4 w-4" /> Mensajería reservada
                   </span>
                   <p className="mt-1">
-                    Para ver el teléfono necesitas tu sello TroncalCheck aprobado (verificación de
-                    RUT). Mientras tanto puedes enviar un mensaje al cargador.
+                    Para escribirle a la empresa necesitas tu sello TroncalCheck aprobado (verificación de
+                    RUT) y postular a la carga.
                   </p>
                 </div>
               ) : (

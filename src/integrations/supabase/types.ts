@@ -311,6 +311,44 @@ export type Database = {
           },
         ]
       }
+      mensajes_carga: {
+        Row: {
+          autor_id: string
+          carga_id: string
+          created_at: string
+          id: string
+          leido: boolean
+          texto: string
+          transportista_id: string
+        }
+        Insert: {
+          autor_id: string
+          carga_id: string
+          created_at?: string
+          id?: string
+          leido?: boolean
+          texto: string
+          transportista_id: string
+        }
+        Update: {
+          autor_id?: string
+          carga_id?: string
+          created_at?: string
+          id?: string
+          leido?: boolean
+          texto?: string
+          transportista_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensajes_carga_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: false
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mensajes_contacto: {
         Row: {
           correo: string
@@ -1003,6 +1041,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: number
       }
+      conversacion_permitida: {
+        Args: { _carga_id: string; _transportista_id: string; _user_id: string }
+        Returns: boolean
+      }
       cupos_fundador: { Args: never; Returns: number }
       gestionar_membresia: {
         Args: { p_accion: string; p_valor?: string }
@@ -1018,6 +1060,10 @@ export type Database = {
       }
       insignias_transportista: { Args: { p_id: string }; Returns: Json }
       limite_publicaciones_mes: { Args: { _tier: string }; Returns: number }
+      marcar_mensajes_leidos: {
+        Args: { p_carga: string; p_transportista: string }
+        Returns: undefined
+      }
       metricas_marketplace: { Args: never; Returns: Json }
       mi_chilevalora: { Args: never; Returns: Json }
       mi_consumo_publicaciones: { Args: never; Returns: Json }
@@ -1025,6 +1071,7 @@ export type Database = {
       mi_membresia_uf: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
       mi_verificacion_resumen: { Args: never; Returns: Json }
+      mis_conversaciones: { Args: never; Returns: Json }
       normalizar_rut: { Args: { p_rut: string }; Returns: string }
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
       perfil_publico: { Args: { p_id: string }; Returns: Json }

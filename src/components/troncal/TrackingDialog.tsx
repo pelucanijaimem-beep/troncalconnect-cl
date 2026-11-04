@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { ClientOnly } from "@tanstack/react-router";
-import { MessageCircle, Phone, Route, Satellite, ShieldCheck, Timer } from "lucide-react";
+import { MessagesSquare, Route, Satellite, ShieldCheck, Timer } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { Carga } from "@/lib/troncal-data";
@@ -23,7 +23,9 @@ export function TrackingDialog({
   viaje,
   ubicacionCompartida = null,
   onOpenChange,
+  onEnviarMensaje,
 }: {
+  onEnviarMensaje?: (carga: Carga) => void;
   carga: Carga | null;
   viaje: Viaje | null;
   ubicacionCompartida?: UbicacionViaje | null;
@@ -32,7 +34,6 @@ export function TrackingDialog({
   if (!carga) return null;
   const m = metricasViaje(carga, viaje);
   const enRuta = viaje?.estado === "en_ruta";
-  const tel = carga.telefono.replace(/[^\d+]/g, "");
   const actual: [number, number] = ubicacionCompartida
     ? [ubicacionCompartida.lat, ubicacionCompartida.lng]
     : m.actual;
@@ -128,22 +129,9 @@ export function TrackingDialog({
                 </div>
               </div>
 
-              <div className="mt-3 flex gap-2">
-                <Button asChild className="flex-1">
-                  <a href={`tel:${tel}`}>
-                    <Phone className="h-4 w-4" /> Llamar al Chofer
-                  </a>
-                </Button>
-                <Button asChild variant="outline" className="flex-1">
-                  <a
-                    href={`https://wa.me/${tel.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <MessageCircle className="h-4 w-4" /> WhatsApp
-                  </a>
-                </Button>
-              </div>
+              <Button className="mt-3 w-full" onClick={() => onEnviarMensaje?.(carga)}>
+                <MessagesSquare className="h-4 w-4" /> Enviar mensaje
+              </Button>
 
               <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
