@@ -21,6 +21,7 @@ import { SearchFilters, type Filtros } from "@/components/troncal/SearchFilters"
 import { EquipmentPills } from "@/components/troncal/EquipmentPills";
 import { LoadCard } from "@/components/troncal/LoadCard";
 import { LoadMatchingDialog } from "@/components/troncal/LoadMatchingDialog";
+import { PublicationQuotaNotice } from "@/components/troncal/PublicationQuotaNotice";
 import { TruckCard } from "@/components/troncal/TruckCard";
 import { AuthDialog } from "@/components/troncal/AuthDialog";
 import { PostTruckDialog } from "@/components/troncal/PostTruckDialog";
@@ -516,6 +517,8 @@ function Index() {
           )}
         </div>
 
+        {sesion.rol === "empresa" && <PublicationQuotaNotice userId={sesion.id} revision={CARGAS.filter(c => c.userId === sesion.id).map(c => c.id).join(",")} />}
+
         <div className="mb-6">
           <TrustProfileCard
             usuario={sesion.nombre}
@@ -608,7 +611,7 @@ function Index() {
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
           onConfigurarRetorno={() => setAlertasOpen(true)}
         />
-        {esCamionero && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} cargas={cargas} onDetalles={setDetalle} />}
+        {sesion.rol === "camionero" && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} ciudadBase={alertas.ciudadBase} cargas={CARGAS.filter(c => c.pais === "CL" && c.estado === "activa" && !estaBloqueada(prefs.bloqueadas, c.empresa))} renderCarga={c => <LoadCard carga={c} rol="camionero" viaje={getViaje(c.id)} onDetalles={c => { setMatchingOpen(false); setDetalle(c); }} onContactar={c => { setMatchingOpen(false); contactarCarga(c); }} onIniciar={c => { setMatchingOpen(false); iniciar(c); }} onFinalizar={c => { setMatchingOpen(false); setPodCarga(c); }} onRastrear={c => { setMatchingOpen(false); rastrear(c); }} onVerViaje={c => { setMatchingOpen(false); setViajeActivo(c); }} onPostular={c => { setMatchingOpen(false); postular(c); }} yaPostulada={postuladas.includes(c.id)} accesoContacto={accesoContacto} />} />}
 
 
         <div className="mt-4">
