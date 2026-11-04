@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import type { Carga } from "@/lib/troncal-data";
 
-/** Acepta solo enlaces http/https; vacío también es válido (campo opcional). */
+/** Campo obligatorio: solo acepta enlaces http/https reales. */
 export function linkRastreoValido(valor: string): boolean {
   const v = valor.trim();
-  if (!v) return true;
+  if (!v) return false;
   try {
     const url = new URL(v);
     return url.protocol === "http:" || url.protocol === "https:";
