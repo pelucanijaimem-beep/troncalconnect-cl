@@ -127,6 +127,13 @@
       "when": 1793671830860,
       "tag": "0017_publicaciones_privilegios_minimos",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1793821095768,
+      "tag": "0018_mensajes_carga",
+      "breakpoints": true
     }
   ]
 }
