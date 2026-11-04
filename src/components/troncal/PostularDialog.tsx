@@ -87,8 +87,10 @@ export function PostularDialog({
                   setError("");
                 }}
               />
-              {error ? (
-                <p className="text-xs font-semibold text-destructive">{error}</p>
+              {error || (link.trim() !== "" && !linkValido) ? (
+                <p className="text-xs font-semibold text-destructive">
+                  {error || "Ingresa un enlace válido que comience con http:// o https://"}
+                </p>
               ) : (
                 <p className="text-xs text-muted-foreground">
                   Pega el link de rastreo en vivo de tu camión (de tu seguro, flota o rastreador
