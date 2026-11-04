@@ -17,7 +17,7 @@ export function useConversaciones(userId: string | undefined | null) {
   const traer = useCallback(async () => {
     if (!userId) return setLista([]);
     const { data } = await supabase.rpc("mis_conversaciones");
-    setLista(((data ?? []) as unknown as Conversacion[]) ?? []);
+    setLista(((data ?? []) as unknown as Conversacion[]));
   }, [userId]);
 
   useEffect(() => {
