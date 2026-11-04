@@ -46,8 +46,10 @@ export function PostularDialog({
     }
   }, [carga]);
 
+  const linkValido = linkRastreoValido(link);
+
   const confirmar = () => {
-    if (!linkRastreoValido(link)) {
+    if (!linkValido) {
       setError("Ingresa un enlace válido que comience con http:// o https://");
       return;
     }
