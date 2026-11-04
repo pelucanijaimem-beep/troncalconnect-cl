@@ -62,6 +62,7 @@ import {
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { AlertPrefsDialog } from "@/components/troncal/AlertPrefsDialog";
 import { NotificationsBell } from "@/components/troncal/NotificationsBell";
+import { MessagesInbox } from "@/components/troncal/MessagesInbox";
 import { usePreferenciasAlerta } from "@/lib/use-alertas";
 import { avisarEstadoCarga, avisarPostulacion } from "@/lib/notificaciones.functions";
 import { enRegion, mismaCiudad, regionesDe } from "@/lib/regiones";
@@ -124,6 +125,7 @@ function Index() {
   const [contacto, setContacto] = useState<Contacto | null>(null);
   const [tipoContacto, setTipoContacto] = useState<TipoContacto | null>(null);
   const [rastreo, setRastreo] = useState<Carga | null>(null);
+  const [chatCarga, setChatCarga] = useState<string | null>(null);
   const [viajeActivo, setViajeActivo] = useState<Carga | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
   const [verificacionOpen, setVerificacionOpen] = useState(false);
@@ -595,6 +597,7 @@ function Index() {
                 </Button>
               </>
             )}
+            <MessagesInbox userId={sesion.id} abrirCarga={chatCarga} onCerrarCarga={() => setChatCarga(null)} />
             <NotificationsBell userId={sesion.id} />
           </div>
         </section>
@@ -808,6 +811,10 @@ function Index() {
         contactoVerificado={soyVerificado}
         esDueno={Boolean(detalle?.userId && detalle.userId === sesion?.id)}
         carga={detalle}
+        onEnviarMensaje={(c) => {
+          setDetalle(null);
+          setChatCarga(c.id);
+        }}
         onOpenChange={(o) => !o && setDetalle(null)}
       />
       <ContactDialog
@@ -839,6 +846,7 @@ function Index() {
         viaje={viajeRastreo}
         ubicacionCompartida={ubicacionRastreo}
         onOpenChange={(o) => !o && setRastreo(null)}
+        onEnviarMensaje={(c) => setChatCarga(c.id)}
       />
       <CompareLoadsDialog
         open={comparaOpen}
