@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import type { Carga } from "@/lib/troncal-data";
 
-/** Acepta solo enlaces http/https; vacío también es válido (campo opcional). */
+/** Campo obligatorio: solo acepta enlaces http/https reales. */
 export function linkRastreoValido(valor: string): boolean {
   const v = valor.trim();
-  if (!v) return true;
+  if (!v) return false;
   try {
     const url = new URL(v);
     return url.protocol === "http:" || url.protocol === "https:";
@@ -46,8 +46,10 @@ export function PostularDialog({
     }
   }, [carga]);
 
+  const linkValido = linkRastreoValido(link);
+
   const confirmar = () => {
-    if (!linkRastreoValido(link)) {
+    if (!linkValido) {
       setError("Ingresa un enlace válido que comience con http:// o https://");
       return;
     }
@@ -72,7 +74,7 @@ export function PostularDialog({
             <div className="space-y-1.5">
               <Label htmlFor="link-rastreo" className="inline-flex items-center gap-1">
                 <Satellite className="h-4 w-4 text-primary" />
-                Link de rastreo GPS del camión (opcional)
+                Link de rastreo GPS del camión (obligatorio)
               </Label>
               <Input
                 id="link-rastreo"
@@ -85,13 +87,15 @@ export function PostularDialog({
                   setError("");
                 }}
               />
-              {error ? (
-                <p className="text-xs font-semibold text-destructive">{error}</p>
+              {error || (link.trim() !== "" && !linkValido) ? (
+                <p className="text-xs font-semibold text-destructive">
+                  {error || "Ingresa un enlace válido que comience con http:// o https://"}
+                </p>
               ) : (
                 <p className="text-xs text-muted-foreground">
-                  Si tu camión tiene GPS con link de rastreo en vivo (de tu seguro, flota, o un
-                  rastreador GPS propio), pégalo aquí para que la empresa pueda ver la ubicación
-                  del camión durante el viaje.
+                  Pega el link de rastreo en vivo de tu camión (de tu seguro, flota o rastreador
+                  GPS propio). Es obligatorio: le da transparencia y confianza a la empresa, que
+                  podrá ver la ubicación del camión durante el viaje.
                 </p>
               )}
             </div>
@@ -105,7 +109,7 @@ export function PostularDialog({
               >
                 Cancelar
               </Button>
-              <Button type="button" onClick={confirmar} disabled={enviando}>
+              <Button type="button" onClick={confirmar} disabled={enviando || !linkValido}>
                 <Send className="h-4 w-4" /> {enviando ? "Enviando…" : "Confirmar postulación"}
               </Button>
             </DialogFooter>

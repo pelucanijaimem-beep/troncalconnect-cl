@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { linkRastreoValido } from "@/components/troncal/PostularDialog";
 
 describe("linkRastreoValido", () => {
-  it("acepta el campo vacío (opcional)", () => {
-    expect(linkRastreoValido("")).toBe(true);
-    expect(linkRastreoValido("   ")).toBe(true);
+  it("rechaza el campo vacío (obligatorio)", () => {
+    expect(linkRastreoValido("")).toBe(false);
+    expect(linkRastreoValido("   ")).toBe(false);
   });
 
   it("acepta URLs http y https", () => {
