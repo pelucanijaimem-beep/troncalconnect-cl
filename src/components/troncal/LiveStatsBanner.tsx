@@ -61,19 +61,22 @@ export function LiveStatsBanner({
   const t = useContador(tarifaKm);
   const r = useContador(rutasActivas);
   const etapaInicial = cargasHoy < 5;
+  const hayActividad = !(cargasHoy === 0 && rutasActivas === 0);
 
   return (
     <section className="border-b border-border bg-surface">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-primary">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-          </span>
-          Mercado en vivo · Chile
-        </p>
+        {hayActividad && (
+          <>
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-primary">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              </span>
+              Mercado en vivo · Chile
+            </p>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border bg-card p-4 shadow-card">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <Activity className="h-4 w-4 text-primary" /> Cargas publicadas hoy
@@ -105,7 +108,9 @@ export function LiveStatsBanner({
               {r.toLocaleString("es-CL")}
             </p>
           </div>
-        </div>
+            </div>
+          </>
+        )}
 
         {etapaInicial && (
           <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-5">
