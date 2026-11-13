@@ -17,6 +17,7 @@ import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SeguridadRutaRouteImport } from './routes/seguridad-ruta'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
 import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
@@ -65,6 +66,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeguridadRutaRoute = SeguridadRutaRouteImport.update({
+  id: '/seguridad-ruta',
+  path: '/seguridad-ruta',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminosRoute = TerminosRouteImport.update({
   id: '/terminos',
   path: '/terminos',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/privacidad': typeof PrivacidadRoute
   '/registro': typeof RegistroRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/registro'
     | '/reset-password'
+    | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
     | '/api/public/didit-webhook'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/registro'
     | '/reset-password'
+    | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
     | '/api/public/didit-webhook'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/privacidad'
     | '/registro'
     | '/reset-password'
+    | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
     | '/api/public/didit-webhook'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   PrivacidadRoute: typeof PrivacidadRoute
   RegistroRoute: typeof RegistroRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SeguridadRutaRoute: typeof SeguridadRutaRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/seguridad-ruta': {
+      id: '/seguridad-ruta'
+      path: '/seguridad-ruta'
+      fullPath: '/seguridad-ruta'
+      preLoaderRoute: typeof SeguridadRutaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terminos': {
       id: '/terminos'
       path: '/terminos'
@@ -345,6 +365,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadRoute: PrivacidadRoute,
   RegistroRoute: RegistroRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SeguridadRutaRoute: SeguridadRutaRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,

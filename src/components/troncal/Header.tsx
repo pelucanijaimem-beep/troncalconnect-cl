@@ -88,7 +88,7 @@ export function Header({
           </span>
         </a>
 
-        <nav className="hidden items-center gap-5 lg:flex">
+        <nav className="hidden items-center gap-3 xl:gap-5 lg:flex">
           {items(false).map((n) => (
             <button
               key={n.label}
@@ -104,6 +104,9 @@ export function Header({
             className="text-sm font-semibold text-foreground transition-colors hover:text-primary"
           >
             Planes
+          </Link>
+          <Link to="/seguridad-ruta" className="text-sm font-semibold text-foreground transition-colors hover:text-primary">
+            Seguridad en Ruta
           </Link>
         </nav>
 
@@ -192,6 +195,9 @@ export function Header({
                   className="rounded-md px-2 py-2 text-left text-sm font-semibold text-foreground hover:bg-surface"
                 >
                   Planes
+                </Link>
+                <Link to="/seguridad-ruta" onClick={() => setMenuAbierto(false)} className="rounded-md px-2 py-2 text-left text-sm font-semibold text-foreground hover:bg-surface">
+                  Seguridad en Ruta
                 </Link>
               </nav>
               <p className="px-2 text-xs text-muted-foreground">Operamos en Chile.</p>
