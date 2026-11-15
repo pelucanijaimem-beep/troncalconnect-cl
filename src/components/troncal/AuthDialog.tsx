@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
+import { GoogleIcon } from "./GoogleIcon";
+import { lovable } from "@/integrations/lovable/index";
 import {
   iniciarSesionRut,
   recuperarPassword,
@@ -40,6 +42,25 @@ export function AuthDialog({
   const [verPassLogin, setVerPassLogin] = useState(false);
   const [verPassRegistro, setVerPassRegistro] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [enviandoGoogle, setEnviandoGoogle] = useState(false);
+
+  const entrarConGoogle = async () => {
+    setEnviandoGoogle(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setEnviandoGoogle(false);
+      toast.error("No pudimos iniciar sesión con Google", {
+        description: "Inténtalo nuevamente en unos segundos.",
+      });
+      return;
+    }
+    if (result.redirected) return; // el navegador redirige a Google
+    setEnviandoGoogle(false);
+    onOpenChange(false);
+    toast.success("Sesión iniciada.", { description: "Tu tablero privado está activo." });
+  };
 
   useEffect(() => {
     if (open) {
@@ -196,8 +217,23 @@ export function AuthDialog({
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
-                  <Button type="submit" className="w-full" disabled={enviando}>
+                  <Button type="submit" className="w-full" disabled={enviando || enviandoGoogle}>
                     Iniciar Sesión
+                  </Button>
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs text-muted-foreground">o continúa con</span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={enviando || enviandoGoogle}
+                    onClick={() => void entrarConGoogle()}
+                  >
+                    <GoogleIcon className="h-[18px] w-[18px]" />
+                    Continuar con Google
                   </Button>
                 </form>
               </TabsContent>
