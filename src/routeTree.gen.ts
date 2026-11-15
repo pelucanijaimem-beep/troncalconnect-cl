@@ -20,6 +20,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SeguridadRutaRouteImport } from './routes/seguridad-ruta'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
+import { Route as AdminUsuarioIdRouteImport } from './routes/admin_.usuario.$id'
 import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
 import { Route as ApiPublicIdentidadRouteImport } from './routes/api/public/identidad'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -81,6 +82,11 @@ const CargaIdRoute = CargaIdRouteImport.update({
   path: '/carga/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsuarioIdRoute = AdminUsuarioIdRouteImport.update({
+  id: '/admin_/usuario/$id',
+  path: '/admin/usuario/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDiditWebhookRoute = ApiPublicDiditWebhookRouteImport.update({
   id: '/api/public/didit-webhook',
   path: '/api/public/didit-webhook',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/admin_/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
     | '/lovable/email/auth/preview'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
     | '/lovable/email/auth/preview'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/admin_/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
     | '/lovable/email/auth/preview'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   SeguridadRutaRoute: typeof SeguridadRutaRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
+  AdminUsuarioIdRoute: typeof AdminUsuarioIdRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
   ApiPublicIdentidadRoute: typeof ApiPublicIdentidadRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CargaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/usuario/$id': {
+      id: '/admin_/usuario/$id'
+      path: '/admin/usuario/$id'
+      fullPath: '/admin/usuario/$id'
+      preLoaderRoute: typeof AdminUsuarioIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/didit-webhook': {
       id: '/api/public/didit-webhook'
       path: '/api/public/didit-webhook'
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   SeguridadRutaRoute: SeguridadRutaRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
+  AdminUsuarioIdRoute: AdminUsuarioIdRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,
   ApiPublicIdentidadRoute: ApiPublicIdentidadRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,

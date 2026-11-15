@@ -579,7 +579,9 @@ function AdminPage() {
               <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <div>
                   <p className="font-semibold text-foreground">
-                    {p.nombre}{" "}
+                    <Link to="/admin/usuario/$id" params={{ id: p.id }} className="text-primary hover:underline">
+                      {p.nombre}
+                    </Link>{" "}
                     {p.verificado && <span className="text-xs text-trust">· Verificado</span>}
                     {p.bloqueado && (
                       <span className="text-xs text-destructive"> · Suspendido</span>

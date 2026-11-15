@@ -26,3 +26,4 @@
 - Organization business segments derive from existing profile business roles; organization ownership and membership are stored separately, and billing fields have no authenticated direct write grants to prevent entitlement escalation.
 - Load chat lives in mensajes_carga, scoped by postulación + load owner via security-definer helper; read flags change only through an RPC so participants cannot edit message content.
 - The route safety center is an isolated browser-only demonstration; its PINs, sharing links, identity samples and SOS never authorize deliveries, expose real trips or dispatch emergency alerts.
+- Administrative user detail uses an escaped admin_ leaf route and the existing perfiles_admin RPC plus administrator-scoped RLS/Storage access; this avoids nesting the full admin panel or exposing private profile reads.
