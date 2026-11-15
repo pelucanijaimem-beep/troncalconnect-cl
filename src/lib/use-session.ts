@@ -13,6 +13,8 @@ export type Sesion = {
   telefono?: string;
   planActivo: boolean;
   cargandoPerfil?: boolean;
+  /** true cuando el perfil aún no tiene RUT (típico tras entrar con Google). */
+  necesitaRut?: boolean;
 };
 
 let sesion: Sesion | null = null;
@@ -51,6 +53,7 @@ async function cargarPerfil(userId: string, email: string) {
     email?: string | null;
     telefono?: string | null;
     rol?: string | null;
+    rut?: string | null;
     plan_activo?: boolean | null;
     bloqueado?: boolean | null;
   } | null;
@@ -104,8 +107,50 @@ async function cargarPerfil(userId: string, email: string) {
     rol: (data.rol as Rol) ?? "camionero",
     ...(data.telefono ? { telefono: data.telefono } : {}),
     planActivo: Boolean(data.plan_activo || accesoMembresia),
+    necesitaRut: !data.rut,
   };
   emitir();
+}
+
+/**
+ * Completa el perfil de quien entró con Google y aún no tiene RUT.
+ * Valida el RUT en cliente y lo guarda en su propia fila de perfiles
+ * (la política RLS solo permite editar la fila propia y el trigger de
+ * escritura vuelve a validar el RUT en el servidor).
+ */
+export async function completarRegistroGoogle(datos: {
+  rut: string;
+  telefono: string;
+  rol: Rol;
+}) {
+  if (!rutValido(datos.rut)) {
+    return "El RUT ingresado no es válido. Revísalo e inténtalo de nuevo.";
+  }
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id;
+  if (!userId) return "Tu sesión venció. Vuelve a iniciar sesión con Google.";
+
+  const { data: existe } = await supabase.rpc("rut_registrado", { p_rut: datos.rut });
+  if (existe) {
+    return "Este RUT ya tiene una cuenta creada en TroncalTrack. Si es tuya, inicia sesión con tu RUT y contraseña.";
+  }
+
+  const { error } = await supabase
+    .from("perfiles")
+    .update({
+      rut: normalizarRut(datos.rut),
+      telefono: datos.telefono,
+      rol: datos.rol,
+    })
+    .eq("id", userId);
+  if (error) return "No pudimos guardar tus datos. Inténtalo nuevamente.";
+
+  try {
+    await refrescarSesion();
+  } catch {
+    console.warn("[registro-google] no se pudo actualizar el perfil tras guardar");
+  }
+  return null;
 }
 
 function iniciar() {

@@ -24,6 +24,7 @@ import { LoadMatchingDialog } from "@/components/troncal/LoadMatchingDialog";
 import { PublicationQuotaNotice } from "@/components/troncal/PublicationQuotaNotice";
 import { TruckCard } from "@/components/troncal/TruckCard";
 import { AuthDialog } from "@/components/troncal/AuthDialog";
+import { CompletarPerfilGoogleDialog } from "@/components/troncal/CompletarPerfilGoogleDialog";
 import { PostTruckDialog } from "@/components/troncal/PostTruckDialog";
 import { PostLoadDialog } from "@/components/troncal/PostLoadDialog";
 import { LoadDetailsDialog } from "@/components/troncal/LoadDetailsDialog";
@@ -797,6 +798,11 @@ function Index() {
       </footer>
 
       <AuthDialog open={authOpen} modo={authModo} rol={rol} onOpenChange={setAuthOpen} />
+      <CompletarPerfilGoogleDialog
+        open={Boolean(sesion?.necesitaRut)}
+        rolSugerido={sesion?.rol ?? "camionero"}
+        {...(sesion?.nombre ? { nombre: sesion.nombre } : {})}
+      />
       {tipoContacto && <ContactSupportDialog tipoInicial={tipoContacto} onClose={() => setTipoContacto(null)} />}
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
       <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
