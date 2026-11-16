@@ -46,10 +46,12 @@ export function AvailabilityPanel({
           </p>
         </div>
 
-        <span className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1 text-xs font-bold text-foreground">
-          <Radio className="h-3.5 w-3.5 text-primary" />
-          {camiones.length} en línea
-        </span>
+        {camiones.length > 0 && (
+          <span className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1 text-xs font-bold text-foreground">
+            <Radio className="h-3.5 w-3.5 text-primary" />
+            {camiones.length} en línea
+          </span>
+        )}
 
         {esCamionero && !bloqueado && (
           <Button
