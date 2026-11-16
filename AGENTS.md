@@ -28,3 +28,5 @@
 - Load chat lives in mensajes_carga, scoped by postulación + load owner via security-definer helper; read flags change only through an RPC so participants cannot edit message content.
 - The route safety center is an isolated browser-only demonstration; its PINs, sharing links, identity samples and SOS never authorize deliveries, expose real trips or dispatch emergency alerts.
 - Administrative user detail uses an escaped admin_ leaf route and the existing perfiles_admin RPC plus administrator-scoped RLS/Storage access; this avoids nesting the full admin panel or exposing private profile reads.
+- Route-report AI summaries run in an authenticated server function over RLS-scoped recent reports, skip the model when none exist, and only phrase existing data; this prevents invented danger alerts.
+- Voice availability is gated by an estado_acceso_ia row for voz_ruta (UI shows Próximamente); deleting the row enables it without code changes.

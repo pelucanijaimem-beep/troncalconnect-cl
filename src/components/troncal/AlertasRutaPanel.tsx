@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ShieldAlert, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,6 +26,7 @@ import {
   crearAlertaRuta,
   type AlertaRuta,
 } from "@/lib/use-alertas-ruta";
+import { resumirAlertasRuta } from "@/lib/alertas-ruta.functions";
 
 /**
  * Se muestra dentro del detalle de una carga. Carga alertas recientes para el
@@ -39,6 +40,8 @@ export function AlertasRutaPanel({ origen, destino }: { origen: string; destino:
   const [abierto, setAbierto] = useState(false);
   const [tipo, setTipo] = useState<string>(TIPOS_ALERTA_RUTA[0]);
   const [enviando, setEnviando] = useState(false);
+  const [resumen, setResumen] = useState<string | null>(null);
+  const conSesion = Boolean(sesion);
 
   useEffect(() => {
     let vivo = true;
@@ -49,6 +52,22 @@ export function AlertasRutaPanel({ origen, destino }: { origen: string; destino:
       vivo = false;
     };
   }, [origen, destino]);
+
+  // Resumen con IA solo cuando existen reportes reales para esta ruta.
+  const hayAlertas = alertas.length > 0;
+  useEffect(() => {
+    setResumen(null);
+    if (!hayAlertas || !conSesion) return;
+    let vivo = true;
+    resumirAlertasRuta({ data: { origen, destino } })
+      .then((r) => {
+        if (vivo) setResumen(r.resumen);
+      })
+      .catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, [origen, destino, hayAlertas, conSesion]);
 
   const reportar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,6 +98,17 @@ export function AlertasRutaPanel({ origen, destino }: { origen: string; destino:
               {alertas.length} reporte{alertas.length === 1 ? "" : "s"} reciente
               {alertas.length === 1 ? "" : "s"} en esta ruta
             </p>
+            {resumen && (
+              <div className="mt-1 space-y-0.5">
+                <p className="flex gap-1.5 text-foreground">
+                  <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
+                  <span>{resumen}</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Resumen automático de reportes no verificados de camioneros.
+                </p>
+              </div>
+            )}
             <ul className="mt-1 space-y-1 text-xs text-muted-foreground">
               {alertas.slice(0, 3).map((a) => (
                 <li key={a.id}>

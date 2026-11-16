@@ -39,6 +39,8 @@ export function RouteVoiceAssistant({
   const [fragmentos, setFragmentos] = useState<Array<{ rol: string; texto: string }>>([]);
   const [reportes, setReportes] = useState<Reporte[]>([]);
   const [buscando, setBuscando] = useState(false);
+  // null = disponible; texto = voz pausada por decisión comercial o por cuota.
+  const [pausa, setPausa] = useState<string | null>(null);
   const voice = useLiveVoice({
     getStartContext: async () => {
       const { data, error } = await supabase.auth.getSession();
@@ -80,6 +82,21 @@ export function RouteVoiceAssistant({
   useEffect(() => {
     if (!open) stop();
   }, [open, stop]);
+  useEffect(() => {
+    if (!open) return;
+    let vivo = true;
+    void supabase
+      .from("estado_acceso_ia")
+      .select("mensaje")
+      .eq("funcion", "voz_ruta")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (vivo) setPausa(data ? data.mensaje || "Próximamente" : null);
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [open]);
   const puedeIniciar = voice.status === "idle" || voice.status === "closed";
   async function consultarUbicacion() {
     setUbicando(true);
@@ -108,6 +125,21 @@ export function RouteVoiceAssistant({
     stopping: "Finalizando…",
     closed: "Conversación finalizada",
   };
+  if (pausa) {
+    return (
+      <section className="space-y-2 border-y border-border py-4" aria-label="Asistente por voz">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="flex items-center gap-2 font-semibold text-muted-foreground">
+            <MicOff className="h-5 w-5" /> Copiloto por voz
+          </h3>
+          <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
+            Próximamente
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground">{pausa} Mientras tanto, escribe tu pregunta arriba.</p>
+      </section>
+    );
+  }
   return (
     <section className="space-y-3 border-y border-border py-4" aria-label="Asistente por voz">
       <div className="flex flex-wrap items-center justify-between gap-2">
