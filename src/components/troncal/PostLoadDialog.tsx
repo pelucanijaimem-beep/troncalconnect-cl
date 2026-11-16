@@ -37,6 +37,22 @@ import { avisarCoincidencias } from "@/lib/notificaciones.functions";
 import { useSesion } from "@/lib/use-session";
 import { VisibilitySwitch } from "./VisibilitySwitch";
 
+function sumarDias(base: Date, dias: number) {
+  const d = new Date(base);
+  d.setDate(d.getDate() + dias);
+  return d;
+}
+
+// Fecha local (no UTC) para que en la noche chilena "mañana" no salte un día.
+function isoFecha(d: Date) {
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const dia = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${dia}`;
+}
+
+function fechaCorta(d: Date) {
+  return d.toLocaleDateString("es-CL", { weekday: "short", day: "numeric" }).replace(".", "");
+}
 
 export function PostLoadDialog({
   open,
@@ -53,6 +69,10 @@ export function PostLoadDialog({
   const [diasPago, setDiasPago] = useState<string>("Pago a 30 días");
   const [visible, setVisible] = useState(true);
   const [enviando, setEnviando] = useState(false);
+  const [origenVal, setOrigenVal] = useState("");
+  const [destinoVal, setDestinoVal] = useState("");
+  const [toneladasVal, setToneladasVal] = useState("");
+  const [fecha, setFecha] = useState("");
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
   const consultarConsumo = useServerFn(consultarConsumoPublicaciones);
@@ -122,6 +142,10 @@ export function PostLoadDialog({
     setTipoPublicador("generador");
     setDiasPago("Pago a 30 días");
     setVisible(true);
+    setOrigenVal("");
+    setDestinoVal("");
+    setToneladasVal("");
+    setFecha("");
     onOpenChange(false);
     toast.success("¡Flete publicado!", {
       description: visible
@@ -142,7 +166,14 @@ export function PostLoadDialog({
     }
   };
 
-
+  const esencialesCompletos = [
+    origenVal.trim().length > 0,
+    destinoVal.trim().length > 0,
+    Boolean(carroceria),
+    Boolean(tipoCarga),
+    toneladasVal.trim().length > 0,
+    Boolean(fecha),
+  ].filter(Boolean).length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -153,17 +184,39 @@ export function PostLoadDialog({
             Publica tu carga y recibe contacto directo de transportistas disponibles.
           </DialogDescription>
         </DialogHeader>
+        <p className="text-sm font-semibold text-muted-foreground">
+          {esencialesCompletos} de 6 datos esenciales
+        </p>
 
         <form onSubmit={(e) => void enviar(e)} className="space-y-4">
+          <h3 className="text-sm font-bold text-foreground">Lo esencial</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="l-origen">Origen</Label>
-              <Input id="l-origen" name="origen" placeholder="Los Ángeles" required />
+              <Input
+                id="l-origen"
+                name="origen"
+                placeholder="Los Ángeles"
+                value={origenVal}
+                onChange={(e) => setOrigenVal(e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-destino">Destino</Label>
-              <Input id="l-destino" name="destino" placeholder="Santiago" required />
+              <Input
+                id="l-destino"
+                name="destino"
+                placeholder="Santiago"
+                value={destinoVal}
+                onChange={(e) => setDestinoVal(e.target.value)}
+                required
+              />
             </div>
+            <p className="text-xs text-muted-foreground sm:col-span-2">
+              Solo se muestra la ciudad de origen y destino en el tablero público. No se pide ni
+              se publica tu dirección exacta.
+            </p>
             <div className="space-y-1.5">
               <Label>Tipo de Carrocería requerida</Label>
               <Select value={carroceria} onValueChange={setCarroceria} required>
@@ -208,8 +261,50 @@ export function PostLoadDialog({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-ton">Peso (Toneladas)</Label>
-              <Input id="l-ton" name="toneladas" type="number" min={1} placeholder="28" required />
+              <Input
+                id="l-ton"
+                name="toneladas"
+                type="number"
+                min={1}
+                placeholder="28"
+                value={toneladasVal}
+                onChange={(e) => setToneladasVal(e.target.value)}
+                required
+              />
             </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="l-fecha">Fecha de retiro</Label>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={fecha === isoFecha(sumarDias(new Date(), 1)) ? "default" : "outline"}
+                  onClick={() => setFecha(isoFecha(sumarDias(new Date(), 1)))}
+                >
+                  Mañana · {fechaCorta(sumarDias(new Date(), 1))}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={fecha === isoFecha(sumarDias(new Date(), 2)) ? "default" : "outline"}
+                  onClick={() => setFecha(isoFecha(sumarDias(new Date(), 2)))}
+                >
+                  Pasado mañana · {fechaCorta(sumarDias(new Date(), 2))}
+                </Button>
+              </div>
+              <Input
+                id="l-fecha"
+                name="fecha"
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <h3 className="text-sm font-bold text-foreground">Detalles adicionales</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="l-km">Distancia de la ruta (km)</Label>
               <Input id="l-km" name="km" type="number" min={1} placeholder="510" required />
@@ -217,10 +312,6 @@ export function PostLoadDialog({
             <div className="space-y-1.5">
               <Label htmlFor="l-valor">Valor por Kilómetro ({moneda})</Label>
               <Input id="l-valor" name="valorKm" type="number" min={1} placeholder="1200" required />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="l-fecha">Fecha de retiro</Label>
-              <Input id="l-fecha" name="fecha" type="date" required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="l-hora">Hora de retiro</Label>
