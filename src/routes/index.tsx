@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PortAccessNotice } from "@/components/troncal/PortAccessNotice";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing, Sparkles } from "lucide-react";
@@ -13,14 +12,13 @@ import { QuickQuote } from "@/components/troncal/landing/QuickQuote";
 import { ValueStrip } from "@/components/troncal/landing/ValueStrip";
 import { SafetyProof } from "@/components/troncal/landing/SafetyProof";
 import { CORREDORES } from "@/lib/corredores";
+import type { BorradorFlete } from "@/lib/cotizador";
 import { LiveStatsBanner } from "@/components/troncal/LiveStatsBanner";
 import { SolutionsSection } from "@/components/troncal/SolutionsSection";
 import { BenefitsGrid } from "@/components/troncal/BenefitsGrid";
 import { FaqSection } from "@/components/troncal/FaqSection";
 import { PricingPlans } from "@/components/troncal/PricingPlans";
-import { ComparisonTable } from "@/components/troncal/ComparisonTable";
 import { RoleSwitcher, type Rol } from "@/components/troncal/RoleSwitcher";
-import { LaunchBanner } from "@/components/troncal/LaunchBanner";
 import { SearchFilters, type Filtros } from "@/components/troncal/SearchFilters";
 import { EquipmentPills } from "@/components/troncal/EquipmentPills";
 import { LoadCard } from "@/components/troncal/LoadCard";
@@ -112,6 +110,8 @@ const FILTROS_VACIOS: Filtros = {
 };
 
 
+const CLAVE_BORRADOR = "troncal-borrador-flete";
+
 function coincide(valor: string, filtro: string) {
   return !filtro.trim() || valor.toLowerCase().includes(filtro.trim().toLowerCase());
 }
@@ -152,6 +152,36 @@ function Index() {
   } | null>(null);
 
   const sesion = useSesion();
+  // Datos del asistente de portada: se conservan al registrarse o iniciar sesión.
+  const [borradorFlete, setBorradorFlete] = useState<BorradorFlete | null>(null);
+  const [publicarPendiente, setPublicarPendiente] = useState(false);
+  const sesionLista = Boolean(sesion && !sesion.cargandoPerfil);
+  useEffect(() => {
+    if (!publicarPendiente || !sesionLista) return;
+    setPublicarPendiente(false);
+    setFleteOpen(true);
+  }, [publicarPendiente, sesionLista]);
+  const guardarBorrador = (b: BorradorFlete | null) => {
+    setBorradorFlete(b);
+    try {
+      if (b) window.sessionStorage.setItem(CLAVE_BORRADOR, JSON.stringify(b));
+      else window.sessionStorage.removeItem(CLAVE_BORRADOR);
+    } catch {
+      /* almacenamiento no disponible */
+    }
+  };
+  useEffect(() => {
+    try {
+      const guardado = window.sessionStorage.getItem(CLAVE_BORRADOR);
+      if (!guardado) return;
+      const b = JSON.parse(guardado) as Partial<BorradorFlete>;
+      if (typeof b.origen === "string" && typeof b.destino === "string") {
+        setBorradorFlete({ origen: b.origen, destino: b.destino, carga: typeof b.carga === "string" ? b.carga : "" });
+      }
+    } catch {
+      /* borrador inválido */
+    }
+  }, []);
   const { camiones: CAMIONES } = usePublicaciones();
   const { cargas: CARGAS } = useCargas(Boolean(sesion));
   const { ids: postuladas, agregar: agregarPostulacion } = useMisPostulaciones(sesion?.id);
@@ -449,12 +479,19 @@ function Index() {
         onPublicarCamion={() => requiereSesion(() => setCamionOpen(true))}
         onPublicarCarga={() => requiereSesion(() => setFleteOpen(true))}
       />
-      <LaunchBanner />
-
       <Hero onRegistro={() => abrirAuth("registro")}>
         <QuickQuote
           cargas={CARGAS}
-          onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
+          conSesion={Boolean(sesion)}
+          onPublicarFlete={(b) => {
+            guardarBorrador(b);
+            if (!sesion) setPublicarPendiente(true);
+            requiereSesion(() => setFleteOpen(true));
+          }}
+          onRegistro={(b) => {
+            guardarBorrador(b);
+            abrirAuth("registro");
+          }}
         />
       </Hero>
 
@@ -509,10 +546,6 @@ function Index() {
       <BenefitsGrid />
 
       <PricingPlans onRegistro={() => abrirAuth("registro")} />
-
-      <ComparisonTable />
-
-      <PortAccessNotice />
 
       <FaqSection onRegistro={() => abrirAuth("registro")} />
 
@@ -784,6 +817,11 @@ function Index() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link to="/guias/ingreso-puertos-enrolamiento-asat" className="font-medium text-muted-foreground hover:text-primary hover:underline">
+                Ingreso a Puertos: Enrolamiento y ASAT
+              </Link>
+            </li>
           </ul>
         </nav>
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
@@ -831,7 +869,15 @@ function Index() {
       />
       {tipoContacto && <ContactSupportDialog tipoInicial={tipoContacto} onClose={() => setTipoContacto(null)} />}
       <PostTruckDialog open={camionOpen} onOpenChange={setCamionOpen} pais={pais} />
-      <PostLoadDialog open={fleteOpen} onOpenChange={setFleteOpen} pais={pais} />
+      <PostLoadDialog
+        open={fleteOpen}
+        onOpenChange={(o) => {
+          setFleteOpen(o);
+          if (!o) guardarBorrador(null);
+        }}
+        pais={pais}
+        inicial={borradorFlete}
+      />
       <PostularDialog
         carga={postulando}
         enviando={enviandoPostulacion}

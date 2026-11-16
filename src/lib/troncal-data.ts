@@ -4,7 +4,9 @@ export type Carroceria =
   | "Furgón"
   | "Thermo / Frigo"
   | "Sider"
-  | "Cama Baja";
+  | "Cama Baja"
+  | "Estanque"
+  | "Camión 3/4";
 
 export const CARROCERIAS: Carroceria[] = [
   "Rampla Plana",
@@ -13,6 +15,8 @@ export const CARROCERIAS: Carroceria[] = [
   "Thermo / Frigo",
   "Sider",
   "Cama Baja",
+  "Estanque",
+  "Camión 3/4",
 ];
 
 export type PaisCodigo = "CL" | "AR" | "PE" | "BO" | "INT";

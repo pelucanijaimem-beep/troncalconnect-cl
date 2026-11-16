@@ -56,3 +56,27 @@ export function cargasDelCorredor(
   }
   return { ida, retorno };
 }
+
+export type TarifaReferencial = { valorKm: number; muestras: number; alcance: "tramo" | "general" };
+
+/**
+ * Reference $/km from real published loads: the same corridor first, otherwise the
+ * average of every published load. Null when no load carries a usable value.
+ */
+export function tarifaReferencial(
+  cargas: { origen: string; destino: string; valorKm: number }[],
+  origen: string,
+  destino: string,
+): TarifaReferencial | null {
+  const validas = cargas.filter((c) => Number.isFinite(c.valorKm) && c.valorKm > 0);
+  const tramo = validas.filter(
+    (c) => mismaCiudadFlexible(c.origen, origen) && mismaCiudadFlexible(c.destino, destino),
+  );
+  const base = tramo.length ? tramo : validas;
+  if (!base.length) return null;
+  const promedio = base.reduce((a, c) => a + c.valorKm, 0) / base.length;
+  return { valorKm: Math.round(promedio), muestras: base.length, alcance: tramo.length ? "tramo" : "general" };
+}
+
+/** Data typed in the home quote box, kept so publishing or signing up does not lose it. */
+export type BorradorFlete = { origen: string; destino: string; carga: string };

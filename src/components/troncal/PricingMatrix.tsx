@@ -19,7 +19,7 @@ export function PricingMatrix() {
   const grupos = [{ id: "transportista", planes: PLANES_TRANSPORTE }, { id: "dador", planes: PLANES_GENERADORES }];
   return <>
     <p className="mb-5 text-lg font-bold text-primary">0% de comisión por viaje coordinado. Sin corte de cola de intermediarios.</p>
-    <p className="mb-5 text-sm text-muted-foreground">Activación manual por WhatsApp y pago por transferencia. No hay cobros automáticos habilitados.</p>
+    <p className="mb-5 text-sm text-muted-foreground">Activación personalizada por WhatsApp y pago directo por transferencia, sin cobros automáticos ni sorpresas en tu tarjeta.</p>
     <p className="mb-5 text-xs text-muted-foreground">Precios en pesos chilenos (CLP). TroncalTrack se reserva el derecho de ajustar sus tarifas conforme a sus políticas internas de precios, informando oportunamente a los usuarios.</p>
     <Tabs defaultValue="transportista">
       <TabsList className="grid h-auto w-full grid-cols-2">

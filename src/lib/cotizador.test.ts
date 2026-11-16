@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cargasDelCorredor, estimarRuta } from "./cotizador";
+import { cargasDelCorredor, estimarRuta, tarifaReferencial } from "./cotizador";
 
 describe("estimarRuta", () => {
   it("estima Chillán – Santiago cerca de los 400 km por carretera", () => {
@@ -28,5 +28,23 @@ describe("cargasDelCorredor", () => {
       { origen: "Talca", destino: "Santiago" },
     ];
     expect(cargasDelCorredor(cargas, "Chillan", "Santiago")).toEqual({ ida: 1, retorno: 2 });
+  });
+});
+
+describe("tarifaReferencial", () => {
+  const cargas = [
+    { origen: "Chillán", destino: "Santiago", valorKm: 1000 },
+    { origen: "Chillán", destino: "Santiago", valorKm: 1200 },
+    { origen: "Talca", destino: "Temuco", valorKm: 2000 },
+    { origen: "Chillán", destino: "Santiago", valorKm: 0 },
+  ];
+  it("promedia solo las cargas del mismo tramo cuando existen", () => {
+    expect(tarifaReferencial(cargas, "chillan", "Santiago")).toEqual({ valorKm: 1100, muestras: 2, alcance: "tramo" });
+  });
+  it("usa el promedio general si el tramo no tiene cargas", () => {
+    expect(tarifaReferencial(cargas, "Arica", "Iquique")).toEqual({ valorKm: 1400, muestras: 3, alcance: "general" });
+  });
+  it("no inventa tarifa sin cargas publicadas", () => {
+    expect(tarifaReferencial([], "Chillán", "Santiago")).toBeNull();
   });
 });

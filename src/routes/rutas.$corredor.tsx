@@ -64,6 +64,15 @@ function CorredorPage() {
           rastreo GPS. No cobramos comisión por viaje ni hacemos subastas: el precio lo acuerdan ustedes.
         </p>
       </Seccion>
+      <Seccion titulo="Si tu viaje pasa por un puerto">
+        <p>
+          Revisa el enrolamiento y el agendamiento antes de salir en nuestra guía{" "}
+          <Link to="/guias/ingreso-puertos-enrolamiento-asat" className="font-semibold text-primary hover:underline">
+            Ingreso a Puertos: Enrolamiento y ASAT
+          </Link>
+          .
+        </p>
+      </Seccion>
       <Seccion titulo="Otros corredores">
         <ul className="space-y-1">
           {otros.map((o) => (

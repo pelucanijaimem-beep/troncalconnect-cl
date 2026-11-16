@@ -20,6 +20,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SeguridadRutaRouteImport } from './routes/seguridad-ruta'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
+import { Route as GuiasIngresoPuertosEnrolamientoAsatRouteImport } from './routes/guias.ingreso-puertos-enrolamiento-asat'
 import { Route as RutasCorredorRouteImport } from './routes/rutas.$corredor'
 import { Route as AdminUsuarioIdRouteImport } from './routes/admin_.usuario.$id'
 import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
@@ -83,6 +84,12 @@ const CargaIdRoute = CargaIdRouteImport.update({
   path: '/carga/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuiasIngresoPuertosEnrolamientoAsatRoute =
+  GuiasIngresoPuertosEnrolamientoAsatRouteImport.update({
+    id: '/guias/ingreso-puertos-enrolamiento-asat',
+    path: '/guias/ingreso-puertos-enrolamiento-asat',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RutasCorredorRoute = RutasCorredorRouteImport.update({
   id: '/rutas/$corredor',
   path: '/rutas/$corredor',
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/guias/ingreso-puertos-enrolamiento-asat': typeof GuiasIngresoPuertosEnrolamientoAsatRoute
   '/rutas/$corredor': typeof RutasCorredorRoute
   '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -152,6 +160,7 @@ export interface FileRoutesByTo {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/guias/ingreso-puertos-enrolamiento-asat': typeof GuiasIngresoPuertosEnrolamientoAsatRoute
   '/rutas/$corredor': typeof RutasCorredorRoute
   '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -173,6 +182,7 @@ export interface FileRoutesById {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/guias/ingreso-puertos-enrolamiento-asat': typeof GuiasIngresoPuertosEnrolamientoAsatRoute
   '/rutas/$corredor': typeof RutasCorredorRoute
   '/admin_/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/guias/ingreso-puertos-enrolamiento-asat'
     | '/rutas/$corredor'
     | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/guias/ingreso-puertos-enrolamiento-asat'
     | '/rutas/$corredor'
     | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
@@ -235,6 +247,7 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/guias/ingreso-puertos-enrolamiento-asat'
     | '/rutas/$corredor'
     | '/admin_/usuario/$id'
     | '/api/public/didit-webhook'
@@ -256,6 +269,7 @@ export interface RootRouteChildren {
   SeguridadRutaRoute: typeof SeguridadRutaRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
+  GuiasIngresoPuertosEnrolamientoAsatRoute: typeof GuiasIngresoPuertosEnrolamientoAsatRoute
   RutasCorredorRoute: typeof RutasCorredorRoute
   AdminUsuarioIdRoute: typeof AdminUsuarioIdRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
@@ -344,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CargaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guias/ingreso-puertos-enrolamiento-asat': {
+      id: '/guias/ingreso-puertos-enrolamiento-asat'
+      path: '/guias/ingreso-puertos-enrolamiento-asat'
+      fullPath: '/guias/ingreso-puertos-enrolamiento-asat'
+      preLoaderRoute: typeof GuiasIngresoPuertosEnrolamientoAsatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rutas/$corredor': {
       id: '/rutas/$corredor'
       path: '/rutas/$corredor'
@@ -408,6 +429,8 @@ const rootRouteChildren: RootRouteChildren = {
   SeguridadRutaRoute: SeguridadRutaRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
+  GuiasIngresoPuertosEnrolamientoAsatRoute:
+    GuiasIngresoPuertosEnrolamientoAsatRoute,
   RutasCorredorRoute: RutasCorredorRoute,
   AdminUsuarioIdRoute: AdminUsuarioIdRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,

@@ -3,12 +3,15 @@ import { Activity, MapPin, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const EQUIPOS = [
-  { label: "Rampla / Cortina (Van)", value: "Sider" },
-  { label: "Plataforma (Flatbed)", value: "Rampla Plana" },
-  { label: "Frigorífico (Reefer)", value: "Thermo / Frigo" },
-  { label: "Cama Baja (Heavy Haul)", value: "Cama Baja" },
+  { label: "Rampla / Sider", value: "Sider" },
+  { label: "Plataforma", value: "Rampla Plana" },
+  { label: "Frigorífico", value: "Thermo / Frigo" },
+  { label: "Cama Baja", value: "Cama Baja" },
   { label: "Tolva", value: "Tolva" },
-  { label: "Flete / Carga Parcial (LTL)", value: "Furgón" },
+  { label: "Estanque", value: "Estanque" },
+  { label: "Camión 3/4", value: "Camión 3/4" },
+  { label: "Furgón", value: "Furgón" },
+  { label: "Carga Parcial (LTL)", value: "Furgón" },
 ];
 
 function useContador(objetivo: number) {
@@ -43,6 +46,7 @@ export function LiveStatsBanner({
   const t = useContador(tarifaKm);
   const r = useContador(rutasActivas);
   const hayActividad = !(cargasHoy === 0 && rutasActivas === 0);
+  const [elegido, setElegido] = useState<string | null>(null);
 
   return (
     <section className="border-b border-border bg-surface">
@@ -99,12 +103,18 @@ export function LiveStatsBanner({
           </p>
           <div className="flex flex-wrap gap-2">
             {EQUIPOS.map((e) => {
-              const activo = equipo === e.value;
+              const activo =
+                equipo === e.value &&
+                (elegido ? elegido === e.label : EQUIPOS.find((x) => x.value === equipo)?.label === e.label);
               return (
                 <button
-                  key={e.value}
+                  key={e.label}
                   type="button"
-                  onClick={() => onEquipoChange(activo ? "todas" : e.value)}
+                  aria-pressed={activo}
+                  onClick={() => {
+                    setElegido(activo ? null : e.label);
+                    onEquipoChange(activo ? "todas" : e.value);
+                  }}
                   className={cn(
                     "cursor-pointer rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors",
                     activo

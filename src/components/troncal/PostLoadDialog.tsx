@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import type { BorradorFlete } from "@/lib/cotizador";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -58,10 +59,12 @@ export function PostLoadDialog({
   open,
   onOpenChange,
   pais = "CL",
+  inicial = null,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   pais?: PaisCodigo;
+  inicial?: BorradorFlete | null;
 }) {
   const [carroceria, setCarroceria] = useState("");
   const [tipoCarga, setTipoCarga] = useState<TipoCarga | "">("");
@@ -73,6 +76,11 @@ export function PostLoadDialog({
   const [destinoVal, setDestinoVal] = useState("");
   const [toneladasVal, setToneladasVal] = useState("");
   const [fecha, setFecha] = useState("");
+  useEffect(() => {
+    if (!open || !inicial) return;
+    setOrigenVal(inicial.origen);
+    setDestinoVal(inicial.destino);
+  }, [open, inicial]);
   const moneda = getPais(pais).moneda;
   const sesion = useSesion();
   const consultarConsumo = useServerFn(consultarConsumoPublicaciones);
@@ -369,6 +377,7 @@ export function PostLoadDialog({
             <Textarea
               id="l-detalle"
               name="detalle"
+              defaultValue={inicial?.carga ?? ""}
               placeholder="Tipo de producto, horarios, requisitos…"
             />
           </div>
