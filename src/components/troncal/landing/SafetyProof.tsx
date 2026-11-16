@@ -24,7 +24,7 @@ export function SafetyProof() {
               <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground">Ejemplo</span>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              TroncalCheck revisa los documentos y Didit confirma con biometría que el chofer es quien dice ser, antes
+              TroncalCheck revisa los documentos y una verificación biométrica confirma que el chofer es quien dice ser, antes
               de que abras el portón.
             </p>
             <div className="mt-4 rounded-xl border border-border bg-surface p-4">

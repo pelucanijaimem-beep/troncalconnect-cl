@@ -776,12 +776,7 @@ function Index() {
       <footer id="soporte" className="mt-10 border-t border-border bg-surface">
         <nav aria-labelledby="footer-corredores" className="mx-auto max-w-6xl border-b border-border px-4 py-6">
           <h2 id="footer-corredores" className="text-sm font-extrabold text-foreground">Corredores y Guías</h2>
-          <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-            <li>
-              <Link to="/guias/resolucion-144-sii-guia-despacho" className="font-medium text-muted-foreground hover:text-primary hover:underline">
-                Guía de Despacho y Resolución 144 SII
-              </Link>
-            </li>
+          <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
             {CORREDORES.map((c) => (
               <li key={c.slug}>
                 <Link to="/rutas/$corredor" params={{ corredor: c.slug }} className="font-medium text-muted-foreground hover:text-primary hover:underline">

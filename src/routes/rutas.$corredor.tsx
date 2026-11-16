@@ -73,11 +73,6 @@ function CorredorPage() {
               </Link>
             </li>
           ))}
-          <li>
-            <Link to="/guias/resolucion-144-sii-guia-despacho" className="font-semibold text-primary hover:underline">
-              Guía de Despacho y Resolución 144 SII
-            </Link>
-          </li>
         </ul>
       </Seccion>
     </GuiaLayout>
