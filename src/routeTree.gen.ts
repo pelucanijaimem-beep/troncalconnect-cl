@@ -20,6 +20,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SeguridadRutaRouteImport } from './routes/seguridad-ruta'
 import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as CargaIdRouteImport } from './routes/carga.$id'
+import { Route as GuiasResolucion144SiiGuiaDespachoRouteImport } from './routes/guias.resolucion-144-sii-guia-despacho'
+import { Route as RutasCorredorRouteImport } from './routes/rutas.$corredor'
 import { Route as AdminUsuarioIdRouteImport } from './routes/admin_.usuario.$id'
 import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
 import { Route as ApiPublicIdentidadRouteImport } from './routes/api/public/identidad'
@@ -82,6 +84,17 @@ const CargaIdRoute = CargaIdRouteImport.update({
   path: '/carga/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuiasResolucion144SiiGuiaDespachoRoute =
+  GuiasResolucion144SiiGuiaDespachoRouteImport.update({
+    id: '/guias/resolucion-144-sii-guia-despacho',
+    path: '/guias/resolucion-144-sii-guia-despacho',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RutasCorredorRoute = RutasCorredorRouteImport.update({
+  id: '/rutas/$corredor',
+  path: '/rutas/$corredor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsuarioIdRoute = AdminUsuarioIdRouteImport.update({
   id: '/admin_/usuario/$id',
   path: '/admin/usuario/$id',
@@ -126,6 +139,8 @@ export interface FileRoutesByFullPath {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/guias/resolucion-144-sii-guia-despacho': typeof GuiasResolucion144SiiGuiaDespachoRoute
+  '/rutas/$corredor': typeof RutasCorredorRoute
   '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
@@ -145,6 +160,8 @@ export interface FileRoutesByTo {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/guias/resolucion-144-sii-guia-despacho': typeof GuiasResolucion144SiiGuiaDespachoRoute
+  '/rutas/$corredor': typeof RutasCorredorRoute
   '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
@@ -165,6 +182,8 @@ export interface FileRoutesById {
   '/seguridad-ruta': typeof SeguridadRutaRoute
   '/terminos': typeof TerminosRoute
   '/carga/$id': typeof CargaIdRoute
+  '/guias/resolucion-144-sii-guia-despacho': typeof GuiasResolucion144SiiGuiaDespachoRoute
+  '/rutas/$corredor': typeof RutasCorredorRoute
   '/admin_/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
@@ -186,6 +205,8 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/guias/resolucion-144-sii-guia-despacho'
+    | '/rutas/$corredor'
     | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
@@ -205,6 +226,8 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/guias/resolucion-144-sii-guia-despacho'
+    | '/rutas/$corredor'
     | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
@@ -224,6 +247,8 @@ export interface FileRouteTypes {
     | '/seguridad-ruta'
     | '/terminos'
     | '/carga/$id'
+    | '/guias/resolucion-144-sii-guia-despacho'
+    | '/rutas/$corredor'
     | '/admin_/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
@@ -244,6 +269,8 @@ export interface RootRouteChildren {
   SeguridadRutaRoute: typeof SeguridadRutaRoute
   TerminosRoute: typeof TerminosRoute
   CargaIdRoute: typeof CargaIdRoute
+  GuiasResolucion144SiiGuiaDespachoRoute: typeof GuiasResolucion144SiiGuiaDespachoRoute
+  RutasCorredorRoute: typeof RutasCorredorRoute
   AdminUsuarioIdRoute: typeof AdminUsuarioIdRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
   ApiPublicIdentidadRoute: typeof ApiPublicIdentidadRoute
@@ -331,6 +358,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CargaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guias/resolucion-144-sii-guia-despacho': {
+      id: '/guias/resolucion-144-sii-guia-despacho'
+      path: '/guias/resolucion-144-sii-guia-despacho'
+      fullPath: '/guias/resolucion-144-sii-guia-despacho'
+      preLoaderRoute: typeof GuiasResolucion144SiiGuiaDespachoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rutas/$corredor': {
+      id: '/rutas/$corredor'
+      path: '/rutas/$corredor'
+      fullPath: '/rutas/$corredor'
+      preLoaderRoute: typeof RutasCorredorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/usuario/$id': {
       id: '/admin_/usuario/$id'
       path: '/admin/usuario/$id'
@@ -388,6 +429,9 @@ const rootRouteChildren: RootRouteChildren = {
   SeguridadRutaRoute: SeguridadRutaRoute,
   TerminosRoute: TerminosRoute,
   CargaIdRoute: CargaIdRoute,
+  GuiasResolucion144SiiGuiaDespachoRoute:
+    GuiasResolucion144SiiGuiaDespachoRoute,
+  RutasCorredorRoute: RutasCorredorRoute,
   AdminUsuarioIdRoute: AdminUsuarioIdRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,
   ApiPublicIdentidadRoute: ApiPublicIdentidadRoute,

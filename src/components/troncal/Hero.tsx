@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { Rocket, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function Hero({ onRegistro }: { onRegistro: () => void }) {
+export function Hero({ onRegistro, children }: { onRegistro: () => void; children?: ReactNode }) {
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-4xl px-4 py-14 text-center lg:py-20">
@@ -26,6 +27,7 @@ export function Hero({ onRegistro }: { onRegistro: () => void }) {
             </a>
           </Button>
         </div>
+        {children}
       </div>
     </section>
   );

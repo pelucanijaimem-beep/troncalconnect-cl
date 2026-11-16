@@ -9,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/troncal/Header";
 import { TopSupportBar } from "@/components/troncal/TopSupportBar";
 import { Hero } from "@/components/troncal/Hero";
+import { QuickQuote } from "@/components/troncal/landing/QuickQuote";
+import { ValueStrip } from "@/components/troncal/landing/ValueStrip";
+import { SafetyProof } from "@/components/troncal/landing/SafetyProof";
+import { Res144Block } from "@/components/troncal/landing/Res144Block";
+import { CORREDORES } from "@/lib/corredores";
 import { LiveStatsBanner } from "@/components/troncal/LiveStatsBanner";
 import { SolutionsSection } from "@/components/troncal/SolutionsSection";
 import { BenefitsGrid } from "@/components/troncal/BenefitsGrid";
@@ -447,7 +452,14 @@ function Index() {
       />
       <LaunchBanner />
 
-      <Hero onRegistro={() => abrirAuth("registro")} />
+      <Hero onRegistro={() => abrirAuth("registro")}>
+        <QuickQuote
+          cargas={CARGAS}
+          onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
+        />
+      </Hero>
+
+      <ValueStrip />
 
       <LiveStatsBanner
         cargasHoy={cargasHoy}
@@ -491,6 +503,10 @@ function Index() {
         onPublicarFlete={() => requiereSesion(() => setFleteOpen(true))}
         onRegistro={() => abrirAuth("registro")}
       />
+
+      <SafetyProof />
+
+      <Res144Block />
 
       <BenefitsGrid />
 
@@ -760,6 +776,23 @@ function Index() {
       )}
 
       <footer id="soporte" className="mt-10 border-t border-border bg-surface">
+        <nav aria-labelledby="footer-corredores" className="mx-auto max-w-6xl border-b border-border px-4 py-6">
+          <h2 id="footer-corredores" className="text-sm font-extrabold text-foreground">Corredores y Guías</h2>
+          <ul className="mt-3 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <li>
+              <Link to="/guias/resolucion-144-sii-guia-despacho" className="font-medium text-muted-foreground hover:text-primary hover:underline">
+                Guía de Despacho y Resolución 144 SII
+              </Link>
+            </li>
+            {CORREDORES.map((c) => (
+              <li key={c.slug}>
+                <Link to="/rutas/$corredor" params={{ corredor: c.slug }} className="font-medium text-muted-foreground hover:text-primary hover:underline">
+                  {c.titulo}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} TroncalTrack — Los Ángeles, Región del Biobío, Chile.</p>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">

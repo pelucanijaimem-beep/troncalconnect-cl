@@ -30,4 +30,5 @@ export function origenCercano(origen: string, referencia: ReturnType<typeof refe
   const ciudad = coordenadasCiudad(origen);
   if (ciudad && referencia.punto) return distanciaKm(referencia.punto, ciudad) <= 100;
   return referencia.fuente === "base" && normalizar(origen) === normalizar(referencia.ciudad);
-}
+}/** City names with known approximate centres (used by the public route estimator). */
+export const CIUDADES_CONOCIDAS = Object.keys(CIUDADES);
