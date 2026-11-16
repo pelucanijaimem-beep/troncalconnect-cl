@@ -12,7 +12,6 @@ import { Hero } from "@/components/troncal/Hero";
 import { QuickQuote } from "@/components/troncal/landing/QuickQuote";
 import { ValueStrip } from "@/components/troncal/landing/ValueStrip";
 import { SafetyProof } from "@/components/troncal/landing/SafetyProof";
-import { Res144Block } from "@/components/troncal/landing/Res144Block";
 import { CORREDORES } from "@/lib/corredores";
 import { LiveStatsBanner } from "@/components/troncal/LiveStatsBanner";
 import { SolutionsSection } from "@/components/troncal/SolutionsSection";
@@ -506,7 +505,6 @@ function Index() {
 
       <SafetyProof />
 
-      <Res144Block />
 
       <BenefitsGrid />
 
