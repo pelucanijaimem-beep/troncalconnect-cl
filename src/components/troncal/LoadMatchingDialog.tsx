@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Search, Volume2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,7 @@ import { buscarCargasCompatibles } from "@/lib/load-matching.functions";
 import type { CoincidenciaCarga } from "@/lib/load-matching";
 import type { Carga } from "@/lib/troncal-data";
 import { usaMiUbicacion, type Coordenadas } from "@/lib/load-search-location";
+import { RouteVoiceAssistant } from "./RouteVoiceAssistant";
 
 export function LoadMatchingDialog({ open, onOpenChange, cargas, renderCarga, ciudadBase }: { open: boolean; onOpenChange: (open: boolean) => void; cargas: Carga[]; renderCarga: (carga: Carga) => ReactNode; ciudadBase: string }) {
   const buscar = useServerFn(buscarCargasCompatibles);
@@ -37,7 +38,8 @@ export function LoadMatchingDialog({ open, onOpenChange, cargas, renderCarga, ci
     finally { setEnviando(false); }
   }
   return <Dialog open={open} onOpenChange={(value) => { if (!enviando) onOpenChange(value); }}><DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl"><DialogHeader><DialogTitle className="flex items-center gap-2"><Search className="h-5 w-5 text-primary" /> Asistente de cargas</DialogTitle><DialogDescription>Cargas disponibles en Chile</DialogDescription></DialogHeader>
-    <form onSubmit={(e) => void enviar(e)} className="space-y-3"><Label htmlFor="descripcion-camion">Tu pregunta o disponibilidad</Label><Textarea id="descripcion-camion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} minLength={3} maxLength={2000} required disabled={enviando} rows={3} placeholder="¿Hay cargas cerca de Concepción esta semana?" /><div className="flex flex-wrap items-center gap-2"><Button disabled={enviando || !cargas.length || descripcion.trim().length < 3} type="submit">{enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} {enviando ? "Buscando coincidencias…" : "Buscar cargas"}</Button><Button type="button" variant="outline" disabled aria-label="Escuchar respuesta — Próximamente"><Volume2 className="h-4 w-4" /> Escuchar respuesta · Próximamente</Button></div></form>
+    <RouteVoiceAssistant open={open} ids={cargas.map(c => c.id)} ciudadBase={ciudadBase} onCargas={ids => setResultados(ids.map(id => ({ id, motivo: "Carga encontrada durante la conversación" })))} />
+    <form onSubmit={(e) => void enviar(e)} className="space-y-3"><Label htmlFor="descripcion-camion">Tu pregunta o disponibilidad</Label><Textarea id="descripcion-camion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} minLength={3} maxLength={2000} required disabled={enviando} rows={3} placeholder="¿Hay cargas cerca de Concepción esta semana?" /><div className="flex flex-wrap items-center gap-2"><Button disabled={enviando || !cargas.length || descripcion.trim().length < 3} type="submit">{enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} {enviando ? "Buscando coincidencias…" : "Buscar cargas"}</Button></div></form>
     {ubicacionTexto && <p role="status" className="text-sm text-muted-foreground">{ubicacionTexto}</p>}
     {!cargas.length && <p className="text-sm text-muted-foreground">No hay cargas disponibles actualmente.</p>}
     {error && <p role="alert" className="break-words text-sm text-destructive">{error}</p>}

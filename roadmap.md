@@ -1,4 +1,7 @@
 # Tareas
+- [x] Integrar conversación por voz autenticada para cargas compatibles y reportes de ruta; 19 pruebas de compatibilidad/proximidad aprobadas y acceso sin sesión rechazado; controles verificados aislados en escritorio/móvil, sin publicar.
+- [ ] Verificar conversación audible, cargas y reportes con cuenta de conductor; bloqueado: no hay sesión autorizada y falló creación de conductor temporal. Iniciar sesión en Vista Previa; no considerar verificada la conversación todavía.
+- [ ] Conectar incidentes externos de Waze; bloqueado: exige autorización de socio y polígonos/datos aprobados. No prometer acceso a toda su información.
 - [x] Incorporar ficha administrativa adjunta, enlazada desde los usuarios del panel; acceso restringido comprobado en navegador sin errores, 5 pruebas de RUT/estado aprobadas, compilación correcta; sin publicar.
 - [ ] Comprobar ficha y revisión documental con sesión administrativa; bloqueado: no existe cuenta coincidente y falló la creación de usuario temporal; iniciar sesión como administrador en Vista Previa.
 - [x] Añadir Centro de Control y Seguridad en Ruta independiente, con mapa y controles demostrativos y acceso discreto; 4 pruebas aprobadas, PIN origen/destino, enlace de muestra de un uso en navegador y SOS sin envío real comprobados. Escritorio y móviles sin desbordamiento ni errores; sin publicar ni cambiar inicio, precios o funciones existentes, salvo enlace de navegación solicitado.
