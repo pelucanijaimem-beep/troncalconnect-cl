@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useCuposFundador } from "@/lib/use-fundadores";
 import { calcularFlota, calcularDador, formatoCLP, PLANES_GENERADORES, PLANES_TRANSPORTE, WHATSAPP_PLANES, precioFundador } from "@/lib/pricing";
 
 
 
 export function PricingMatrix() {
-  const { quedan, total } = useCuposFundador();
   const [camiones, setCamiones] = useState(5);
   const [publicaciones, setPublicaciones] = useState(16);
   const flota = calcularFlota(camiones);
@@ -45,6 +43,6 @@ export function PricingMatrix() {
         </div>
       </TabsContent>)}
     </Tabs>
-    <div className="mt-6 flex gap-3 border-l-4 border-primary bg-primary/5 p-4"><Crown className="h-5 w-5 shrink-0 text-primary" /><div><p className="font-bold text-foreground">Empresa Fundadora · 20% de descuento de por vida</p><p className="mt-1 text-sm text-muted-foreground">Se mantiene sobre el nuevo precio de tu tramo y tus unidades reales. {quedan !== null ? `Quedan ${quedan} de ${total} cupos.` : "Consulta disponibilidad."}</p></div></div>
+    <div className="mt-6 flex gap-3 border-l-4 border-primary bg-primary/5 p-4"><Crown className="h-5 w-5 shrink-0 text-primary" /><div><p className="font-bold text-foreground">Empresa Fundadora · 20% de descuento de por vida</p><p className="mt-1 text-sm text-muted-foreground">Cupos limitados de lanzamiento · Se mantiene sobre el nuevo precio de tu tramo y tus unidades reales.</p></div></div>
   </>;
 }
