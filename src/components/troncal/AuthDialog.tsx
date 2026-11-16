@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoleSwitcher, type Rol } from "./RoleSwitcher";
 import { GoogleIcon } from "./GoogleIcon";
+import { HumanCheck } from "./HumanCheck";
+import { verificarHumano } from "@/lib/humano.functions";
 import { lovable } from "@/integrations/lovable/index";
 import {
   iniciarSesionRut,
@@ -43,6 +45,10 @@ export function AuthDialog({
   const [verPassRegistro, setVerPassRegistro] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [enviandoGoogle, setEnviandoGoogle] = useState(false);
+  const [captchaRegistro, setCaptchaRegistro] = useState("");
+  const [captchaRecuperar, setCaptchaRecuperar] = useState("");
+  // Cada token sirve una sola vez: tras cada intento se renueva la casilla.
+  const [intentoCaptcha, setIntentoCaptcha] = useState(0);
 
   const entrarConGoogle = async () => {
     setEnviandoGoogle(true);
@@ -73,6 +79,13 @@ export function AuthDialog({
     e.preventDefault();
     const email = String(new FormData(e.currentTarget).get("email") ?? "");
     setEnviando(true);
+    const verificacion = await verificarHumano({ data: { token: captchaRecuperar } });
+    setIntentoCaptcha((n) => n + 1);
+    if (!verificacion.ok) {
+      setEnviando(false);
+      toast.error("No pudimos verificar el formulario", { description: verificacion.error });
+      return;
+    }
     const error = await recuperarPassword(email);
     setEnviando(false);
     if (error) {
@@ -100,6 +113,15 @@ export function AuthDialog({
     const rut = String(datos.get("rut") ?? "");
 
     setEnviando(true);
+    if (tipo === "registro") {
+      const verificacion = await verificarHumano({ data: { token: captchaRegistro } });
+      setIntentoCaptcha((n) => n + 1);
+      if (!verificacion.ok) {
+        setEnviando(false);
+        toast.error("No pudimos verificar el formulario", { description: verificacion.error });
+        return;
+      }
+    }
     const error =
       tipo === "registro"
         ? await registrarUsuario({ nombre, email, password, rol: rolCuenta, telefono, rut })
@@ -144,6 +166,7 @@ export function AuthDialog({
                   required
                 />
               </div>
+              <HumanCheck key={`recuperar-${intentoCaptcha}`} onToken={setCaptchaRecuperar} />
               <Button type="submit" className="w-full" disabled={enviando}>
                 Enviar enlace de recuperación
               </Button>
@@ -309,6 +332,7 @@ export function AuthDialog({
                       de TroncalTrack.cl
                     </Label>
                   </div>
+                  <HumanCheck key={`registro-${intentoCaptcha}`} onToken={setCaptchaRegistro} />
                   <Button type="submit" className="w-full" disabled={enviando}>
                     Regístrate
                   </Button>
