@@ -85,6 +85,7 @@ type CargaFila = {
   empresa: string;
   precio: number;
   created_at: string;
+  user_id: string;
 };
 
 type Reporte = {
@@ -182,7 +183,7 @@ function AdminPage() {
       supabase.rpc("perfiles_admin"),
       supabase
         .from("cargas")
-        .select("id, titulo, origen, destino, empresa, precio, created_at")
+        .select("id, titulo, origen, destino, empresa, precio, created_at, user_id")
         .order("created_at", { ascending: false }),
       supabase
         .from("reportes")
@@ -406,6 +407,10 @@ function AdminPage() {
   const perfilesFiltrados = perfiles.filter((p) =>
     `${p.nombre} ${p.email}`.toLowerCase().includes(busqueda.trim().toLowerCase()),
   );
+  const cargasPorUsuario = cargas.reduce<Record<string, number>>((acc, c) => {
+    acc[c.user_id] = (acc[c.user_id] ?? 0) + 1;
+    return acc;
+  }, {});
   const textoCargas = busquedaCargas.trim().toLowerCase();
   const cargasFiltradas = textoCargas
     ? cargas.filter((c) =>
@@ -589,6 +594,14 @@ function AdminPage() {
                     <Link to="/admin/usuario/$id" params={{ id: p.id }} className="text-primary hover:underline">
                       {p.nombre}
                     </Link>{" "}
+                    {(cargasPorUsuario[p.id] ?? 0) > 0 && (
+                      <span
+                        className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary"
+                        title="Cargas publicadas por este usuario"
+                      >
+                        {cargasPorUsuario[p.id]} carga{cargasPorUsuario[p.id] === 1 ? "" : "s"}
+                      </span>
+                    )}{" "}
                     {p.verificado && <span className="text-xs text-trust">· Verificado</span>}
                     {p.bloqueado && (
                       <span className="text-xs text-destructive"> · Suspendido</span>

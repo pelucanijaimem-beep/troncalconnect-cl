@@ -31,6 +31,7 @@ import {
 import { invitarACarga, postulantesDeCarga } from "@/lib/use-cargas";
 import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
 import { VerificationBadge } from "./VerificationBadge";
+import { AlertasRutaPanel } from "./AlertasRutaPanel";
 import { getVerificacionDe, useInsignias, useVerificaciones } from "@/lib/use-verificacion";
 import { useEffect } from "react";
 import { Flame, Trees } from "lucide-react";
@@ -216,6 +217,8 @@ export function LoadDetailsDialog({
               <PublisherBadge tipo={carga.tipoPublicador} />
               <RouteRateInfo origen={carga.origen} destino={carga.destino} pais={carga.pais} />
             </div>
+
+            <AlertasRutaPanel origen={carga.origen} destino={carga.destino} />
 
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg border border-border bg-surface p-3">

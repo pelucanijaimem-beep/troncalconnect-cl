@@ -47,6 +47,36 @@ export type Database = {
         }
         Relationships: []
       }
+      alertas_ruta: {
+        Row: {
+          created_at: string
+          destino: string
+          detalle: string
+          id: string
+          origen: string
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destino?: string
+          detalle?: string
+          id?: string
+          origen?: string
+          tipo?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destino?: string
+          detalle?: string
+          id?: string
+          origen?: string
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       calificaciones: {
         Row: {
           autor_id: string
