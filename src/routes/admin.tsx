@@ -162,6 +162,7 @@ function AdminPage() {
   const [perfiles, setPerfiles] = useState<Perfil[]>([]);
   const [cargas, setCargas] = useState<CargaFila[]>([]);
   const [busqueda, setBusqueda] = useState("");
+  const [busquedaCargas, setBusquedaCargas] = useState("");
   const [notas, setNotas] = useState<Record<string, string>>({});
   const [trabajando, setTrabajando] = useState(false);
   const [reportes, setReportes] = useState<Reporte[]>([]);
@@ -405,6 +406,12 @@ function AdminPage() {
   const perfilesFiltrados = perfiles.filter((p) =>
     `${p.nombre} ${p.email}`.toLowerCase().includes(busqueda.trim().toLowerCase()),
   );
+  const textoCargas = busquedaCargas.trim().toLowerCase();
+  const cargasFiltradas = textoCargas
+    ? cargas.filter((c) =>
+        `${c.titulo} ${c.origen} ${c.destino} ${c.empresa}`.toLowerCase().includes(textoCargas),
+      )
+    : cargas;
 
   return (
     <div className="min-h-screen bg-background">
@@ -616,20 +623,30 @@ function AdminPage() {
 
         <Seccion
           titulo={`Gestión de Cargas (${cargas.length})`}
-          descripcion="Elimina publicaciones falsas, duplicadas o vencidas."
+          descripcion="Revisa las publicaciones del tablero y elimina las falsas, duplicadas o vencidas."
         >
+          <Input
+            className="mb-3 max-w-sm"
+            placeholder="Buscar por título, ruta o empresa"
+            value={busquedaCargas}
+            onChange={(e) => setBusquedaCargas(e.target.value)}
+          />
           {cargas.length === 0 && (
             <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <PackageX className="h-4 w-4" /> No hay cargas publicadas.
             </p>
           )}
           <div className="divide-y divide-border">
-            {cargas.map((c) => (
+            {cargasFiltradas.map((c) => (
               <div key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <div>
                   <p className="font-semibold text-foreground">{c.titulo}</p>
                   <p className="text-xs text-muted-foreground">
                     {c.origen} → {c.destino} · {c.empresa}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ${Number(c.precio).toLocaleString("es-CL")} · Publicada el{" "}
+                    {new Date(c.created_at).toLocaleString("es-CL")}
                   </p>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => void eliminarCarga(c)}>
@@ -637,6 +654,9 @@ function AdminPage() {
                 </Button>
               </div>
             ))}
+            {cargas.length > 0 && cargasFiltradas.length === 0 && (
+              <p className="py-3 text-sm text-muted-foreground">Sin resultados.</p>
+            )}
           </div>
         </Seccion>
 
