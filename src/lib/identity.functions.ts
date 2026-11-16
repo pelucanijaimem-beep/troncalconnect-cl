@@ -20,7 +20,7 @@ export const iniciarVerificacionIdentidad = createServerFn({ method: "POST" })
     try {
     const response = await fetch("https://verification.didit.me/v3/session/", {
       method: "POST", headers: { "Content-Type": "application/json", "x-api-key": key },
-      body: JSON.stringify({ workflow_id: workflow, vendor_data: context.userId, language: "es", callback: "https://troncalconnect-cl.lovable.app/?verificacion=identidad" }),
+      body: JSON.stringify({ workflow_id: workflow, vendor_data: context.userId, language: "es", callback: "https://troncaltrack.com/?verificacion=identidad" }),
       signal: AbortSignal.timeout(12000),
     });
     if (!response.ok) {
