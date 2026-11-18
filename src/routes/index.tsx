@@ -844,6 +844,12 @@ function Index() {
             >
               Política de Privacidad
             </Link>
+            <Link
+              to="/guia"
+              className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"
+            >
+              Guía rápida
+            </Link>
             <a
               href="#faq"
               className="cursor-pointer font-medium text-foreground hover:text-primary hover:underline"

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as EliminarCuentaRouteImport } from './routes/eliminar-cuenta'
+import { Route as GuiaRouteImport } from './routes/guia'
 import { Route as MembresiaRouteImport } from './routes/membresia'
 import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
@@ -43,6 +44,11 @@ const AdminRoute = AdminRouteImport.update({
 const EliminarCuentaRoute = EliminarCuentaRouteImport.update({
   id: '/eliminar-cuenta',
   path: '/eliminar-cuenta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaRoute = GuiaRouteImport.update({
+  id: '/guia',
+  path: '/guia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembresiaRoute = MembresiaRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/eliminar-cuenta': typeof EliminarCuentaRoute
+  '/guia': typeof GuiaRoute
   '/membresia': typeof MembresiaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/eliminar-cuenta': typeof EliminarCuentaRoute
+  '/guia': typeof GuiaRoute
   '/membresia': typeof MembresiaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/eliminar-cuenta': typeof EliminarCuentaRoute
+  '/guia': typeof GuiaRoute
   '/membresia': typeof MembresiaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/eliminar-cuenta'
+    | '/guia'
     | '/membresia'
     | '/planes'
     | '/privacidad'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/eliminar-cuenta'
+    | '/guia'
     | '/membresia'
     | '/planes'
     | '/privacidad'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/eliminar-cuenta'
+    | '/guia'
     | '/membresia'
     | '/planes'
     | '/privacidad'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   EliminarCuentaRoute: typeof EliminarCuentaRoute
+  GuiaRoute: typeof GuiaRoute
   MembresiaRoute: typeof MembresiaRoute
   PlanesRoute: typeof PlanesRoute
   PrivacidadRoute: typeof PrivacidadRoute
@@ -313,6 +326,13 @@ declare module '@tanstack/react-router' {
       path: '/eliminar-cuenta'
       fullPath: '/eliminar-cuenta'
       preLoaderRoute: typeof EliminarCuentaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia': {
+      id: '/guia'
+      path: '/guia'
+      fullPath: '/guia'
+      preLoaderRoute: typeof GuiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/membresia': {
@@ -441,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   EliminarCuentaRoute: EliminarCuentaRoute,
+  GuiaRoute: GuiaRoute,
   MembresiaRoute: MembresiaRoute,
   PlanesRoute: PlanesRoute,
   PrivacidadRoute: PrivacidadRoute,
