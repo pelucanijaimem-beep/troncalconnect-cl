@@ -15,7 +15,6 @@ import { Route as EliminarCuentaRouteImport } from './routes/eliminar-cuenta'
 import { Route as MembresiaRouteImport } from './routes/membresia'
 import { Route as PlanesRouteImport } from './routes/planes'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
-import { Route as PruebaTemporalComponentesRouteImport } from './routes/prueba-temporal-componentes'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SeguridadRutaRouteImport } from './routes/seguridad-ruta'
@@ -60,12 +59,6 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
   path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PruebaTemporalComponentesRoute =
-  PruebaTemporalComponentesRouteImport.update({
-    id: '/prueba-temporal-componentes',
-    path: '/prueba-temporal-componentes',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const RegistroRoute = RegistroRouteImport.update({
   id: '/registro',
   path: '/registro',
@@ -141,7 +134,6 @@ export interface FileRoutesByFullPath {
   '/membresia': typeof MembresiaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
-  '/prueba-temporal-componentes': typeof PruebaTemporalComponentesRoute
   '/registro': typeof RegistroRoute
   '/reset-password': typeof ResetPasswordRoute
   '/seguridad-ruta': typeof SeguridadRutaRoute
@@ -163,7 +155,6 @@ export interface FileRoutesByTo {
   '/membresia': typeof MembresiaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
-  '/prueba-temporal-componentes': typeof PruebaTemporalComponentesRoute
   '/registro': typeof RegistroRoute
   '/reset-password': typeof ResetPasswordRoute
   '/seguridad-ruta': typeof SeguridadRutaRoute
@@ -186,7 +177,6 @@ export interface FileRoutesById {
   '/membresia': typeof MembresiaRoute
   '/planes': typeof PlanesRoute
   '/privacidad': typeof PrivacidadRoute
-  '/prueba-temporal-componentes': typeof PruebaTemporalComponentesRoute
   '/registro': typeof RegistroRoute
   '/reset-password': typeof ResetPasswordRoute
   '/seguridad-ruta': typeof SeguridadRutaRoute
@@ -210,7 +200,6 @@ export interface FileRouteTypes {
     | '/membresia'
     | '/planes'
     | '/privacidad'
-    | '/prueba-temporal-componentes'
     | '/registro'
     | '/reset-password'
     | '/seguridad-ruta'
@@ -232,7 +221,6 @@ export interface FileRouteTypes {
     | '/membresia'
     | '/planes'
     | '/privacidad'
-    | '/prueba-temporal-componentes'
     | '/registro'
     | '/reset-password'
     | '/seguridad-ruta'
@@ -254,7 +242,6 @@ export interface FileRouteTypes {
     | '/membresia'
     | '/planes'
     | '/privacidad'
-    | '/prueba-temporal-componentes'
     | '/registro'
     | '/reset-password'
     | '/seguridad-ruta'
@@ -277,7 +264,6 @@ export interface RootRouteChildren {
   MembresiaRoute: typeof MembresiaRoute
   PlanesRoute: typeof PlanesRoute
   PrivacidadRoute: typeof PrivacidadRoute
-  PruebaTemporalComponentesRoute: typeof PruebaTemporalComponentesRoute
   RegistroRoute: typeof RegistroRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SeguridadRutaRoute: typeof SeguridadRutaRoute
@@ -335,13 +321,6 @@ declare module '@tanstack/react-router' {
       path: '/privacidad'
       fullPath: '/privacidad'
       preLoaderRoute: typeof PrivacidadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/prueba-temporal-componentes': {
-      id: '/prueba-temporal-componentes'
-      path: '/prueba-temporal-componentes'
-      fullPath: '/prueba-temporal-componentes'
-      preLoaderRoute: typeof PruebaTemporalComponentesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registro': {
@@ -445,7 +424,6 @@ const rootRouteChildren: RootRouteChildren = {
   MembresiaRoute: MembresiaRoute,
   PlanesRoute: PlanesRoute,
   PrivacidadRoute: PrivacidadRoute,
-  PruebaTemporalComponentesRoute: PruebaTemporalComponentesRoute,
   RegistroRoute: RegistroRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SeguridadRutaRoute: SeguridadRutaRoute,
