@@ -44,9 +44,9 @@ const PASOS = [
     imagen: "/guia/paso-6-avisos.png",
   },
   {
-    titulo: "Cierra la entrega con Código PIN y firma.",
+    titulo: "Cierra la entrega con código y RUT del receptor.",
     texto:
-      "Al llegar a destino, el receptor ingresa el código PIN de 6 dígitos y firma en pantalla junto a la foto de la guía. Tu entrega queda respaldada para cobrar sin excusas.",
+      "Al llegar a destino, el receptor te da el código de 6 dígitos que le envió la empresa. Lo ingresas junto a su nombre y RUT, sin subir fotos, y la entrega queda registrada con fecha, hora y ubicación.",
     imagen: "/guia/paso-7-entrega.png",
   },
   {

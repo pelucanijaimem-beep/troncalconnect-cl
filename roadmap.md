@@ -53,3 +53,6 @@
 - [x] Refinar portada: badge Ruta 5, nuevo titular, asistente IA de rutas y tarifas con datos guardados al registrarse/publicar, filtros de equipo en español, sin precios duplicados, guía de puertos en el pie. Llamada real de IA probada; escritorio/móvil y enlaces sin errores.
 - [ ] Probar el asistente dentro de la portada con sesión real; bloqueado: no hay cuenta coincidente y falló la creación de usuario temporal.
 - [ ] Resolución 144 del SII: omitida por instrucción previa del usuario; esperar autorización.
+
+- [x] Cierre de entrega con código de 6 dígitos + nombre y RUT del receptor (sin fotos), código visible solo para la empresa, calificación mutua al confirmar.
+- [ ] Probar el cierre con código en la app con dos sesiones reales (empresa y transportista); reglas verificadas en la base de datos con datos temporales revertidos.

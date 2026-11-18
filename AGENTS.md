@@ -32,8 +32,9 @@
 - Voice availability is gated by an estado_acceso_ia row for voz_ruta (UI shows Próximamente); deleting the row enables it without code changes.
 - The home route assistant computes distance, tolls and $/km from real loads; its authenticated AI call only phrases those numbers and pauses on 402/403, so visitors spend no credits.
 - Signup and password-recovery forms require a server-verified anti-bot token once its secret is configured (open until then); RUT login keeps its own attempt limit instead, so legitimate logins never depend on an outside check.
-- Load cards keep only Ver Detalles/Postular as visible actions and move contact, report and block into the overflow menu; Iniciar Viaje appears only after the trucker has applied, because applications have no accepted state yet.
-- Load-card margin and Ruta 5 tolls come from the shared rentabilidad helper; counteroffers are prefixed text in the application message (no schema change).
-- Document expiry autofill runs in an authenticated server function that never stores the file, keeps only validated dates/plates, fills the form for manual review and pauses on 402/403 like other AI features.
-- Trip ratings are written only via RPCs on owner-confirmed deliveries (one per party); reputation keys on user id to prevent forgery.
-- Push alerts: a cargas insert trigger queues a one-time token and pg_net calls the public push route, which sends in-house Web Push only for unused tokens.
+- Load cards show only Ver Detalles/Postular; contact/report/block live in the overflow menu. Iniciar Viaje needs a prior application (no accepted state exists).
+- Load-card margin/Ruta 5 tolls use the shared rentabilidad helper; counteroffers are prefixed application text (no schema change).
+- Document expiry autofill: authenticated server function, never stores the file, keeps validated dates/plates for manual review, pauses on 402/403.
+- Trip ratings are RPC-only on confirmed deliveries (one per party), keyed on user id to prevent forgery.
+- App-started trips close only via the delivery-code RPC (owner-only code, receiver name+RUT, 5 tries); viajes_entrega has no direct grants and no photos are kept, protecting the code and third-party documents.
+- Push alerts: a cargas insert trigger queues a one-time token; pg_net calls the public push route, which sends Web Push only for unused tokens.

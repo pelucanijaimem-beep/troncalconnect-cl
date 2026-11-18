@@ -90,7 +90,7 @@ function PrivacidadPage() {
             </li>
             <li>
               <strong className="text-foreground">Datos operacionales:</strong> cargas publicadas,
-              postulaciones, calificaciones recibidas y emitidas, comprobantes de entrega (POD) y
+              postulaciones, calificaciones recibidas y emitidas, comprobantes de entrega (código de verificación, nombre y RUT de quien recibe, fecha, hora y ubicación) y
               preferencias de alertas de ruta.
             </li>
             <li>

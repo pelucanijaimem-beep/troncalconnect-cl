@@ -2,25 +2,15 @@ import { useEffect, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-export type Pod = {
-  /** Imagen de la guía de despacho firmada en base64. */
-  imagen: string;
-  nombreArchivo: string;
-  fecha: string;
-  observacion: string;
-};
-
 type Datos = {
   /** IDs de cargas guardadas en favoritos. */
   favoritos: string[];
   /** Nombres de empresas bloqueadas (en minúsculas). */
   bloqueadas: string[];
-  /** Guías de despacho firmadas por carga. */
-  pods: Record<string, Pod>;
 };
 
 const KEY = "troncaltrack.tablero";
-const VACIO: Datos = { favoritos: [], bloqueadas: [], pods: {} };
+const VACIO: Datos = { favoritos: [], bloqueadas: [] };
 
 let datos: Datos = VACIO;
 let cargado = false;
@@ -32,12 +22,13 @@ function cargar() {
   try {
     const raw = window.localStorage.getItem(KEY);
     if (raw) {
-      const p = JSON.parse(raw) as Partial<Datos>;
+      const p = JSON.parse(raw) as Partial<Datos> & { pods?: unknown };
       datos = {
         favoritos: p.favoritos ?? [],
         bloqueadas: p.bloqueadas ?? [],
-        pods: p.pods ?? {},
       };
+      // Privacidad: se borran fotos de guías guardadas por versiones anteriores.
+      if (p.pods !== undefined) window.localStorage.setItem(KEY, JSON.stringify(datos));
     }
   } catch {
     datos = VACIO;
@@ -151,11 +142,6 @@ export function desbloquearEmpresa(empresa: string) {
 
 export function estaBloqueada(bloqueadas: string[], empresa: string) {
   return bloqueadas.includes(clave(empresa));
-}
-
-export function guardarPod(cargaId: string, pod: Pod) {
-  cargar();
-  guardar({ ...datos, pods: { ...datos.pods, [cargaId]: pod } });
 }
 
 export function useTableroPrefs() {

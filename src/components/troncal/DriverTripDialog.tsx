@@ -94,7 +94,7 @@ export function DriverTripDialog({
         {onCompartirUbicacion && (
           <div
             className={`rounded-xl border p-4 ${
-              compartiendo ? "border-success/40 bg-success/10" : "border-border bg-surface"
+              compartiendo ? "border-primary/40 bg-primary/5" : "border-border bg-surface"
             }`}
           >
             <p className="flex items-center gap-2 text-sm font-bold text-foreground">
@@ -102,7 +102,7 @@ export function DriverTripDialog({
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               Es opcional. Si lo activas, solo la empresa dueña de esta carga verá tu ubicación
-              aproximada, y se apaga sola al marcar la carga como entregada.
+              aproximada, y se apaga sola al confirmar la entrega.
             </p>
             {errorUbicacion && (
               <p className="mt-2 text-xs font-semibold text-destructive">{errorUbicacion}</p>
@@ -116,7 +116,7 @@ export function DriverTripDialog({
               {compartiendo ? "Dejar de compartir mi ubicación" : "Compartir mi ubicación"}
             </Button>
             {compartiendo && (
-              <p className="mt-2 text-center text-xs font-semibold text-success">
+              <p className="mt-2 text-center text-xs font-semibold text-foreground">
                 Compartiendo tu ubicación con la empresa de esta carga.
               </p>
             )}
@@ -130,10 +130,10 @@ export function DriverTripDialog({
           disabled={!enRuta}
           onClick={() => onFinalizar(carga)}
         >
-          <CheckCircle2 className="h-5 w-5" /> Carga Entregada
+          <CheckCircle2 className="h-5 w-5" /> Confirmar Entrega en Destino
         </Button>
         <p className="text-center text-xs text-muted-foreground">
-          Al presionar “Carga Entregada” se apaga el GPS y se elimina tu ubicación en vivo.
+          Pide al receptor el código de 6 dígitos. Al confirmar se apaga el GPS y se elimina tu ubicación en vivo.
         </p>
       </DialogContent>
     </Dialog>

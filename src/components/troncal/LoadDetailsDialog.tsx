@@ -52,6 +52,8 @@ import {
   type CalificacionPendiente,
 } from "@/lib/use-calificaciones";
 import { RatingSummary } from "./StarRating";
+import { CodigoEntregaPanel } from "./CodigoEntregaPanel";
+import { useCodigoEntrega } from "@/lib/use-entrega-codigo";
 import { ReviewsList } from "./ReviewsList";
 
 /** Reputación y últimas reseñas de un usuario, plegables para no alargar el detalle. */
@@ -88,6 +90,7 @@ function CierreViaje({
   postulantes: { id: string; nombre: string }[];
   onConfirmada?: ((p: CalificacionPendiente) => void) | undefined;
 }) {
+  const entrega = useCodigoEntrega(carga.id);
   const [confirmada, setConfirmada] = useState<string | null | undefined>(undefined);
   const [elegido, setElegido] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -111,13 +114,20 @@ function CierreViaje({
     if (!elegido && postulantes.length === 1) setElegido(postulantes[0]!.id);
   }, [postulantes, elegido]);
 
+  if (entrega.datos === undefined) return null;
+
+  // Viaje iniciado en la app: se cierra solo con el código que el receptor da al transportista.
+  if (entrega.datos) {
+    return <CodigoEntregaPanel datos={entrega.datos} onRegenerar={entrega.regenerar} />;
+  }
+
   if (confirmada === undefined || postulantes.length === 0) return null;
 
   if (confirmada) {
     const nombre = postulantes.find((p) => p.id === confirmada)?.nombre ?? "el transportista";
     return (
-      <p className="flex items-center gap-1.5 rounded-lg bg-success-soft p-2 text-xs font-semibold text-success">
-        <CheckCircle2 className="h-4 w-4" /> Entregado y Conforme con {nombre}.
+      <p className="flex items-center gap-1.5 rounded-lg border border-border bg-card p-2 text-xs font-semibold text-foreground">
+        <CheckCircle2 className="h-4 w-4 text-primary" /> Entregado y Conforme con {nombre}.
       </p>
     );
   }

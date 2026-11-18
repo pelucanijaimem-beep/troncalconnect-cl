@@ -43,9 +43,10 @@ import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
 import { PendingRatingsCard } from "@/components/troncal/PendingRatingsCard";
 import { PushAlertBanner } from "@/components/troncal/PushAlertBanner";
-import { useCalificacionesPendientes } from "@/lib/use-calificaciones";
+import { refrescarCalificaciones, useCalificacionesPendientes } from "@/lib/use-calificaciones";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
-import { PodDialog } from "@/components/troncal/PodDialog";
+import { EntregaCodigoDialog } from "@/components/troncal/EntregaCodigoDialog";
+import { iniciarViajeEntrega } from "@/lib/use-entrega-codigo";
 import {
   desbloquearEmpresa,
   estaBloqueada,
@@ -398,7 +399,13 @@ function Index() {
 
 
 
-  const iniciar = (c: Carga) => {
+  const iniciar = async (c: Carga) => {
+    // El servidor deja el viaje "En Ruta" y genera el código de entrega para la empresa.
+    const error = await iniciarViajeEntrega(c.id);
+    if (error) {
+      toast.error("No pudimos iniciar el viaje", { description: error });
+      return;
+    }
     iniciarViaje(c.id);
     setViajeActivo(c);
     // Sugerencias de retorno vacío según el destino del viaje en curso.
@@ -420,13 +427,14 @@ function Index() {
     void avisarEstadoCarga({ data: { cargaId: c.id, estado: "entregada" } }).catch(() => {
       /* el aviso es complementario: la entrega ya quedó registrada */
     });
-    toast.success("Carga entregada", {
-      description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
-    });
-    // La calificación se habilita solo cuando la empresa confirma "Entregado y Conforme".
+    // Entrega confirmada con código: el transportista ya puede calificar a la empresa.
+    void refrescarCalificaciones();
     if (esCamionero) {
-      toast.info("Calificación pendiente de confirmación", {
-        description: "Podrás calificar a la empresa cuando confirme la entrega como conforme.",
+      setEvaluacion({
+        cargaId: c.id,
+        tipo: "a_empresa",
+        contraparte: c.empresa,
+        ruta: `${c.origen} → ${c.destino}`,
       });
       return;
     }
@@ -667,7 +675,7 @@ function Index() {
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
           onConfigurarRetorno={() => setAlertasOpen(true)}
         />
-        {sesion.rol === "camionero" && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} ciudadBase={alertas.ciudadBase} cargas={CARGAS.filter(c => c.pais === "CL" && c.estado === "activa" && !estaBloqueada(prefs.bloqueadas, c.empresa))} renderCarga={c => <LoadCard carga={c} rol="camionero" viaje={getViaje(c.id)} onDetalles={c => { setMatchingOpen(false); setDetalle(c); }} onContactar={c => { setMatchingOpen(false); contactarCarga(c); }} onIniciar={c => { setMatchingOpen(false); iniciar(c); }} onFinalizar={c => { setMatchingOpen(false); setPodCarga(c); }} onRastrear={c => { setMatchingOpen(false); rastrear(c); }} onVerViaje={c => { setMatchingOpen(false); setViajeActivo(c); }} onPostular={c => { setMatchingOpen(false); postular(c); }} yaPostulada={postuladas.includes(c.id)} accesoContacto={accesoContacto} />} />}
+        {sesion.rol === "camionero" && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} ciudadBase={alertas.ciudadBase} cargas={CARGAS.filter(c => c.pais === "CL" && c.estado === "activa" && !estaBloqueada(prefs.bloqueadas, c.empresa))} renderCarga={c => <LoadCard carga={c} rol="camionero" viaje={getViaje(c.id)} onDetalles={c => { setMatchingOpen(false); setDetalle(c); }} onContactar={c => { setMatchingOpen(false); contactarCarga(c); }} onIniciar={c => { setMatchingOpen(false); void iniciar(c); }} onFinalizar={c => { setMatchingOpen(false); setPodCarga(c); }} onRastrear={c => { setMatchingOpen(false); rastrear(c); }} onVerViaje={c => { setMatchingOpen(false); setViajeActivo(c); }} onPostular={c => { setMatchingOpen(false); postular(c); }} yaPostulada={postuladas.includes(c.id)} accesoContacto={accesoContacto} />} />}
 
 
         <div className="mt-4">
@@ -964,7 +972,7 @@ function Index() {
           setDetalle(c);
         }}
       />
-      <PodDialog
+      <EntregaCodigoDialog
         carga={podCarga}
         onOpenChange={(o) => !o && setPodCarga(null)}
         onConfirmado={(c) => {

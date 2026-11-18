@@ -162,6 +162,20 @@
       "when": 1795012719791,
       "tag": "0022_notificaciones_push_cargas",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1795016578566,
+      "tag": "0023_cierre_entrega_codigo_rut",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1795016615286,
+      "tag": "0024_entrega_nombre_receptor",
+      "breakpoints": true
     }
   ]
 }

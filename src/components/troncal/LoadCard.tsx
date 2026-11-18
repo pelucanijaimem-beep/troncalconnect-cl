@@ -215,8 +215,8 @@ export function LoadCard({
               En Ruta - GPS Activo · {Math.round(viaje.avance * 100)}%
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-3 py-1 text-xs font-bold text-success">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Carga entregada
+            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 text-xs font-bold text-foreground">
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Entregado y Conforme
             </span>
           )}
         </div>
@@ -278,7 +278,7 @@ export function LoadCard({
                     className="flex-1 sm:flex-none"
                     onClick={() => onFinalizar(carga)}
                   >
-                    <CheckCircle2 className="h-4 w-4" /> Carga Entregada
+                    <CheckCircle2 className="h-4 w-4" /> Confirmar Entrega
                   </Button>
                 </>
               )}

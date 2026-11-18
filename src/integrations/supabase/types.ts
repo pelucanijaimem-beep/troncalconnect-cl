@@ -1112,6 +1112,62 @@ export type Database = {
         }
         Relationships: []
       }
+      viajes_entrega: {
+        Row: {
+          carga_id: string
+          codigo: string
+          entrega_lat: number | null
+          entrega_lng: number | null
+          entrega_precision_m: number | null
+          entregado_at: string | null
+          estado: string
+          generador_id: string
+          iniciado_at: string
+          intentos_fallidos: number
+          receptor_nombre: string | null
+          receptor_rut: string | null
+          transportista_id: string
+        }
+        Insert: {
+          carga_id: string
+          codigo: string
+          entrega_lat?: number | null
+          entrega_lng?: number | null
+          entrega_precision_m?: number | null
+          entregado_at?: string | null
+          estado?: string
+          generador_id: string
+          iniciado_at?: string
+          intentos_fallidos?: number
+          receptor_nombre?: string | null
+          receptor_rut?: string | null
+          transportista_id: string
+        }
+        Update: {
+          carga_id?: string
+          codigo?: string
+          entrega_lat?: number | null
+          entrega_lng?: number | null
+          entrega_precision_m?: number | null
+          entregado_at?: string | null
+          estado?: string
+          generador_id?: string
+          iniciado_at?: string
+          intentos_fallidos?: number
+          receptor_nombre?: string | null
+          receptor_rut?: string | null
+          transportista_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "viajes_entrega_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: true
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       viajes_ubicacion: {
         Row: {
           activo: boolean
@@ -1185,6 +1241,19 @@ export type Database = {
         Args: { _user_id: string }
         Returns: number
       }
+      codigo_entrega_carga: { Args: { p_carga: string }; Returns: Json }
+      confirmar_entrega_codigo: {
+        Args: {
+          p_carga: string
+          p_codigo: string
+          p_lat?: number
+          p_lng?: number
+          p_nombre: string
+          p_precision?: number
+          p_rut: string
+        }
+        Returns: Json
+      }
       confirmar_entrega_conforme: {
         Args: { p_carga: string; p_transportista: string }
         Returns: undefined
@@ -1198,6 +1267,7 @@ export type Database = {
         Args: { p_etiquetas: string[]; p_tipo: string }
         Returns: boolean
       }
+      generar_codigo_entrega: { Args: never; Returns: string }
       gestionar_membresia: {
         Args: { p_accion: string; p_valor?: string }
         Returns: Json
@@ -1210,6 +1280,7 @@ export type Database = {
         Args: { p_numero: string; p_ruta: string; p_vigencia: string }
         Returns: undefined
       }
+      iniciar_viaje_entrega: { Args: { p_carga: string }; Returns: Json }
       insignias_transportista: { Args: { p_id: string }; Returns: Json }
       limite_publicaciones_mes: { Args: { _tier: string }; Returns: number }
       marcar_mensajes_leidos: {
@@ -1260,6 +1331,7 @@ export type Database = {
         }
         Returns: string
       }
+      regenerar_codigo_entrega: { Args: { p_carga: string }; Returns: string }
       registrar_sesion_identidad_v2: {
         Args: { p_session: string; p_user: string }
         Returns: undefined
