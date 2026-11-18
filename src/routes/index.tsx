@@ -449,15 +449,11 @@ function Index() {
     setRastreo(c);
   };
 
-  const cargasHoy = CARGAS.filter((c) => c.pais === pais).length;
   const tarifaPromedioKm = (() => {
     const lista = CARGAS.filter((c) => c.pais === pais && c.km > 0);
     if (!lista.length) return 0;
     return Math.round(lista.reduce((a, c) => a + c.valorKm, 0) / lista.length);
   })();
-  const rutasActivas = new Set(
-    CARGAS.filter((c) => c.pais === pais).map((c) => `${c.origen}-${c.destino}`),
-  ).size;
 
 
   const viajeRastreo = rastreo ? getViaje(rastreo.id) : null;
@@ -498,9 +494,7 @@ function Index() {
       <ValueStrip />
 
       <LiveStatsBanner
-        cargasHoy={cargasHoy}
         tarifaKm={tarifaPromedioKm}
-        rutasActivas={rutasActivas}
         equipo={filtros.carroceria}
         onEquipoChange={(v) => {
           setFiltros({ ...filtros, carroceria: v });
@@ -858,6 +852,20 @@ function Index() {
               Sugerencias
             </Button>
           </div>
+        </div>
+        <div className="mx-auto max-w-6xl space-y-2 border-t border-border px-4 py-4 text-xs leading-relaxed text-muted-foreground">
+          <p>
+            TroncalTrack realiza un proceso de validación documental basado en los registros
+            públicos disponibles (SII, Registro Civil y MTT). La veracidad y vigencia de la
+            información proporcionada es responsabilidad exclusiva del usuario. TroncalTrack no
+            asume responsabilidad por la falsificación ideológica de documentos por parte de
+            terceros ni garantiza los acuerdos comerciales privados suscritos entre las partes.
+          </p>
+          <p>
+            Precios en pesos chilenos (CLP). TroncalTrack se reserva el derecho de ajustar sus
+            tarifas conforme a sus políticas internas de precios, informando oportunamente a los
+            usuarios.
+          </p>
         </div>
       </footer>
 

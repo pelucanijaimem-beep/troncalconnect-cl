@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CARROCERIAS, ESTADOS_CAMION } from "@/lib/troncal-data";
+import { ESTADOS_CAMION } from "@/lib/troncal-data";
 
 export type Filtros = {
   origen: string;
@@ -88,22 +88,6 @@ export function SearchFilters({
             value={filtros.destino}
             onChange={(e) => set("destino", e.target.value)}
           />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Tipo de Carrocería</Label>
-          <Select value={filtros.carroceria} onValueChange={(v) => set("carroceria", v)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Todas" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todas">Todas</SelectItem>
-              {CARROCERIAS.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="fecha">Fecha de salida</Label>

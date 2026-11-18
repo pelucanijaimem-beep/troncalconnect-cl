@@ -18,7 +18,7 @@ export function PricingMatrix() {
   return <>
     <p className="mb-5 text-lg font-bold text-primary">0% de comisión por viaje coordinado. Sin corte de cola de intermediarios.</p>
     <p className="mb-5 text-sm text-muted-foreground">Activación personalizada por WhatsApp y pago directo por transferencia, sin cobros automáticos ni sorpresas en tu tarjeta.</p>
-    <p className="mb-5 text-xs text-muted-foreground">Precios en pesos chilenos (CLP). TroncalTrack se reserva el derecho de ajustar sus tarifas conforme a sus políticas internas de precios, informando oportunamente a los usuarios.</p>
+    <p className="mb-5 text-xs text-muted-foreground">Precios en pesos chilenos (CLP).</p>
     <Tabs defaultValue="transportista">
       <TabsList className="grid h-auto w-full grid-cols-2">
         <TabsTrigger value="transportista" className="min-h-12 whitespace-normal"><Truck className="mr-2 h-4 w-4 shrink-0" />Transportistas</TabsTrigger>

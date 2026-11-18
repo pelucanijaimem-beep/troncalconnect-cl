@@ -16,7 +16,14 @@ import {
   Satellite,
   ShieldCheck,
   Flag,
+  MoreVertical,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { costoCombustible, labelTipoCarga, money, type Carga } from "@/lib/troncal-data";
@@ -121,6 +128,44 @@ export function LoadCard({
           >
             <Star className={`h-4 w-4 ${esFavorita ? "fill-primary text-primary" : ""}`} />
           </button>
+          {(rol === "camionero" || onReportar) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Más acciones"
+                  title="Más acciones"
+                  className="rounded-lg border border-border p-2 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {rol === "camionero" &&
+                  (accesoContacto ? (
+                    <DropdownMenuItem onSelect={() => onContactar(carga)}>
+                      <MessageCircle className="h-4 w-4" /> Contactar
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link to="/planes">
+                        <Lock className="h-4 w-4" /> Contactar (Requiere Plan Pro)
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                {onReportar && (
+                  <DropdownMenuItem onSelect={() => onReportar(carga)}>
+                    <Flag className="h-4 w-4" /> Reportar
+                  </DropdownMenuItem>
+                )}
+                {rol === "camionero" && (
+                  <DropdownMenuItem onSelect={() => bloquearEmpresa(carga.empresa)}>
+                    <Ban className="h-4 w-4" /> Bloquear empresa
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 
@@ -185,35 +230,8 @@ export function LoadCard({
             Ver Detalles
           </Button>
 
-          {onReportar && (
-            <Button
-              variant="ghost"
-              className="flex-1 sm:flex-none"
-              title="Reportar esta publicación"
-              onClick={() => onReportar(carga)}
-            >
-              <Flag className="h-4 w-4" /> Reportar
-            </Button>
-          )}
-
-
           {rol === "camionero" ? (
             <>
-              {accesoContacto ? (
-                <Button
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                  onClick={() => onContactar(carga)}
-                >
-                  <MessageCircle className="h-4 w-4" /> Contactar
-                </Button>
-              ) : (
-                <Button asChild variant="outline" className="flex-1 sm:flex-none">
-                  <Link to="/planes">
-                    <Lock className="h-4 w-4" /> Contactar (Requiere Plan Pro)
-                  </Link>
-                </Button>
-              )}
               {onPostular && !enRuta && !entregada && (
                 <Button
                   className="flex-1 sm:flex-none"
@@ -224,17 +242,9 @@ export function LoadCard({
                 </Button>
               )}
 
-              <Button
-                variant="ghost"
-                className="flex-1 sm:flex-none"
-                title="No volver a ver fletes de esta empresa"
-                onClick={() => bloquearEmpresa(carga.empresa)}
-              >
-                <Ban className="h-4 w-4" /> Bloquear empresa
-              </Button>
-
-              {!enRuta && !entregada && (
-                <Button className="flex-1 sm:flex-none" onClick={() => onIniciar(carga)}>
+              {/* Iniciar Viaje solo aparece cuando el transportista ya postuló a esta carga. */}
+              {yaPostulada && !enRuta && !entregada && (
+                <Button variant="outline" className="flex-1 sm:flex-none" onClick={() => onIniciar(carga)}>
                   <PlayCircle className="h-4 w-4" /> Iniciar Viaje
                 </Button>
               )}

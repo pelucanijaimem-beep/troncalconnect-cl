@@ -32,3 +32,4 @@
 - Voice availability is gated by an estado_acceso_ia row for voz_ruta (UI shows Próximamente); deleting the row enables it without code changes.
 - The home route assistant computes distance, tolls and $/km from real visible loads first; its AI call is authenticated, RLS-scoped, only phrases those numbers and pauses on 402/403, so public visitors get deterministic values without spending credits.
 - Signup and password-recovery forms require a server-verified anti-bot token once its secret is configured (open until then); RUT login keeps its own attempt limit instead, so legitimate logins never depend on an outside check.
+- Load cards keep only Ver Detalles/Postular as visible actions and move contact, report and block into the overflow menu; Iniciar Viaje appears only after the trucker has applied, because applications have no accepted state yet.

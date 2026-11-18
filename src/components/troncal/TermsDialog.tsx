@@ -35,6 +35,7 @@ const SECCIONES = [
     contenido: [
       "La verificación de antecedentes (TroncalCheck) realizada por TroncalTrack.cl consiste en una revisión informativa de documentos públicos (tales como RUT, revisión técnica, inscripción MTT u hoja de vida de conductor).",
       "Dicha verificación constituye una herramienta de apoyo preventivo y no representa una garantía absoluta o fianza sobre la conducta moral, idoneidad profesional o solvencia financiera de los usuarios. Cada parte debe aplicar la debida diligencia antes de entregar mercancías o firmar órdenes de flete.",
+      "TroncalTrack realiza un proceso de validación documental basado en los registros públicos disponibles (SII, Registro Civil y MTT). La veracidad y vigencia de la información proporcionada es responsabilidad exclusiva del usuario. TroncalTrack no asume responsabilidad por la falsificación ideológica de documentos por parte de terceros ni garantiza los acuerdos comerciales privados suscritos entre las partes.",
     ],
   },
   {
@@ -42,6 +43,7 @@ const SECCIONES = [
     titulo: "Tarifas y Negociación Directa",
     contenido: [
       "Los precios de los fletes, condiciones de pago y tarifas mostradas o acordadas dentro o fuera de la plataforma son pactados libremente entre el Transportista y la Empresa. TroncalTrack.cl únicamente cobra una tarifa por concepto de suscripción o acceso al software/directorio de contactos y no retiene porcentajes ni interviene en el flujo de dinero del flete.",
+      "Los precios de los planes están expresados en pesos chilenos (CLP). TroncalTrack se reserva el derecho de ajustar sus tarifas conforme a sus políticas internas de precios, informando oportunamente a los usuarios.",
     ],
   },
   {

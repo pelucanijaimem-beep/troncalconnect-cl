@@ -1,6 +1,6 @@
 import { HandCoins, MessageSquareQuote, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { VerificationBadge, VerificationDisclaimer } from "./VerificationBadge";
+import { VerificationBadge } from "./VerificationBadge";
 import { VerificationChecklist } from "./VerificationChecklist";
 import { RatingSummary, StarRating } from "./StarRating";
 import { useVerificacion, type RolVerificacion } from "@/lib/use-verificacion";
@@ -80,7 +80,6 @@ export function TrustProfileCard({
         </div>
       )}
 
-      <VerificationDisclaimer className="mt-4 border-t border-border pt-3" />
     </section>
   );
 }
