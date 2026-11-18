@@ -4,7 +4,7 @@ import type { Camion } from "@/lib/troncal-data";
 import { VerificationBadge } from "./VerificationBadge";
 import { RatingSummary } from "./StarRating";
 import { useVerificacion } from "@/lib/use-verificacion";
-import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
+import { reputacionDe, useReputacion } from "@/lib/use-calificaciones";
 
 export function TruckCard({
   camion,
@@ -14,8 +14,8 @@ export function TruckCard({
   onContactar: (c: Camion) => void;
 }) {
   const verificacion = useVerificacion(camion.conductor);
-  const calificaciones = useCalificaciones();
-  const { promedio, total } = resumen(calificaciones, camion.conductor);
+  const reputacion = useReputacion();
+  const { promedio, total } = reputacionDe(reputacion, camion.userId);
 
   return (
     <article className="rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-md">

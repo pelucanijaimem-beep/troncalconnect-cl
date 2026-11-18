@@ -35,3 +35,4 @@
 - Load cards keep only Ver Detalles/Postular as visible actions and move contact, report and block into the overflow menu; Iniciar Viaje appears only after the trucker has applied, because applications have no accepted state yet.
 - Load-card net margin and Ruta 5 tolls come from the shared rentabilidad helper (axle category from body type); counteroffers are stored as prefixed text in the existing application message, so no schema change is needed.
 - Document expiry autofill runs in an authenticated server function that never stores the file, keeps only validated dates/plates, fills the form for manual review and pauses on 402/403 like other AI features.
+- Trip ratings are written only via RPCs tied to owner-confirmed deliveries (one per party); reputation is keyed by user id, so reviews cannot be forged.

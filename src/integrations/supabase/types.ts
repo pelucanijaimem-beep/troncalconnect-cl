@@ -86,6 +86,7 @@ export type Database = {
           created_at: string
           criterios: Json
           estrellas: number
+          etiquetas: string[]
           evaluado_id: string | null
           evaluado_nombre: string
           id: string
@@ -101,6 +102,7 @@ export type Database = {
           created_at?: string
           criterios?: Json
           estrellas?: number
+          etiquetas?: string[]
           evaluado_id?: string | null
           evaluado_nombre?: string
           id?: string
@@ -116,6 +118,7 @@ export type Database = {
           created_at?: string
           criterios?: Json
           estrellas?: number
+          etiquetas?: string[]
           evaluado_id?: string | null
           evaluado_nombre?: string
           id?: string
@@ -234,6 +237,35 @@ export type Database = {
           lanzamiento_flotas?: boolean
         }
         Relationships: []
+      }
+      entregas_conformes: {
+        Row: {
+          carga_id: string
+          confirmada_at: string
+          generador_id: string
+          transportista_id: string
+        }
+        Insert: {
+          carga_id: string
+          confirmada_at?: string
+          generador_id: string
+          transportista_id: string
+        }
+        Update: {
+          carga_id?: string
+          confirmada_at?: string
+          generador_id?: string
+          transportista_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entregas_conformes_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: true
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       estado_acceso_ia: {
         Row: {
@@ -1059,6 +1091,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calificar_viaje: {
+        Args: {
+          p_carga: string
+          p_comentario: string
+          p_estrellas: number
+          p_etiquetas: string[]
+        }
+        Returns: string
+      }
       carga_es_mia: {
         Args: { _carga_id: string; _user_id: string }
         Returns: boolean
@@ -1071,11 +1112,19 @@ export type Database = {
         Args: { _user_id: string }
         Returns: number
       }
+      confirmar_entrega_conforme: {
+        Args: { p_carga: string; p_transportista: string }
+        Returns: undefined
+      }
       conversacion_permitida: {
         Args: { _carga_id: string; _transportista_id: string; _user_id: string }
         Returns: boolean
       }
       cupos_fundador: { Args: never; Returns: number }
+      etiquetas_calificacion_validas: {
+        Args: { p_etiquetas: string[]; p_tipo: string }
+        Returns: boolean
+      }
       gestionar_membresia: {
         Args: { p_accion: string; p_valor?: string }
         Returns: Json
@@ -1101,6 +1150,16 @@ export type Database = {
       mi_membresia_uf: { Args: never; Returns: Json }
       mi_perfil: { Args: never; Returns: Json }
       mi_verificacion_resumen: { Args: never; Returns: Json }
+      mis_calificaciones_pendientes: {
+        Args: never
+        Returns: {
+          carga_id: string
+          confirmada_at: string
+          contraparte: string
+          ruta: string
+          tipo: string
+        }[]
+      }
       mis_conversaciones: { Args: never; Returns: Json }
       normalizar_rut: { Args: { p_rut: string }; Returns: string }
       perfil_id_por_email: { Args: { p_email: string }; Returns: string }
@@ -1131,6 +1190,27 @@ export type Database = {
       registrar_sesion_identidad_v2: {
         Args: { p_session: string; p_user: string }
         Returns: undefined
+      }
+      reputacion_usuarios: {
+        Args: never
+        Returns: {
+          evaluado_id: string
+          promedio: number
+          total: number
+        }[]
+      }
+      resenas_recibidas: {
+        Args: { p_id: string; p_limite?: number }
+        Returns: {
+          autor_nombre: string
+          comentario: string
+          created_at: string
+          estrellas: number
+          etiquetas: string[]
+          id: string
+          ruta: string
+          tipo: string
+        }[]
       }
       reservar_cupo_fundador: { Args: never; Returns: number }
       rut_chileno_valido: { Args: { p_rut: string }; Returns: boolean }

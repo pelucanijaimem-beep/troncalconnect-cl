@@ -40,6 +40,8 @@ import type { TipoContacto } from "@/lib/contacto-schema";
 import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
+import { PendingRatingsCard } from "@/components/troncal/PendingRatingsCard";
+import { useCalificacionesPendientes } from "@/lib/use-calificaciones";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
 import { PodDialog } from "@/components/troncal/PodDialog";
 import {
@@ -58,7 +60,6 @@ import { getVerificacionDe, useInsignias, useVerificaciones } from "@/lib/use-ve
 import { usePublicaciones } from "@/lib/use-publicaciones";
 import {
   postularACarga,
-  primerPostulante,
   useCargas,
   useMisPostulaciones,
 } from "@/lib/use-cargas";
@@ -152,6 +153,7 @@ function Index() {
   } | null>(null);
 
   const sesion = useSesion();
+  const calificacionesPendientes = useCalificacionesPendientes(sesion?.id);
   // Datos del asistente de portada: se conservan al registrarse o iniciar sesión.
   const [borradorFlete, setBorradorFlete] = useState<BorradorFlete | null>(null);
   const [publicarPendiente, setPublicarPendiente] = useState(false);
@@ -419,25 +421,14 @@ function Index() {
     toast.success("Carga entregada", {
       description: "El seguimiento GPS se detuvo y el viaje quedó completado.",
     });
-    const ruta = `${c.origen} → ${c.destino}`;
+    // La calificación se habilita solo cuando la empresa confirma "Entregado y Conforme".
     if (esCamionero) {
-      setEvaluacion({
-        evaluado: c.empresa,
-        cargaId: c.id,
-        ruta,
-        papel: "Generador de Carga",
+      toast.info("Calificación pendiente de confirmación", {
+        description: "Podrás calificar a la empresa cuando confirme la entrega como conforme.",
       });
       return;
     }
-    const camionero = await primerPostulante(c.id);
-    if (!camionero) return;
-    setEvaluacion({
-      evaluado: camionero.nombre,
-      evaluadoId: camionero.id,
-      cargaId: c.id,
-      ruta,
-      papel: "Transportista",
-    });
+    setDetalle(c);
   };
 
 
@@ -568,10 +559,17 @@ function Index() {
         <div className="mb-6">
           <TrustProfileCard
             usuario={sesion.nombre}
+            userId={sesion.id}
             onVerificar={() => setVerificacionOpen(true)}
             rol={esCamionero ? "camionero" : "empresa"}
           />
         </div>
+
+        {calificacionesPendientes.length > 0 && (
+          <div className="mb-6">
+            <PendingRatingsCard pendientes={calificacionesPendientes} onCalificar={setEvaluacion} />
+          </div>
+        )}
 
         {esCamionero && (
           <div className="mb-6">
@@ -904,6 +902,10 @@ function Index() {
           setChatCarga(c.id);
         }}
         onOpenChange={(o) => !o && setDetalle(null)}
+        onEntregaConforme={(p) => {
+          setDetalle(null);
+          setEvaluacion(p);
+        }}
       />
       <ContactDialog
         contacto={contacto}
@@ -974,8 +976,6 @@ function Index() {
       />
       <RatingDialog
         evaluacion={evaluacion}
-        autor={sesion?.nombre ?? "Usuario TroncalTrack"}
-        autorId={sesion?.id}
         onOpenChange={(o) => !o && setEvaluacion(null)}
       />
 

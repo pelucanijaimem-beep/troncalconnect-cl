@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Star } from "lucide-react";
+import { Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,85 +12,98 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { StarRating } from "./StarRating";
-import { calificar, type Criterios } from "@/lib/use-calificaciones";
+import {
+  ETIQUETAS,
+  MAX_COMENTARIO_CALIFICACION,
+  validarCalificacion,
+} from "@/lib/calificacion-viaje";
+import { calificarViaje, type CalificacionPendiente } from "@/lib/use-calificaciones";
 
-export type EvaluacionPendiente = {
-  evaluado: string;
-  evaluadoId?: string | undefined;
-  cargaId?: string | undefined;
-  ruta: string;
-  papel: "Transportista" | "Generador de Carga";
-};
+export type EvaluacionPendiente = CalificacionPendiente;
 
-const CRITERIOS_EMPRESA: { clave: keyof Criterios; label: string }[] = [
-  { clave: "puntualidad_pago", label: "Puntualidad en el pago" },
-  { clave: "condiciones_carga", label: "Condiciones de carga y descarga" },
-];
+function Etiqueta({
+  texto,
+  activa,
+  negativa,
+  onClick,
+}: {
+  texto: string;
+  activa: boolean;
+  negativa: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={activa}
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+        activa
+          ? negativa
+            ? "border-destructive bg-destructive/10 text-destructive"
+            : "border-success bg-success-soft text-success"
+          : "border-border bg-card text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {negativa ? <ThumbsDown className="h-3 w-3" /> : <ThumbsUp className="h-3 w-3" />}
+      {texto}
+    </button>
+  );
+}
 
-const CRITERIOS_CAMIONERO: { clave: keyof Criterios; label: string }[] = [
-  { clave: "puntualidad", label: "Puntualidad en retiro y entrega" },
-  { clave: "estado_camion", label: "Estado y presentación del camión" },
-];
-
+/** "Calificar Experiencia del Viaje": solo para viajes entregados y conformes. */
 export function RatingDialog({
   evaluacion,
-  autor,
-  autorId,
   onOpenChange,
 }: {
   evaluacion: EvaluacionPendiente | null;
-  autor: string;
-  autorId: string | undefined;
   onOpenChange: (o: boolean) => void;
 }) {
   const [estrellas, setEstrellas] = useState(5);
-  const [criterios, setCriterios] = useState<Criterios>({});
+  const [etiquetas, setEtiquetas] = useState<string[]>([]);
   const [comentario, setComentario] = useState("");
   const [enviando, setEnviando] = useState(false);
-
-  const esEmpresa = evaluacion?.papel === "Generador de Carga";
-  const lista = esEmpresa ? CRITERIOS_EMPRESA : CRITERIOS_CAMIONERO;
 
   useEffect(() => {
     if (evaluacion) {
       setEstrellas(5);
+      setEtiquetas([]);
       setComentario("");
-      setCriterios(
-        evaluacion.papel === "Generador de Carga"
-          ? { puntualidad_pago: 5, condiciones_carga: 5 }
-          : { puntualidad: 5, estado_camion: 5 },
-      );
     }
   }, [evaluacion]);
 
+  const tipo = evaluacion?.tipo ?? "a_empresa";
+  const grupos = ETIQUETAS[tipo];
+  const papel = tipo === "a_empresa" ? "Empresa Generadora" : "Transportista";
+
+  const alternar = (e: string) =>
+    setEtiquetas((p) => (p.includes(e) ? p.filter((x) => x !== e) : [...p, e]));
+
   const enviar = async () => {
     if (!evaluacion) return;
-    if (!autorId) {
-      toast.error("Inicia sesión para calificar.");
+    const invalida = validarCalificacion({ tipo, estrellas, etiquetas, comentario });
+    if (invalida) {
+      toast.error(invalida);
       return;
     }
     setEnviando(true);
-    const error = await calificar({
-      autorId,
-      autor,
-      evaluado: evaluacion.evaluado,
-      evaluadoId: evaluacion.evaluadoId,
+    const error = await calificarViaje({
       cargaId: evaluacion.cargaId,
-      tipo: esEmpresa ? "a_empresa" : "a_camionero",
       estrellas,
-      criterios,
-      comentario: comentario.trim() || "Sin comentarios.",
-      ruta: evaluacion.ruta,
+      etiquetas,
+      comentario,
     });
     setEnviando(false);
     if (error) {
-      toast.error("No pudimos guardar tu evaluación", { description: error });
+      toast.error("No pudimos guardar tu calificación", { description: error });
       return;
     }
     onOpenChange(false);
-    toast.success("¡Gracias por tu evaluación!", {
-      description: "Tu calificación ayuda a construir confianza en la comunidad TroncalTrack.",
+    toast.success("¡Gracias por calificar tu viaje!", {
+      description: "Tu reseña suma a la reputación verificada de la comunidad TroncalTrack.",
     });
   };
 
@@ -99,49 +112,70 @@ export function RatingDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-warning" /> Calificar viaje finalizado
+            <Star className="h-5 w-5 text-warning" /> Calificar Experiencia del Viaje
           </DialogTitle>
           <DialogDescription>
             {evaluacion
-              ? `Evalúa a ${evaluacion.evaluado} (${evaluacion.papel}) por el viaje ${evaluacion.ruta}.`
+              ? `Evalúa a ${evaluacion.contraparte} (${papel}) por el viaje ${evaluacion.ruta}. Solo puedes calificar una vez.`
               : ""}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label>Calificación general (1 a 5 estrellas)</Label>
+            <Label>Calificación (1 a 5 estrellas)</Label>
             <div>
               <StarRating valor={estrellas} onChange={setEstrellas} size={28} />
             </div>
           </div>
 
-          {lista.map((c) => (
-            <div key={String(c.clave)} className="space-y-1.5">
-              <Label>{c.label}</Label>
-              <div>
-                <StarRating
-                  valor={criterios[c.clave] ?? 5}
-                  onChange={(v) => setCriterios((p) => ({ ...p, [c.clave]: v }))}
-                  size={22}
+          <div className="space-y-2">
+            <Label>Lo que destacas</Label>
+            <div className="flex flex-wrap gap-2">
+              {grupos.positivas.map((e) => (
+                <Etiqueta
+                  key={e}
+                  texto={e}
+                  negativa={false}
+                  activa={etiquetas.includes(e)}
+                  onClick={() => alternar(e)}
                 />
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Lo que se puede mejorar</Label>
+            <div className="flex flex-wrap gap-2">
+              {grupos.negativas.map((e) => (
+                <Etiqueta
+                  key={e}
+                  texto={e}
+                  negativa
+                  activa={etiquetas.includes(e)}
+                  onClick={() => alternar(e)}
+                />
+              ))}
+            </div>
+          </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="comentario-eval">Comentario</Label>
+            <Label htmlFor="comentario-eval">Comentario breve (opcional)</Label>
             <Textarea
               id="comentario-eval"
-              rows={4}
+              rows={3}
+              maxLength={MAX_COMENTARIO_CALIFICACION}
               placeholder={
-                esEmpresa
-                  ? "Forma y plazo de pago, tiempos de espera en planta, comunicación…"
-                  : "Puntualidad, cuidado de la carga, estado del equipo, comunicación…"
+                tipo === "a_empresa"
+                  ? "Tiempos en planta, trato, condiciones de pago…"
+                  : "Puntualidad, cuidado de la carga, comunicación…"
               }
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
             />
+            <p className="text-right text-xs text-muted-foreground">
+              {comentario.length}/{MAX_COMENTARIO_CALIFICACION}
+            </p>
           </div>
         </div>
 
@@ -150,7 +184,7 @@ export function RatingDialog({
             Ahora no
           </Button>
           <Button disabled={enviando} onClick={() => void enviar()}>
-            {enviando ? "Enviando…" : "Enviar evaluación"}
+            {enviando ? "Enviando…" : "Enviar calificación"}
           </Button>
         </DialogFooter>
       </DialogContent>

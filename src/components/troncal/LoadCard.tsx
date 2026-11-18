@@ -40,7 +40,7 @@ import { NetMarginPanel } from "./NetMarginPanel";
 import { margenOperativo, peajesEstimados } from "@/lib/rentabilidad";
 import { RatingSummary } from "./StarRating";
 import { useVerificacion } from "@/lib/use-verificacion";
-import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
+import { reputacionDe, useReputacion } from "@/lib/use-calificaciones";
 import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
 
 export function LoadCard({
@@ -74,8 +74,8 @@ export function LoadCard({
   accesoContacto?: boolean;
 }) {
   const verificacion = useVerificacion(carga.empresa);
-  const calificaciones = useCalificaciones();
-  const { promedio, total: totalEval } = resumen(calificaciones, carga.empresa);
+  const reputacion = useReputacion();
+  const { promedio, total: totalEval } = reputacionDe(reputacion, carga.userId);
   const montoTotal = carga.km * carga.valorKm;
   const enRuta = viaje.estado === "en_ruta";
   const entregada = viaje.estado === "entregada";

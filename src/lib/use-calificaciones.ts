@@ -1,167 +1,171 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { TipoCalificacion } from "./calificacion-viaje";
 
-export type TipoCalificacion = "a_empresa" | "a_camionero";
+export type { TipoCalificacion } from "./calificacion-viaje";
 
-/** Criterios evaluados según a quién se califica. */
-export type Criterios = {
-  /** Empresa: puntualidad en el pago acordado. */
-  puntualidad_pago?: number;
-  /** Empresa: condiciones de carga y descarga. */
-  condiciones_carga?: number;
-  /** Camionero: puntualidad en retiro y entrega. */
-  puntualidad?: number;
-  /** Camionero: estado y presentación del camión. */
-  estado_camion?: number;
-};
+export type Reputacion = { promedio: number; total: number };
 
-export type Calificacion = {
+export type Resena = {
   id: string;
-  evaluado: string;
-  autor: string;
   tipo: TipoCalificacion;
   estrellas: number;
-  criterios: Criterios;
+  etiquetas: string[];
   comentario: string;
   ruta: string;
+  autor: string;
   fecha: string;
 };
 
-type Fila = {
-  id: string;
-  autor_nombre: string;
-  evaluado_nombre: string;
-  tipo: string;
-  estrellas: number;
-  criterios: unknown;
-  comentario: string;
+export type CalificacionPendiente = {
+  cargaId: string;
+  tipo: TipoCalificacion;
+  contraparte: string;
   ruta: string;
-  created_at: string;
 };
 
-const aCalificacion = (f: Fila): Calificacion => ({
-  id: f.id,
-  evaluado: f.evaluado_nombre,
-  autor: f.autor_nombre,
-  tipo: f.tipo === "a_empresa" ? "a_empresa" : "a_camionero",
-  estrellas: Number(f.estrellas),
-  criterios: (f.criterios ?? {}) as Criterios,
-  comentario: f.comentario,
-  ruta: f.ruta,
-  fecha: f.created_at,
-});
+// Estado compartido: una sola lectura de reputación para todas las tarjetas, y
+// un contador de versión que avisa a reseñas y pendientes cuando algo cambia.
+let reputacionGlobal = new Map<string, Reputacion>();
+let version = 0;
+let cargando: Promise<void> | null = null;
+let cargadoUnaVez = false;
+const oyentes = new Set<() => void>();
+const avisar = () => oyentes.forEach((f) => f());
 
-/** Guarda una calificación cruzada al finalizar un viaje. */
-export async function calificar(entrada: {
-  autorId: string;
-  autor: string;
-  evaluado: string;
-  evaluadoId?: string | undefined;
-  cargaId?: string | undefined;
-  tipo: TipoCalificacion;
-  estrellas: number;
-  criterios: Criterios;
-  comentario: string;
-  ruta: string;
-}): Promise<string | null> {
-  const { error } = await supabase.from("calificaciones").insert({
-    autor_id: entrada.autorId,
-    autor_nombre: entrada.autor,
-    evaluado_nombre: entrada.evaluado,
-    evaluado_id: entrada.evaluadoId ?? null,
-    carga_id: entrada.cargaId ?? null,
-    tipo: entrada.tipo,
-    estrellas: entrada.estrellas,
-    criterios: entrada.criterios,
-    comentario: entrada.comentario,
-    ruta: entrada.ruta,
+async function traerReputacion() {
+  const { data } = await supabase.rpc("reputacion_usuarios");
+  const mapa = new Map<string, Reputacion>();
+  for (const fila of data ?? []) {
+    if (!fila.evaluado_id) continue;
+    mapa.set(fila.evaluado_id, { promedio: Number(fila.promedio), total: Number(fila.total) });
+  }
+  reputacionGlobal = mapa;
+  cargadoUnaVez = true;
+}
+
+/** Vuelve a leer la reputación y avisa a reseñas y pendientes. */
+export async function refrescarCalificaciones() {
+  cargando = traerReputacion().finally(() => {
+    cargando = null;
   });
-  return error?.message ?? null;
+  await cargando;
+  version += 1;
+  avisar();
 }
 
-// Un único canal en vivo compartido por todos los componentes: los callbacks se
-// registran antes de suscribir y el canal nunca se reutiliza tras suscribirse.
-// Revisado: la suscripción en vivo de calificaciones funciona correctamente.
-let listaGlobal: Calificacion[] = [];
-const oyentes = new Set<(l: Calificacion[]) => void>();
-let canalActivo: ReturnType<typeof supabase.channel> | null = null;
-
-async function traerCalificaciones() {
-  const { data } = await supabase
-    .from("calificaciones")
-    .select(
-      "id, autor_nombre, evaluado_nombre, tipo, estrellas, criterios, comentario, ruta, created_at",
-    )
-    .order("created_at", { ascending: false })
-    .limit(300);
-  listaGlobal = ((data ?? []) as Fila[]).map(aCalificacion);
-  oyentes.forEach((f) => f(listaGlobal));
-}
-
-function abrirCanal() {
-  if (canalActivo) return;
-  try {
-    const canal = supabase.channel("calificaciones-live");
-    canal.on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "calificaciones" },
-      () => void traerCalificaciones(),
-    );
-    canal.subscribe();
-    canalActivo = canal;
-  } catch {
-    // Si la conexión en vivo falla, los datos siguen mostrándose sin tiempo real.
-    canalActivo = null;
-  }
-}
-
-function cerrarCanal() {
-  if (!canalActivo) return;
-  const canal = canalActivo;
-  canalActivo = null;
-  try {
-    void supabase.removeChannel(canal);
-  } catch {
-    /* no bloquea la app */
-  }
-}
-
-/** Todas las calificaciones visibles, en tiempo real. */
-export function useCalificaciones() {
-  const [lista, setLista] = useState<Calificacion[]>(listaGlobal);
-
+function useVersion() {
+  const [, setTick] = useState(0);
   useEffect(() => {
-    const oyente = (l: Calificacion[]) => setLista(l);
+    const oyente = () => setTick((t) => t + 1);
     oyentes.add(oyente);
-    abrirCanal();
-    void traerCalificaciones();
     return () => {
       oyentes.delete(oyente);
-      if (oyentes.size === 0) cerrarCanal();
     };
   }, []);
+  return version;
+}
 
+/** Promedio y viajes calificados de todos los usuarios (por id). */
+export function useReputacion() {
+  useVersion();
+  useEffect(() => {
+    if (!cargadoUnaVez && !cargando) void refrescarCalificaciones();
+  }, []);
+  return reputacionGlobal;
+}
+
+export const reputacionDe = (
+  mapa: Map<string, Reputacion>,
+  id: string | null | undefined,
+): Reputacion => (id ? mapa.get(id) : undefined) ?? { promedio: 0, total: 0 };
+
+/** Últimas reseñas recibidas por un usuario (requiere sesión). */
+export function useResenas(userId: string | null | undefined, limite = 5) {
+  const v = useVersion();
+  const [lista, setLista] = useState<Resena[]>([]);
+  useEffect(() => {
+    if (!userId) {
+      setLista([]);
+      return;
+    }
+    let vivo = true;
+    void supabase.rpc("resenas_recibidas", { p_id: userId, p_limite: limite }).then(({ data }) => {
+      if (!vivo) return;
+      setLista(
+        (data ?? []).map((f) => ({
+          id: f.id,
+          tipo: f.tipo === "a_empresa" ? "a_empresa" : "a_camionero",
+          estrellas: Number(f.estrellas),
+          etiquetas: f.etiquetas ?? [],
+          comentario: f.comentario ?? "",
+          ruta: f.ruta ?? "",
+          autor: f.autor_nombre ?? "Usuario TroncalTrack",
+          fecha: f.created_at,
+        })),
+      );
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [userId, limite, v]);
   return lista;
 }
 
-const promedioDe = (valores: number[]) =>
-  valores.length ? Math.round((valores.reduce((a, v) => a + v, 0) / valores.length) * 10) / 10 : 0;
+/** Viajes entregados y conformes que el usuario aún no califica. */
+export function useCalificacionesPendientes(userId: string | null | undefined) {
+  const v = useVersion();
+  const [lista, setLista] = useState<CalificacionPendiente[]>([]);
+  useEffect(() => {
+    if (!userId) {
+      setLista([]);
+      return;
+    }
+    let vivo = true;
+    void supabase.rpc("mis_calificaciones_pendientes").then(({ data }) => {
+      if (!vivo) return;
+      setLista(
+        (data ?? []).map((f) => ({
+          cargaId: f.carga_id,
+          tipo: f.tipo === "a_empresa" ? "a_empresa" : "a_camionero",
+          contraparte: f.contraparte,
+          ruta: f.ruta,
+        })),
+      );
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [userId, v]);
+  return lista;
+}
 
-export function resumen(lista: Calificacion[], evaluado: string) {
-  const clave = evaluado.trim().toLowerCase();
-  const propias = lista.filter((c) => c.evaluado.trim().toLowerCase() === clave);
-  const promedio = promedioDe(propias.map((c) => c.estrellas));
-  const pagos = propias
-    .map((c) => c.criterios.puntualidad_pago)
-    .filter((v): v is number => typeof v === "number");
-  const promedioPago = promedioDe(pagos);
-  return {
-    promedio,
-    total: propias.length,
-    propias,
-    promedioPago,
-    totalPagos: pagos.length,
-    /** Insignia "Buen historial de pago" para empresas cumplidoras. */
-    buenHistorialPago: pagos.length >= 2 && promedioPago >= 4,
-  };
+/** La empresa confirma "Entregado y Conforme" con el transportista que hizo el viaje. */
+export async function confirmarEntregaConforme(
+  cargaId: string,
+  transportistaId: string,
+): Promise<string | null> {
+  const { error } = await supabase.rpc("confirmar_entrega_conforme", {
+    p_carga: cargaId,
+    p_transportista: transportistaId,
+  });
+  if (!error) void refrescarCalificaciones();
+  return error?.message ?? null;
+}
+
+/** Guarda la calificación de la contraparte; la base valida viaje, parte y etiquetas. */
+export async function calificarViaje(entrada: {
+  cargaId: string;
+  estrellas: number;
+  etiquetas: string[];
+  comentario: string;
+}): Promise<string | null> {
+  const { error } = await supabase.rpc("calificar_viaje", {
+    p_carga: entrada.cargaId,
+    p_estrellas: entrada.estrellas,
+    p_etiquetas: entrada.etiquetas,
+    p_comentario: entrada.comentario.trim(),
+  });
+  if (!error) await refrescarCalificaciones();
+  return error?.message ?? null;
 }

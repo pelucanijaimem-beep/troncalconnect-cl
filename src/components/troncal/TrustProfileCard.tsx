@@ -1,26 +1,30 @@
-import { HandCoins, MessageSquareQuote, ShieldCheck } from "lucide-react";
+import { HandCoins, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerificationBadge } from "./VerificationBadge";
 import { VerificationChecklist } from "./VerificationChecklist";
-import { RatingSummary, StarRating } from "./StarRating";
+import { RatingSummary } from "./StarRating";
+import { ReviewsList } from "./ReviewsList";
 import { useVerificacion, type RolVerificacion } from "@/lib/use-verificacion";
-import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
+import { reputacionDe, useReputacion, useResenas } from "@/lib/use-calificaciones";
 
 export function TrustProfileCard({
   usuario,
+  userId,
   onVerificar,
   rol = "camionero",
 }: {
   usuario: string;
+  userId?: string | undefined;
   onVerificar: () => void;
   rol?: RolVerificacion;
 }) {
   const verificacion = useVerificacion(usuario);
-  const calificaciones = useCalificaciones();
-  const { promedio, total, propias, buenHistorialPago, promedioPago } = resumen(
-    calificaciones,
-    usuario,
-  );
+  const reputacion = useReputacion();
+  const { promedio, total } = reputacionDe(reputacion, userId);
+  const resenas = useResenas(userId, 5);
+  const pagosPuntuales = resenas.filter((r) => r.etiquetas.includes("Pago puntual")).length;
+  const buenHistorialPago =
+    pagosPuntuales >= 2 && !resenas.some((r) => r.etiquetas.includes("Atraso en pago"));
 
   return (
     <section
@@ -41,8 +45,8 @@ export function TrustProfileCard({
             <RatingSummary promedio={promedio} total={total} />
             {buenHistorialPago && (
               <span className="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
-                <HandCoins className="h-3.5 w-3.5" /> Buen historial de pago (
-                {promedioPago.toFixed(1)})
+                <HandCoins className="h-3.5 w-3.5" /> Buen historial de pago ({pagosPuntuales}{" "}
+                viajes)
               </span>
             )}
           </div>
@@ -59,24 +63,9 @@ export function TrustProfileCard({
       </div>
 
 
-      {propias.length > 0 && (
-        <div className="mt-4 space-y-3 border-t border-border pt-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Comentarios recibidos
-          </h3>
-          {propias.slice(0, 4).map((c) => (
-            <div key={c.id} className="rounded-lg border border-border bg-surface p-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <StarRating valor={c.estrellas} size={14} />
-                <span className="text-xs font-semibold text-foreground">{c.autor}</span>
-                <span className="text-xs text-muted-foreground">· {c.ruta}</span>
-              </div>
-              <p className="mt-1 flex items-start gap-1.5 text-sm text-foreground">
-                <MessageSquareQuote className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                {c.comentario}
-              </p>
-            </div>
-          ))}
+      {resenas.length > 0 && (
+        <div className="mt-4 border-t border-border pt-3">
+          <ReviewsList resenas={resenas} titulo="Últimas reseñas recibidas" />
         </div>
       )}
 

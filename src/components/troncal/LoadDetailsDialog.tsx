@@ -35,7 +35,146 @@ import { VerificationBadge } from "./VerificationBadge";
 import { AlertasRutaPanel } from "./AlertasRutaPanel";
 import { getVerificacionDe, useInsignias, useVerificaciones } from "@/lib/use-verificacion";
 import { useEffect } from "react";
-import { Flame, Trees } from "lucide-react";
+import { CheckCircle2, Flame, Trees } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  confirmarEntregaConforme,
+  reputacionDe,
+  useReputacion,
+  useResenas,
+  type CalificacionPendiente,
+} from "@/lib/use-calificaciones";
+import { RatingSummary } from "./StarRating";
+import { ReviewsList } from "./ReviewsList";
+
+/** Reputación y últimas reseñas de un usuario, plegables para no alargar el detalle. */
+function ReputacionUsuario({ userId, titulo }: { userId: string; titulo: string }) {
+  const [abierta, setAbierta] = useState(false);
+  const reputacion = reputacionDe(useReputacion(), userId);
+  const resenas = useResenas(abierta ? userId : null, 5);
+  return (
+    <div className="w-full space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <RatingSummary promedio={reputacion.promedio} total={reputacion.total} />
+        {reputacion.total > 0 && (
+          <button
+            type="button"
+            className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+            onClick={() => setAbierta((a) => !a)}
+          >
+            {abierta ? "Ocultar reseñas" : "Ver últimas reseñas"}
+          </button>
+        )}
+      </div>
+      {abierta && <ReviewsList resenas={resenas} titulo={titulo} />}
+    </div>
+  );
+}
+
+/** Cierre del viaje: la empresa confirma "Entregado y Conforme" con quien hizo el viaje. */
+function CierreViaje({
+  carga,
+  postulantes,
+  onConfirmada,
+}: {
+  carga: Carga;
+  postulantes: { id: string; nombre: string }[];
+  onConfirmada?: ((p: CalificacionPendiente) => void) | undefined;
+}) {
+  const [confirmada, setConfirmada] = useState<string | null | undefined>(undefined);
+  const [elegido, setElegido] = useState("");
+  const [enviando, setEnviando] = useState(false);
+
+  useEffect(() => {
+    let vivo = true;
+    void supabase
+      .from("entregas_conformes")
+      .select("transportista_id")
+      .eq("carga_id", carga.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (vivo) setConfirmada(data?.transportista_id ?? null);
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [carga.id]);
+
+  useEffect(() => {
+    if (!elegido && postulantes.length === 1) setElegido(postulantes[0]!.id);
+  }, [postulantes, elegido]);
+
+  if (confirmada === undefined || postulantes.length === 0) return null;
+
+  if (confirmada) {
+    const nombre = postulantes.find((p) => p.id === confirmada)?.nombre ?? "el transportista";
+    return (
+      <p className="flex items-center gap-1.5 rounded-lg bg-success-soft p-2 text-xs font-semibold text-success">
+        <CheckCircle2 className="h-4 w-4" /> Entregado y Conforme con {nombre}.
+      </p>
+    );
+  }
+
+  const confirmar = async () => {
+    if (!elegido) {
+      toast.error("Elige al transportista que realizó el viaje.");
+      return;
+    }
+    setEnviando(true);
+    const error = await confirmarEntregaConforme(carga.id, elegido);
+    setEnviando(false);
+    if (error) {
+      toast.error("No pudimos confirmar la entrega", { description: error });
+      return;
+    }
+    setConfirmada(elegido);
+    toast.success("Entrega confirmada como conforme", {
+      description: "Ambas partes ya pueden calificar la experiencia del viaje.",
+    });
+    const nombre = postulantes.find((p) => p.id === elegido)?.nombre ?? "Transportista";
+    onConfirmada?.({
+      cargaId: carga.id,
+      tipo: "a_camionero",
+      contraparte: nombre,
+      ruta: `${carga.origen} → ${carga.destino}`,
+    });
+  };
+
+  return (
+    <div className="space-y-2 border-t border-border pt-3">
+      <p className="text-sm font-semibold text-foreground">Cierre del viaje</p>
+      <p className="text-xs text-muted-foreground">
+        Cuando recibas la carga, confírmala como entregada y conforme. Así se habilita la
+        calificación para ti y para el transportista (una por cada parte).
+      </p>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Select value={elegido} onValueChange={setElegido}>
+          <SelectTrigger className="min-w-0 flex-1" aria-label="Transportista que realizó el viaje">
+            <SelectValue placeholder="Transportista que realizó el viaje" />
+          </SelectTrigger>
+          <SelectContent>
+            {postulantes.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.nombre}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button type="button" disabled={enviando} onClick={() => void confirmar()}>
+          <CheckCircle2 className="h-4 w-4" />
+          {enviando ? "Confirmando…" : "Entregado y Conforme"}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 /** Insignias de habilitación del postulante: solo estados, nunca documentos ni números. */
 function InsigniasPostulante({ userId }: { userId: string }) {
@@ -58,7 +197,13 @@ function InsigniasPostulante({ userId }: { userId: string }) {
 }
 
 /** Lista de transportistas que postularon. Solo muestra nombre y sello, nunca documentos. */
-function ApplicantsPanel({ carga }: { carga: Carga }) {
+function ApplicantsPanel({
+  carga,
+  onEntregaConforme,
+}: {
+  carga: Carga;
+  onEntregaConforme?: ((p: CalificacionPendiente) => void) | undefined;
+}) {
   const [postulantes, setPostulantes] = useState<
     { id: string; nombre: string; mensaje: string; linkRastreo: string | null }[]
   >([]);
@@ -95,6 +240,7 @@ function ApplicantsPanel({ carga }: { carga: Carga }) {
                 <span className="font-semibold text-foreground">{p.nombre}</span>
                 <VerificationBadge estado={v.estado} asegurado={v.asegurado} compacto />
                 <InsigniasPostulante userId={p.id} />
+                <ReputacionUsuario userId={p.id} titulo={`Reseñas de ${p.nombre}`} />
                 {esContraoferta(p.mensaje) && (
                   <p className="w-full rounded-md bg-surface px-2 py-1 text-xs font-semibold text-foreground">
                     {p.mensaje}
@@ -112,6 +258,7 @@ function ApplicantsPanel({ carga }: { carga: Carga }) {
           })}
         </ul>
       )}
+      <CierreViaje carga={carga} postulantes={postulantes} onConfirmada={onEntregaConforme} />
       <p className="text-xs text-muted-foreground">
         Los documentos de cada transportista son revisados solo por el equipo de TroncalTrack: aquí
         únicamente ves el resultado del sello TroncalCheck.
@@ -190,7 +337,10 @@ export function LoadDetailsDialog({
   contactoVerificado = false,
   esDueno = false,
   onEnviarMensaje,
+  onEntregaConforme,
 }: {
+  /** Tras confirmar "Entregado y Conforme": abre la calificación de la empresa. */
+  onEntregaConforme?: (p: CalificacionPendiente) => void;
   onEnviarMensaje?: (carga: Carga) => void;
   carga: Carga | null;
   onOpenChange: (o: boolean) => void;
@@ -209,7 +359,7 @@ export function LoadDetailsDialog({
 
   return (
     <Dialog open={!!carga} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         {carga && (
           <>
             <DialogHeader>
@@ -336,7 +486,14 @@ export function LoadDetailsDialog({
               )}
             </p>
 
-            {esDueno && <ApplicantsPanel carga={carga} />}
+            {!esDueno && carga.userId && (
+              <div className="rounded-xl border border-border bg-surface p-3">
+                <p className="mb-1 text-sm font-semibold text-foreground">Reputación de la empresa</p>
+                <ReputacionUsuario userId={carga.userId} titulo="Últimas reseñas de la empresa" />
+              </div>
+            )}
+
+            {esDueno && <ApplicantsPanel carga={carga} onEntregaConforme={onEntregaConforme} />}
 
             {esDueno && <SharePanel carga={carga} />}
 

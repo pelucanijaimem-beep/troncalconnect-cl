@@ -1,4 +1,6 @@
 # Tareas
+- [x] Calificación bidireccional post-viaje: cierre "Entregado y Conforme", etiquetas por rol, una por parte, reputación por usuario e historial de reseñas; 5 pruebas y reglas de base comprobadas con datos temporales revertidos; formulario revisado aislado en móvil/escritorio. Sin publicar.
+- [ ] Probar cierre y calificación desde el panel con sesiones reales de empresa y transportista; bloqueado: no hay cuenta que coincida para iniciar sesión.
 - [x] Margen neto con peajes Ruta 5, contraoferta dentro de la postulación, sello de confianza de empresa y autocompletar vencimientos con IA; 11 pruebas nuevas aprobadas, lectura real IA de foto y PDF correcta, tarjeta/diálogo/panel revisados aislados en móvil y escritorio sin desbordamiento. Sin publicar.
 - [ ] Probar contraoferta real y autocompletar desde el panel con sesión de transportista; bloqueado: no existe cuenta coincidente y crear usuario de prueba lo haría en datos reales.
 - [x] Integrar conversación por voz autenticada para cargas compatibles y reportes de ruta; 19 pruebas de compatibilidad/proximidad aprobadas y acceso sin sesión rechazado; controles verificados aislados en escritorio/móvil, sin publicar.
