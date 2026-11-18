@@ -1,4 +1,6 @@
 # Tareas
+- [x] Margen neto con peajes Ruta 5, contraoferta dentro de la postulación, sello de confianza de empresa y autocompletar vencimientos con IA; 11 pruebas nuevas aprobadas, lectura real IA de foto y PDF correcta, tarjeta/diálogo/panel revisados aislados en móvil y escritorio sin desbordamiento. Sin publicar.
+- [ ] Probar contraoferta real y autocompletar desde el panel con sesión de transportista; bloqueado: no existe cuenta coincidente y crear usuario de prueba lo haría en datos reales.
 - [x] Integrar conversación por voz autenticada para cargas compatibles y reportes de ruta; 19 pruebas de compatibilidad/proximidad aprobadas y acceso sin sesión rechazado; controles verificados aislados en escritorio/móvil, sin publicar.
 - [ ] Verificar conversación audible, cargas y reportes con cuenta de conductor; bloqueado: no hay sesión autorizada y falló creación de conductor temporal. Iniciar sesión en Vista Previa; no considerar verificada la conversación todavía.
 - [ ] Conectar incidentes externos de Waze; bloqueado: exige autorización de socio y polígonos/datos aprobados. No prometer acceso a toda su información.

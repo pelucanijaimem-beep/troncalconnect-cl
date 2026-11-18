@@ -2,6 +2,7 @@ import {
   ArrowRight,
   Ban,
   Fuel,
+  Milestone,
   Star,
   Wallet,
   CalendarDays,
@@ -34,7 +35,9 @@ import {
 } from "@/lib/use-tablero-prefs";
 import type { Viaje } from "@/lib/use-trip-tracking";
 import type { Rol } from "./RoleSwitcher";
-import { VerificationBadge } from "./VerificationBadge";
+import { CompanyTrustBadge } from "./CompanyTrustBadge";
+import { NetMarginPanel } from "./NetMarginPanel";
+import { margenOperativo, peajesEstimados } from "@/lib/rentabilidad";
 import { RatingSummary } from "./StarRating";
 import { useVerificacion } from "@/lib/use-verificacion";
 import { resumen, useCalificaciones } from "@/lib/use-calificaciones";
@@ -80,6 +83,11 @@ export function LoadCard({
   const prefs = useTableroPrefs();
   const esFavorita = prefs.favoritos.includes(carga.id);
   const diesel = costoCombustible(carga.km, carga.pais);
+  const esChile = carga.pais === "CL";
+  const peajes = peajesEstimados(carga.km, carga.carroceria);
+  const margen = margenOperativo(montoTotal, diesel.costo, esChile ? peajes.total : 0, carga.km);
+  const plazoPago = carga.diasPago ?? "Pago a 30 días";
+  const empresaVerificada = verificacion.estado === "verificado";
 
 
 
@@ -170,12 +178,22 @@ export function LoadCard({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-        <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-foreground">
-          <Wallet className="h-3.5 w-3.5 text-primary" /> {carga.diasPago ?? "Pago a 30 días"}
-        </span>
+        {!empresaVerificada && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-foreground">
+            <Wallet className="h-3.5 w-3.5 text-primary" /> {plazoPago}
+          </span>
+        )}
         <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-muted-foreground">
           <Fuel className="h-3.5 w-3.5" /> Diésel estimado: {money(diesel.costo, carga.pais)}
         </span>
+        {esChile && (
+          <span
+            className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-1 font-semibold text-muted-foreground"
+            title={`${peajes.plazas} plaza(s) troncal(es) · ${peajes.categoria === "2_ejes" ? "camión de 2 ejes" : "camión de más de 2 ejes"}`}
+          >
+            <Milestone className="h-3.5 w-3.5" /> Peajes estimados (Ruta 5): {money(peajes.total, carga.pais)}
+          </span>
+        )}
         {carga.tipoCarga && carga.tipoCarga !== "general" && (
           <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 font-semibold text-primary">
             {labelTipoCarga(carga.tipoCarga)}
@@ -183,6 +201,8 @@ export function LoadCard({
         )}
         <RouteRateInfo origen={carga.origen} destino={carga.destino} pais={carga.pais} />
       </div>
+
+      {esChile && carga.km > 0 && <NetMarginPanel neto={margen.neto} porKm={margen.porKm} />}
 
       {(enRuta || entregada) && (
         <div className="mt-3">
@@ -212,7 +232,7 @@ export function LoadCard({
             </span>
           )}
         </span>
-        <VerificationBadge estado={verificacion.estado} asegurado={verificacion.asegurado} compacto />
+        <CompanyTrustBadge estado={verificacion.estado} asegurado={verificacion.asegurado} plazoPago={plazoPago} />
         <PublisherBadge tipo={carga.tipoPublicador} />
         <RatingSummary promedio={promedio} total={totalEval} />
         {carga.soloVerificados && (

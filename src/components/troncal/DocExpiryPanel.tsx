@@ -12,6 +12,8 @@ import {
   type Vencimientos,
 } from "@/lib/use-vencimientos";
 import { revisarVencimientos } from "@/lib/vencimientos.functions";
+import type { LecturaDocumento } from "@/lib/lectura-vencimientos";
+import { DocAutofillButton } from "./DocAutofillButton";
 
 const COLOR = {
   vencido: "text-destructive",
@@ -55,6 +57,12 @@ export function DocExpiryPanel({ userId }: { userId?: string }) {
 
   const { vencidos, porVencer } = resumenVencimientos(datos);
 
+  // Solo completa los campos que el documento trae; el resto queda como estaba.
+  const aplicarLectura = (lectura: LecturaDocumento) => {
+    const limpio = Object.fromEntries(Object.entries(lectura).filter(([, v]) => Boolean(v)));
+    setForm({ ...form, ...limpio });
+  };
+
   const onGuardar = async () => {
     setGuardando(true);
     const error = await guardar(form);
@@ -90,9 +98,19 @@ export function DocExpiryPanel({ userId }: { userId?: string }) {
         )}
       </div>
 
-      <p className="mt-1 text-xs text-muted-foreground">
-        Ingresa manualmente la fecha de vencimiento de cada documento. Te avisamos cuando falten
-        30, 15 y 7 días, y marcamos en rojo lo que ya venció.
+      {userId && (
+        <div className="mt-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+          <DocAutofillButton onAplicar={aplicarLectura} />
+          <p className="text-[11px] text-muted-foreground">
+            Padrón, Revisión Técnica o SOAP en foto o PDF. El archivo no se guarda.
+          </p>
+        </div>
+      )}
+
+      <p className="mt-2 text-xs text-muted-foreground">
+        Ingresa la fecha de vencimiento de cada documento o autocompleta desde una foto; siempre
+        puedes editarlas antes de guardar. Te avisamos cuando falten 30, 15 y 7 días, y marcamos en
+        rojo lo que ya venció.
       </p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">

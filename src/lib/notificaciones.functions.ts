@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/lib/require-session";
+import { esContraoferta } from "./contraoferta";
 
 /** Envía un correo con una plantilla registrada. Nunca lanza error. */
 async function enviarCorreo(params: {
@@ -56,11 +57,19 @@ export const avisarPostulacion = createServerFn({ method: "POST" })
       : "Sin verificación TroncalCheck";
     const ruta = `${carga.origen} → ${carga.destino}`;
 
+    const { data: propia } = await supabase
+      .from("postulaciones")
+      .select("mensaje")
+      .eq("carga_id", carga.id)
+      .eq("user_id", userId)
+      .maybeSingle();
+    const oferta = propia?.mensaje && esContraoferta(propia.mensaje) ? ` ${propia.mensaje}` : "";
+
     await supabaseAdmin.from("notificaciones").insert({
       user_id: carga.user_id,
       tipo: "postulacion",
-      titulo: "Nueva postulación a tu carga",
-      mensaje: `${nombre} (${sello}) postuló a ${ruta}. Teléfono: ${telefono}.`,
+      titulo: oferta ? "Nueva contraoferta a tu carga" : "Nueva postulación a tu carga",
+      mensaje: `${nombre} (${sello}) postuló a ${ruta}. Teléfono: ${telefono}.${oferta}`,
       datos: { carga_id: carga.id, postulante_id: userId, ruta },
     });
 

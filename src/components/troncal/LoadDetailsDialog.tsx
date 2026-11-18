@@ -29,6 +29,7 @@ import {
   type Carga,
 } from "@/lib/troncal-data";
 import { invitarACarga, postulantesDeCarga } from "@/lib/use-cargas";
+import { esContraoferta } from "@/lib/contraoferta";
 import { PublisherBadge, RouteRateInfo } from "./RouteRateInfo";
 import { VerificationBadge } from "./VerificationBadge";
 import { AlertasRutaPanel } from "./AlertasRutaPanel";
@@ -94,6 +95,11 @@ function ApplicantsPanel({ carga }: { carga: Carga }) {
                 <span className="font-semibold text-foreground">{p.nombre}</span>
                 <VerificationBadge estado={v.estado} asegurado={v.asegurado} compacto />
                 <InsigniasPostulante userId={p.id} />
+                {esContraoferta(p.mensaje) && (
+                  <p className="w-full rounded-md bg-surface px-2 py-1 text-xs font-semibold text-foreground">
+                    {p.mensaje}
+                  </p>
+                )}
                 {p.linkRastreo && (
                   <Button asChild size="sm" variant="outline" className="ml-auto">
                     <a href={p.linkRastreo} target="_blank" rel="noreferrer noopener">

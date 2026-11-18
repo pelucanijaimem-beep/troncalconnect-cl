@@ -366,11 +366,11 @@ function Index() {
     setPostulando(c);
   };
 
-  const confirmarPostulacion = async (linkRastreo: string) => {
+  const confirmarPostulacion = async (linkRastreo: string, contraoferta: string | null) => {
     const c = postulando;
     if (!c || !sesion) return;
     setEnviandoPostulacion(true);
-    const error = await postularACarga(c.id, sesion.id, `${c.origen} → ${c.destino}`, linkRastreo);
+    const error = await postularACarga(c.id, sesion.id, contraoferta ?? `${c.origen} → ${c.destino}`, linkRastreo);
     setEnviandoPostulacion(false);
     if (error) {
       toast.error("No pudimos enviar tu postulación", {
@@ -381,7 +381,9 @@ function Index() {
     setPostulando(null);
     agregarPostulacion(c.id);
     toast.success("Reserva enviada al instante", {
-      description: `${c.empresa} recibió tu aviso con tus datos de contacto y tu sello TroncalCheck.`,
+      description: contraoferta
+        ? `${c.empresa} recibió tu contraoferta junto a tus datos de contacto y tu sello TroncalCheck.`
+        : `${c.empresa} recibió tu aviso con tus datos de contacto y tu sello TroncalCheck.`,
     });
     try {
       await avisarPostulacion({ data: { cargaId: c.id } });
@@ -890,7 +892,7 @@ function Index() {
         carga={postulando}
         enviando={enviandoPostulacion}
         onOpenChange={(o) => !o && setPostulando(null)}
-        onConfirmar={(link) => void confirmarPostulacion(link)}
+        onConfirmar={(link, contraoferta) => void confirmarPostulacion(link, contraoferta)}
       />
       <LoadDetailsDialog
         accesoContacto={accesoContacto}

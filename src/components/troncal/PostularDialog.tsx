@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Send, Satellite } from "lucide-react";
+import { HandCoins, Send, Satellite, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Carga } from "@/lib/troncal-data";
+import { calcularContraoferta, mensajeContraoferta } from "@/lib/contraoferta";
+import { CONTRAOFERTA_VACIA, CounterOfferFields, type EstadoContraoferta } from "./CounterOfferFields";
 
 /** Campo obligatorio: solo acepta enlaces http/https reales. */
 export function linkRastreoValido(valor: string): boolean {
@@ -34,31 +36,39 @@ export function PostularDialog({
   carga: Carga | null;
   enviando: boolean;
   onOpenChange: (o: boolean) => void;
-  onConfirmar: (linkRastreo: string) => void;
+  /** contraoferta: texto listo para el mensaje de la postulación, o null si postula a la tarifa publicada. */
+  onConfirmar: (linkRastreo: string, contraoferta: string | null) => void;
 }) {
   const [link, setLink] = useState("");
   const [error, setError] = useState("");
+  const [ofertando, setOfertando] = useState(false);
+  const [oferta, setOferta] = useState<EstadoContraoferta>(CONTRAOFERTA_VACIA);
 
   useEffect(() => {
     if (carga) {
       setLink("");
       setError("");
+      setOfertando(false);
+      setOferta(CONTRAOFERTA_VACIA);
     }
   }, [carga]);
 
   const linkValido = linkRastreoValido(link);
+  const calcOferta = carga ? calcularContraoferta(carga.km, carga.valorKm, oferta.modo, Number(oferta.valor)) : null;
+  const ofertaLista = !ofertando || calcOferta !== null;
 
   const confirmar = () => {
     if (!linkValido) {
       setError("Ingresa un enlace válido que comience con http:// o https://");
       return;
     }
-    onConfirmar(link.trim());
+    if (ofertando && !calcOferta) return;
+    onConfirmar(link.trim(), ofertando && calcOferta ? mensajeContraoferta(calcOferta, oferta.nota) : null);
   };
 
   return (
     <Dialog open={!!carga} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-md">
         {carga && (
           <>
             <DialogHeader>
@@ -100,6 +110,34 @@ export function PostularDialog({
               )}
             </div>
 
+            <div className="space-y-2">
+              {ofertando ? (
+                <>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                      <HandCoins className="h-4 w-4 text-primary" /> Tu contraoferta
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setOfertando(false);
+                        setOferta(CONTRAOFERTA_VACIA);
+                      }}
+                    >
+                      <X className="h-4 w-4" /> Quitar
+                    </Button>
+                  </div>
+                  <CounterOfferFields km={carga.km} valorKm={carga.valorKm} estado={oferta} onChange={setOferta} />
+                </>
+              ) : (
+                <Button type="button" variant="outline" className="w-full" onClick={() => setOfertando(true)}>
+                  <HandCoins className="h-4 w-4" /> Hacer Contraoferta
+                </Button>
+              )}
+            </div>
+
             <DialogFooter className="gap-2">
               <Button
                 type="button"
@@ -109,8 +147,9 @@ export function PostularDialog({
               >
                 Cancelar
               </Button>
-              <Button type="button" onClick={confirmar} disabled={enviando || !linkValido}>
-                <Send className="h-4 w-4" /> {enviando ? "Enviando…" : "Confirmar postulación"}
+              <Button type="button" onClick={confirmar} disabled={enviando || !linkValido || !ofertaLista}>
+                <Send className="h-4 w-4" />{" "}
+                {enviando ? "Enviando…" : ofertando ? "Postular con contraoferta" : "Confirmar postulación"}
               </Button>
             </DialogFooter>
           </>
