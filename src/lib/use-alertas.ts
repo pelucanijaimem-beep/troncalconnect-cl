@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { coincideAlerta } from "./push-carga";
 
 export type PreferenciasAlerta = {
   origenes: string[];
@@ -96,15 +97,5 @@ export function calzaConPreferencias(
   carga: { origen: string; destino: string; carroceria: string },
 ): boolean {
   if (!prefs.activo) return false;
-  const igual = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
-  const origenOk =
-    prefs.origenes.length === 0 || prefs.origenes.some((o) => igual(o, carga.origen));
-  const destinoOk =
-    prefs.destinos.length === 0 || prefs.destinos.some((d) => igual(d, carga.destino));
-  const carroceriaOk =
-    prefs.carrocerias.length === 0 ||
-    prefs.carrocerias.some((c) => igual(c, carga.carroceria));
-  const algunaPreferencia =
-    prefs.origenes.length + prefs.destinos.length + prefs.carrocerias.length > 0;
-  return algunaPreferencia && origenOk && destinoOk && carroceriaOk;
+  return coincideAlerta(prefs, carga);
 }

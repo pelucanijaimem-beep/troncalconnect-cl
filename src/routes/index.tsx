@@ -41,6 +41,7 @@ import { TermsDialog } from "@/components/troncal/TermsDialog";
 import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
 import { PendingRatingsCard } from "@/components/troncal/PendingRatingsCard";
+import { PushAlertBanner } from "@/components/troncal/PushAlertBanner";
 import { useCalificacionesPendientes } from "@/lib/use-calificaciones";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
 import { PodDialog } from "@/components/troncal/PodDialog";
@@ -555,6 +556,13 @@ function Index() {
         </div>
 
         {sesion.rol === "empresa" && <PublicationQuotaNotice userId={sesion.id} revision={CARGAS.filter(c => c.userId === sesion.id).map(c => c.id).join(",")} />}
+
+        {esCamionero && (
+          <PushAlertBanner
+            tieneAlertas={alertas.origenes.length + alertas.destinos.length + alertas.carrocerias.length > 0}
+            onConfigurarAlertas={() => setAlertasOpen(true)}
+          />
+        )}
 
         <div className="mb-6">
           <TrustProfileCard

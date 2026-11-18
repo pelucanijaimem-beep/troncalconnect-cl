@@ -78,6 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#184f7e" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "TroncalTrack" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
       { title: "TroncalTrack — Plataforma de Gestión y Logística para el Transporte en Chile" },
       {
         name: "description",
@@ -120,6 +125,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
       { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
 

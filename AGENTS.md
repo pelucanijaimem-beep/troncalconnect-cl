@@ -30,9 +30,10 @@
 - Administrative user detail uses an escaped admin_ leaf route and the existing perfiles_admin RPC plus administrator-scoped RLS/Storage access; this avoids nesting the full admin panel or exposing private profile reads.
 - Route-report AI summaries run in an authenticated server function over RLS-scoped recent reports, skip the model when none exist, and only phrase existing data; this prevents invented danger alerts.
 - Voice availability is gated by an estado_acceso_ia row for voz_ruta (UI shows Próximamente); deleting the row enables it without code changes.
-- The home route assistant computes distance, tolls and $/km from real visible loads first; its AI call is authenticated, RLS-scoped, only phrases those numbers and pauses on 402/403, so public visitors get deterministic values without spending credits.
+- The home route assistant computes distance, tolls and $/km from real loads; its authenticated AI call only phrases those numbers and pauses on 402/403, so visitors spend no credits.
 - Signup and password-recovery forms require a server-verified anti-bot token once its secret is configured (open until then); RUT login keeps its own attempt limit instead, so legitimate logins never depend on an outside check.
 - Load cards keep only Ver Detalles/Postular as visible actions and move contact, report and block into the overflow menu; Iniciar Viaje appears only after the trucker has applied, because applications have no accepted state yet.
-- Load-card net margin and Ruta 5 tolls come from the shared rentabilidad helper (axle category from body type); counteroffers are stored as prefixed text in the existing application message, so no schema change is needed.
+- Load-card margin and Ruta 5 tolls come from the shared rentabilidad helper; counteroffers are prefixed text in the application message (no schema change).
 - Document expiry autofill runs in an authenticated server function that never stores the file, keeps only validated dates/plates, fills the form for manual review and pauses on 402/403 like other AI features.
-- Trip ratings are written only via RPCs tied to owner-confirmed deliveries (one per party); reputation is keyed by user id, so reviews cannot be forged.
+- Trip ratings are written only via RPCs on owner-confirmed deliveries (one per party); reputation keys on user id to prevent forgery.
+- Push alerts: a cargas insert trigger queues a one-time token and pg_net calls the public push route, which sends in-house Web Push only for unused tokens.

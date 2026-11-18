@@ -25,6 +25,7 @@ import { Route as RutasCorredorRouteImport } from './routes/rutas.$corredor'
 import { Route as AdminUsuarioIdRouteImport } from './routes/admin_.usuario.$id'
 import { Route as ApiPublicDiditWebhookRouteImport } from './routes/api/public/didit-webhook'
 import { Route as ApiPublicIdentidadRouteImport } from './routes/api/public/identidad'
+import { Route as ApiPublicPushNuevaCargaRouteImport } from './routes/api/public/push-nueva-carga'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -110,6 +111,11 @@ const ApiPublicIdentidadRoute = ApiPublicIdentidadRouteImport.update({
   path: '/api/public/identidad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPushNuevaCargaRoute = ApiPublicPushNuevaCargaRouteImport.update({
+  id: '/api/public/push-nueva-carga',
+  path: '/api/public/push-nueva-carga',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
+  '/api/public/push-nueva-carga': typeof ApiPublicPushNuevaCargaRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/admin/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
+  '/api/public/push-nueva-carga': typeof ApiPublicPushNuevaCargaRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/admin_/usuario/$id': typeof AdminUsuarioIdRoute
   '/api/public/didit-webhook': typeof ApiPublicDiditWebhookRoute
   '/api/public/identidad': typeof ApiPublicIdentidadRoute
+  '/api/public/push-nueva-carga': typeof ApiPublicPushNuevaCargaRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
+    | '/api/public/push-nueva-carga'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/admin/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
+    | '/api/public/push-nueva-carga'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/admin_/usuario/$id'
     | '/api/public/didit-webhook'
     | '/api/public/identidad'
+    | '/api/public/push-nueva-carga'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -274,6 +286,7 @@ export interface RootRouteChildren {
   AdminUsuarioIdRoute: typeof AdminUsuarioIdRoute
   ApiPublicDiditWebhookRoute: typeof ApiPublicDiditWebhookRoute
   ApiPublicIdentidadRoute: typeof ApiPublicIdentidadRoute
+  ApiPublicPushNuevaCargaRoute: typeof ApiPublicPushNuevaCargaRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -393,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicIdentidadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/push-nueva-carga': {
+      id: '/api/public/push-nueva-carga'
+      path: '/api/public/push-nueva-carga'
+      fullPath: '/api/public/push-nueva-carga'
+      preLoaderRoute: typeof ApiPublicPushNuevaCargaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -435,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUsuarioIdRoute: AdminUsuarioIdRoute,
   ApiPublicDiditWebhookRoute: ApiPublicDiditWebhookRoute,
   ApiPublicIdentidadRoute: ApiPublicIdentidadRoute,
+  ApiPublicPushNuevaCargaRoute: ApiPublicPushNuevaCargaRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,

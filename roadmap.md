@@ -1,4 +1,6 @@
 # Tareas
+- [x] Avisos al teléfono por cargas compatibles: app instalable, banner móvil del transportista, suscripción guardada por cuenta, disparo automático al publicar y apertura del detalle; 5 pruebas, cifrado y firma verificados de forma independiente, envío aceptado por el servicio de avisos de un navegador real, disparo y cola de un solo uso comprobados. Sin publicar.
+- [ ] Ver un aviso real en un teléfono; bloqueado: requiere publicar y que un transportista con sesión active los avisos en su teléfono.
 - [x] Calificación bidireccional post-viaje: cierre "Entregado y Conforme", etiquetas por rol, una por parte, reputación por usuario e historial de reseñas; 5 pruebas y reglas de base comprobadas con datos temporales revertidos; formulario revisado aislado en móvil/escritorio. Sin publicar.
 - [ ] Probar cierre y calificación desde el panel con sesiones reales de empresa y transportista; bloqueado: no hay cuenta que coincida para iniciar sesión.
 - [x] Margen neto con peajes Ruta 5, contraoferta dentro de la postulación, sello de confianza de empresa y autocompletar vencimientos con IA; 11 pruebas nuevas aprobadas, lectura real IA de foto y PDF correcta, tarjeta/diálogo/panel revisados aislados en móvil y escritorio sin desbordamiento. Sin publicar.

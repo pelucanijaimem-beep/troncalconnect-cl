@@ -223,6 +223,38 @@ export type Database = {
         }
         Relationships: []
       }
+      cola_push_cargas: {
+        Row: {
+          carga_id: string
+          created_at: string
+          enviados: number
+          procesada_at: string | null
+          token: string
+        }
+        Insert: {
+          carga_id: string
+          created_at?: string
+          enviados?: number
+          procesada_at?: string | null
+          token: string
+        }
+        Update: {
+          carga_id?: string
+          created_at?: string
+          enviados?: number
+          procesada_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cola_push_cargas_carga_id_fkey"
+            columns: ["carga_id"]
+            isOneToOne: true
+            referencedRelation: "cargas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       configuracion_membresias: {
         Row: {
           clave: string
@@ -910,6 +942,47 @@ export type Database = {
         }
         Relationships: []
       }
+      suscripciones_push: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_agent: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_agent?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suscripciones_push_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1189,6 +1262,15 @@ export type Database = {
       }
       registrar_sesion_identidad_v2: {
         Args: { p_session: string; p_user: string }
+        Returns: undefined
+      }
+      registrar_suscripcion_push: {
+        Args: {
+          p_auth: string
+          p_endpoint: string
+          p_p256dh: string
+          p_user_agent: string
+        }
         Returns: undefined
       }
       reputacion_usuarios: {

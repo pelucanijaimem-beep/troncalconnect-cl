@@ -155,6 +155,13 @@
       "when": 1795012019551,
       "tag": "0021_calificacion_bidireccional_post_viaje",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795012719791,
+      "tag": "0022_notificaciones_push_cargas",
+      "breakpoints": true
     }
   ]
 }
