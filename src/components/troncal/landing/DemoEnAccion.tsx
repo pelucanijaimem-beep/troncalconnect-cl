@@ -7,12 +7,12 @@ import {
   MapPin,
   Navigation,
   Pause,
-  PenLine,
   Play,
   Rocket,
   Share2,
   ShieldCheck,
   Signal,
+  UserCheck,
   Wifi,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -197,21 +197,13 @@ function PantallaEntrega() {
       </div>
       <div className="rounded-xl border border-border bg-card p-3">
         <p className="flex items-center gap-1 text-xs font-bold text-foreground">
-          <PenLine className="h-3.5 w-3.5" /> Firma del receptor
+          <UserCheck className="h-3.5 w-3.5" /> Datos de quien recibe
         </p>
-        <div className="mt-2 h-24 rounded-lg border border-dashed border-border bg-background">
-          <svg viewBox="0 0 220 90" className="h-full w-full" aria-hidden>
-            <path
-              d="M18 60 C 30 20, 45 20, 42 55 S 60 75, 70 45 C 78 25, 88 30, 86 55 C 84 72, 100 70, 110 48 C 118 32, 126 36, 124 52 C 122 66, 140 64, 152 44 C 160 32, 170 40, 168 54 C 166 62, 180 60, 200 40"
-              className="fill-none stroke-foreground"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <line x1="14" y1="78" x2="206" y2="78" className="stroke-border" strokeWidth="1" />
-          </svg>
+        <div className="mt-2 space-y-1 rounded-lg border border-dashed border-border bg-background p-2.5">
+          <p className="text-sm font-bold text-foreground">Carolina Soto</p>
+          <p className="text-xs text-muted-foreground">RUT 18.432.665-1</p>
         </div>
-        <p className="mt-1 text-[10px] text-muted-foreground">Carolina Soto · 18-11 · 18:52</p>
+        <p className="mt-1 text-[10px] text-muted-foreground">18-11 · 18:52 · Ubicación GPS registrada</p>
       </div>
       <span className="flex w-full items-center justify-center gap-2 rounded-lg bg-device py-2.5 text-xs font-bold text-device-foreground">
         <CircleDollarSign className="h-3.5 w-3.5 text-primary" /> Entrega conforme · respalda tu cobro
@@ -240,8 +232,8 @@ const PASOS: Paso[] = [
     Pantalla: PantallaGps,
   },
   {
-    titulo: "4. Entrega Segura con Código PIN y Firma",
-    texto: "Cierra el viaje en destino con PIN de 6 dígitos y firma del receptor.",
+    titulo: "4. Entrega Segura con Código PIN",
+    texto: "Cierra el viaje en destino con el PIN de 6 dígitos y el nombre y RUT de quien recibe.",
     icono: ShieldCheck,
     Pantalla: PantallaEntrega,
   },

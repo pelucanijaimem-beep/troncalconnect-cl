@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Optimiza flotas, controla rutas y conecta con transportistas, dadores de carga y comisionistas en Chile. Plan Inicial gratuito, sin vencimiento.",
+          "Optimiza flotas, controla rutas y conecta con transportistas, dadores de carga y comisionistas en Chile. Plan Camionero Independiente gratuito, sin vencimiento.",
       },
       { property: "og:site_name", content: "TroncalTrack" },
       { property: "og:type", content: "website" },

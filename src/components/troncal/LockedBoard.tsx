@@ -73,8 +73,8 @@ export function LockedBoard({
           </Button>
         </div>
         <p className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
-          <ShieldCheck className="h-4 w-4 text-success" /> Registro con el Plan Inicial, sin tarjeta
-          de crédito.
+          <ShieldCheck className="h-4 w-4 text-success" /> Registro con el plan Camionero
+          Independiente, sin tarjeta de crédito.
         </p>
       </div>
     </section>
