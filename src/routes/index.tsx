@@ -10,6 +10,7 @@ import { TopSupportBar } from "@/components/troncal/TopSupportBar";
 import { Hero } from "@/components/troncal/Hero";
 import { QuickQuote } from "@/components/troncal/landing/QuickQuote";
 import { ValueStrip } from "@/components/troncal/landing/ValueStrip";
+import { DemoEnAccion } from "@/components/troncal/landing/DemoEnAccion";
 import { SafetyProof } from "@/components/troncal/landing/SafetyProof";
 import { CORREDORES } from "@/lib/corredores";
 import type { BorradorFlete } from "@/lib/cotizador";
@@ -484,6 +485,8 @@ function Index() {
           }}
         />
       </Hero>
+
+      <DemoEnAccion onRegistro={() => abrirAuth("registro")} />
 
       <ValueStrip />
 

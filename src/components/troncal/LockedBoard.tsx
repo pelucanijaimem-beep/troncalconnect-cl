@@ -65,7 +65,7 @@ export function LockedBoard({
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Button size="lg" onClick={onIngresar}>
+          <Button size="lg" onClick={onIngresar} className="h-auto min-h-10 whitespace-normal py-2 text-center">
             <LogIn className="h-4 w-4" /> Iniciar Sesión para Ver Cargas en Vivo
           </Button>
           <Button size="lg" variant="outline" onClick={onRegistro}>
