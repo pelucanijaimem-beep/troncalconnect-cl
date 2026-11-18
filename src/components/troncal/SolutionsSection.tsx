@@ -17,6 +17,7 @@ const PERFILES = [
       "Publica tu flete en segundos y encuentra camiones disponibles verificados en tiempo real.",
     cta: "Publicar Flete",
     accion: "flete" as const,
+    destacado: "Publicación de cargas sin comisión · Activación inmediata",
   },
   {
     icon: Network,
@@ -63,6 +64,11 @@ export function SolutionsSection({
                 <p.icon className="h-5 w-5 text-primary" />
               </span>
               <h3 className="mt-4 text-lg font-bold text-foreground">{p.titulo}</h3>
+              {"destacado" in p && p.destacado && (
+                <span className="mt-2 inline-flex w-fit rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                  {p.destacado}
+                </span>
+              )}
               <p className="mt-2 flex-1 text-sm text-muted-foreground">{p.texto}</p>
               <Button className="mt-5 w-full" variant="outline" onClick={handler[p.accion]}>
                 {p.cta}

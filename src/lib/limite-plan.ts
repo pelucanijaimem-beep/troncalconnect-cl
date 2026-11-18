@@ -5,7 +5,7 @@ export const NOMBRES_PLAN: Record<string, string> = {
   empresa_pyme: "Empresa Pyme",
   empresa_pro: "Empresa Pro",
   corporativo_premium: "Corporativo Premium",
-  camionero_solitario: "Camionero Solitario",
+  camionero_solitario: "Camionero Independiente",
   flota_mediana: "Flota Mediana",
   flota_enterprise: "Flota Enterprise",
 };

@@ -13,7 +13,7 @@ export const PLANES_GENERADORES = [
 ] as const;
 
 export const PLANES_TRANSPORTE = [
-  { id: "camionero_solitario", nombre: "Camionero Solitario", uf: 0, clp: 0, min: 1, max: 1, desde: false,
+  { id: "camionero_solitario", nombre: "Camionero Independiente", uf: 0, clp: 0, min: 1, max: 1, desde: false,
     features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
   { id: "flota_mediana", nombre: "Flota Mediana", uf: 0.121, clp: 4990, min: 2, max: 20, desde: false,
     features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "4 meses gratis durante el lanzamiento"] },

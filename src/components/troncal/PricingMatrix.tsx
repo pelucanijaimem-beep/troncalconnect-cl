@@ -39,7 +39,7 @@ export function PricingMatrix() {
         </div>
         <div className="mt-6 grid gap-4 border-y border-border py-5 sm:grid-cols-2">
           <div><Label htmlFor={`cantidad-${grupo.id}`}>{grupo.id === "transportista" ? "Camiones registrados" : "Publicaciones mensuales · Starter"}</Label><Input id={`cantidad-${grupo.id}`} type="number" min={1} step={1} className="mt-2 max-w-40" value={grupo.id === "transportista" ? camiones : publicaciones} onChange={e => grupo.id === "transportista" ? setCamiones(Number(e.target.value)) : setPublicaciones(Number(e.target.value))} /></div>
-          <div aria-live="polite"><p className="text-sm text-muted-foreground">Tarifa mensual después de la promoción</p><p className="mt-1 text-2xl font-bold text-foreground">{grupo.id === "transportista" ? flota ? formatoCLP(flota.totalClp) : "Cantidad inválida" : dador ? formatoCLP(dador.totalClp) : "Cantidad inválida"}</p><p className="mt-1 text-sm text-primary">{grupo.id === "transportista" ? flota?.plan?.nombre : `Starter · ${dador?.excedentes ?? 0} adicionales`}</p></div>
+          <div aria-live="polite"><p className="text-sm text-muted-foreground">Tarifa mensual después de la promoción</p><p className="mt-1 text-2xl font-bold text-foreground">{grupo.id === "transportista" ? flota ? formatoCLP(flota.totalClp) : "Cantidad inválida" : dador ? formatoCLP(dador.totalClp) : "Cantidad inválida"}</p><p className="mt-1 text-sm text-primary">{grupo.id === "transportista" ? flota?.plan?.nombre : `Starter · ${dador?.excedentes ?? 0} adicionales`}</p>{grupo.id === "transportista" && flota && <p className="mt-1 text-xs text-muted-foreground">Cálculo referencial para {camiones} {camiones === 1 ? "camión" : "camiones"}</p>}</div>
         </div>
       </TabsContent>)}
     </Tabs>

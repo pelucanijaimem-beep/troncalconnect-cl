@@ -27,6 +27,11 @@ import {
 } from "@/lib/cotizador";
 import { consultarAsistenteRutas } from "@/lib/asistente-rutas.functions";
 
+const EJEMPLOS = [
+  { texto: "Ejemplo: Chillán → Santiago · Rampla Sider", origen: "Chillán", destino: "Santiago", carga: "Rampla Sider" },
+  { texto: "Ejemplo: Los Ángeles → Puerto Montt · Plataforma", origen: "Los Ángeles", destino: "Puerto Montt", carga: "Plataforma" },
+];
+
 const clp = (n: number) => `$${n.toLocaleString("es-CL")}`;
 
 type Resultado =
@@ -127,6 +132,22 @@ export function QuickQuote({
             <option key={c} value={c} />
           ))}
         </datalist>
+        <div className="flex flex-wrap gap-2 sm:col-span-3">
+          {EJEMPLOS.map((ej) => (
+            <button
+              key={ej.texto}
+              type="button"
+              onClick={() => {
+                setOrigen(ej.origen);
+                setDestino(ej.destino);
+                setCarga(ej.carga);
+              }}
+              className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+            >
+              {ej.texto}
+            </button>
+          ))}
+        </div>
         <Button type="submit" size="lg" className="sm:col-span-3" disabled={ia.tipo === "cargando"}>
           {ia.tipo === "cargando" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bot className="h-4 w-4" />}
           Consultar Asistente IA

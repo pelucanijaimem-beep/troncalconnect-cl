@@ -347,7 +347,7 @@ function Index() {
     if (!sesion.planActivo) {
       toast.error("Necesitas activar tu acceso de transporte", {
         description:
-          "Camionero Solitario es gratis para siempre y las flotas son gratis durante el lanzamiento. Registra tus patentes en Mi membresía.",
+          "Camionero Independiente es gratis para siempre y las flotas son gratis durante el lanzamiento. Registra tus patentes en Mi membresía.",
       });
       navigate({ to: "/membresia" });
       return;
@@ -515,8 +515,8 @@ function Index() {
               Actividad en vivo en Chile
             </h2>
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-              Camiones transmitiendo su posición GPS en este momento. Inicia sesión para ver el
-              detalle de cada camión y contactar.
+              Explora la red de transporte verificada en Ruta 5. Inicia sesión para ver
+              disponibilidad, rutas activas y datos de contacto.
             </p>
           </div>
         </div>
