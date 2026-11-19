@@ -13,40 +13,33 @@ describe("Precios fijos en pesos", () => {
   it("fija los generadores en importes comerciales sin conversión diaria", () => {
     expect(PLANES_GENERADORES.map(p => p.clp)).toEqual([53990, 131990, 412990]);
   });
-  it("Starter incluye 15 y continúa con adicionales en pesos", () => {
-    expect(calcularDador("generador_starter", 15)?.adicionalesClp).toBe(0);
-    expect(calcularDador("generador_starter", 16)?.totalClp).toBe(55280);
-    expect(calcularDador("generador_starter", 100)?.adicionalesClp).toBe(109650);
+  it("Starter tiene publicaciones ilimitadas sin cobro adicional", () => {
+    expect(calcularDador("generador_starter", 16)?.adicionalesClp).toBe(0);
+    expect(calcularDador("generador_starter", 1000)?.totalClp).toBe(53990);
   });
-  it("Pro incluye 60 y Enterprise sigue sin adicionales", () => {
-    expect(calcularDador("generador_pro", 61)?.adicionalesClp).toBe(790);
+  it("Pro y Enterprise tienen publicaciones ilimitadas sin cobro adicional", () => {
+    expect(calcularDador("generador_pro", 1000)?.adicionalesClp).toBe(0);
+    expect(calcularDador("generador_pro", 1000)?.totalClp).toBe(131990);
     expect(calcularDador("generador_enterprise", 100000)?.adicionalesClp).toBe(0);
   });
   it("aplica Fundador 20% a los nuevos precios", () => {
     expect(calcularFlota(5)?.fundadorClp).toBe(19960);
-    expect(calcularDador("generador_starter", 16)?.fundadorClp).toBe(44224);
+    expect(calcularDador("generador_starter", 16)?.fundadorClp).toBe(43192);
     expect(MESES_LANZAMIENTO).toBe(4);
   });
-  it("conserva el descuento histórico en el resumen de adicionales", () => {
-    expect(importePublicacionesCLP("generador_starter", 0.03)).toBe(1290);
-    expect(importePublicacionesCLP("generador_starter", 0.024)).toBe(1032);
-    expect(importePublicacionesCLP("generador_pro", 0.04)).toBe(1580);
+  it("no muestra importes por publicaciones adicionales en ningún plan generador", () => {
+    expect(importePublicacionesCLP("generador_starter", 0.03)).toBe(0);
+    expect(importePublicacionesCLP("generador_pro", 0.04)).toBe(0);
     expect(importePublicacionesCLP("generador_enterprise", 0)).toBe(0);
   });
 });
 
 describe("Membresías y excedentes en UF", () => {
   it("un camión sigue gratis", () => expect(calcularFlota(1)?.totalUf).toBe(0));
-  it("Starter incluye 15 y registra 0,03 UF desde la publicación 16", () => {
-    expect(calcularDador("generador_starter",15)?.adicionalesUf).toBe(0);
-    expect(calcularDador("generador_starter",16)?.adicionalesUf).toBe(0.03);
-    expect(calcularDador("generador_starter",100)?.adicionalesUf).toBe(2.55);
-    expect(calcularDador("generador_starter",16)?.totalUf).toBe(1.33);
-  });
-  it("Pro incluye 60 y registra 0,02 UF desde la publicación 61", () => {
-    expect(calcularDador("generador_pro",60)?.adicionalesUf).toBe(0);
-    expect(calcularDador("generador_pro",61)?.adicionalesUf).toBe(0.02);
-    expect(calcularDador("generador_pro",100)?.adicionalesUf).toBe(0.8);
+  it("Starter y Pro no registran UF adicional por publicaciones", () => {
+    expect(calcularDador("generador_starter",100)?.adicionalesUf).toBe(0);
+    expect(calcularDador("generador_starter",100)?.totalUf).toBe(1.3);
+    expect(calcularDador("generador_pro",100)?.adicionalesUf).toBe(0);
   });
   it("Enterprise no tiene adicionales", () => {
     expect(calcularDador("generador_enterprise",100000)?.adicionalesUf).toBe(0);

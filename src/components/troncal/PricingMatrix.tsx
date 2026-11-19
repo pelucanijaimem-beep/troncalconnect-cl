@@ -25,7 +25,7 @@ export function PricingMatrix() {
         <TabsTrigger value="dador" className="min-h-12 whitespace-normal"><Building2 className="mr-2 h-4 w-4 shrink-0" />Dadores de Carga</TabsTrigger>
       </TabsList>
       {grupos.map(grupo => <TabsContent key={grupo.id} value={grupo.id} className="mt-6">
-        <div className="mb-6 flex gap-3 border-y border-success/30 bg-success-soft p-4 text-foreground"><Gift className="h-5 w-5 shrink-0 text-success" /><p className="text-sm font-semibold">{grupo.id === "transportista" ? "Flotas: 4 meses gratis durante el lanzamiento. Un camión es gratis para siempre." : "Generadores: primer mes gratis en la membresía base. Los adicionales se registran para facturación manual."}</p></div>
+        <div className="mb-6 flex gap-3 border-y border-success/30 bg-success-soft p-4 text-foreground"><Gift className="h-5 w-5 shrink-0 text-success" /><p className="text-sm font-semibold">{grupo.id === "transportista" ? "Flotas: 4 meses gratis durante el lanzamiento. Un camión es gratis para siempre." : "Generadores: primer mes gratis en la membresía base. Publicaciones ilimitadas, sin cargos adicionales."}</p></div>
         <div className={`grid items-stretch gap-4 ${grupo.id === "transportista" ? "lg:grid-cols-3" : "lg:grid-cols-3"}`}>
           {grupo.planes.map(plan => <article key={plan.id} className={`flex min-w-0 flex-col rounded-lg border bg-card p-5 shadow-card ${plan.clp === 0 ? "border-success" : "border-border"}`}>
             <h3 className="text-lg font-extrabold text-foreground">{plan.nombre}</h3>
@@ -39,7 +39,7 @@ export function PricingMatrix() {
         </div>
         <div className="mt-6 grid gap-4 border-y border-border py-5 sm:grid-cols-2">
           <div><Label htmlFor={`cantidad-${grupo.id}`}>{grupo.id === "transportista" ? "Camiones registrados" : "Publicaciones mensuales · Starter"}</Label><Input id={`cantidad-${grupo.id}`} type="number" min={1} step={1} className="mt-2 max-w-40" value={grupo.id === "transportista" ? camiones : publicaciones} onChange={e => grupo.id === "transportista" ? setCamiones(Number(e.target.value)) : setPublicaciones(Number(e.target.value))} /></div>
-          <div aria-live="polite"><p className="text-sm text-muted-foreground">Tarifa mensual después de la promoción</p><p className="mt-1 text-2xl font-bold text-foreground">{grupo.id === "transportista" ? flota ? formatoCLP(flota.totalClp) : "Cantidad inválida" : dador ? formatoCLP(dador.totalClp) : "Cantidad inválida"}</p><p className="mt-1 text-sm text-primary">{grupo.id === "transportista" ? flota?.plan?.nombre : `Starter · ${dador?.excedentes ?? 0} adicionales`}</p>{grupo.id === "transportista" && flota && <p className="mt-1 text-xs text-muted-foreground">Cálculo referencial para {camiones} {camiones === 1 ? "camión" : "camiones"}</p>}</div>
+          <div aria-live="polite"><p className="text-sm text-muted-foreground">Tarifa mensual después de la promoción</p><p className="mt-1 text-2xl font-bold text-foreground">{grupo.id === "transportista" ? flota ? formatoCLP(flota.totalClp) : "Cantidad inválida" : dador ? formatoCLP(dador.totalClp) : "Cantidad inválida"}</p><p className="mt-1 text-sm text-primary">{grupo.id === "transportista" ? flota?.plan?.nombre : "Starter · publicaciones ilimitadas"}</p>{grupo.id === "transportista" && flota && <p className="mt-1 text-xs text-muted-foreground">Cálculo referencial para {camiones} {camiones === 1 ? "camión" : "camiones"}</p>}</div>
         </div>
       </TabsContent>)}
     </Tabs>

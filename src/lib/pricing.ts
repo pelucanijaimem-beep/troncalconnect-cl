@@ -4,10 +4,10 @@ export const MESES_LANZAMIENTO = 4;
 export const WHATSAPP_PLANES = "56947926230";
 
 export const PLANES_GENERADORES = [
-  { id: "generador_starter", nombre: "Generador Starter", uf: 1.3, clp: 53990, adicionalClp: 1290, publicaciones: 15, adicionalUf: 0.03, desde: false,
-    features: ["15 publicaciones incluidas al mes", "Publicación adicional: +$1.290", "Sin bloqueo por superar la cuota", "Primer mes gratis en la membresía base"] },
-  { id: "generador_pro", nombre: "Generador Pro", uf: 3.2, clp: 131990, adicionalClp: 790, publicaciones: 60, adicionalUf: 0.02, desde: false,
-    features: ["60 publicaciones incluidas al mes", "Publicación adicional: +$790", "Sin bloqueo por superar la cuota", "Primer mes gratis en la membresía base"] },
+  { id: "generador_starter", nombre: "Generador Starter", uf: 1.3, clp: 53990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: false,
+    features: ["Publicaciones ilimitadas", "Sin cargos por publicaciones adicionales", "Primer mes gratis en la membresía base"] },
+  { id: "generador_pro", nombre: "Generador Pro", uf: 3.2, clp: 131990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: false,
+    features: ["Publicaciones ilimitadas", "Sin cargos por publicaciones adicionales", "Primer mes gratis en la membresía base"] },
   { id: "generador_enterprise", nombre: "Generador Enterprise", uf: 10, clp: 412990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: true,
     features: ["Publicaciones ilimitadas", "Sin cargos por publicaciones adicionales", "Cotización y activación manual"] },
 ] as const;
@@ -70,6 +70,8 @@ export function enlacePlan(nombre: string, precioClp: number, desde = false, por
 // Preserve stored publication snapshots; project their existing discounts onto fixed peso rates.
 export function importePublicacionesCLP(planId: string, importeRegistrado: number): number {
   const plan = PLANES_GENERADORES.find(p => p.id === planId);
-  if (!plan || plan.adicionalUf === 0) return 0;
-  return Math.round(importeRegistrado / plan.adicionalUf * plan.adicionalClp);
+  const tarifaUf: number = plan?.adicionalUf ?? 0;
+  const tarifaClp: number = plan?.adicionalClp ?? 0;
+  if (tarifaUf === 0) return 0;
+  return Math.round(importeRegistrado / tarifaUf * tarifaClp);
 }

@@ -53,11 +53,7 @@ export function VerificationBadge({
 export function VerificationDisclaimer({ className = "" }: { className?: string }) {
   return (
     <p className={`text-xs leading-relaxed text-muted-foreground ${className}`}>
-      TroncalTrack realiza un proceso de validación documental basado en los registros públicos
-      disponibles (SII, Registro Civil y MTT). La veracidad y vigencia de la información
-      proporcionada es responsabilidad exclusiva del usuario. TroncalTrack no asume responsabilidad
-      por la falsificación ideológica de documentos por parte de terceros ni garantiza los
-      acuerdos comerciales privados suscritos entre las partes.
+      TroncalTrack realiza una revisión manual de los documentos que cada usuario sube a la plataforma (como cédula tributaria, revisión técnica, permiso de circulación y licencia de conducir), documentos cuyo origen son registros públicos como el SII, el Registro Civil y el MTT. TroncalTrack no consulta estas instituciones de forma automática ni en tiempo real. La veracidad y vigencia de la información proporcionada es responsabilidad exclusiva del usuario. TroncalTrack no asume responsabilidad por la falsificación ideológica de documentos por parte de terceros ni garantiza los acuerdos comerciales privados suscritos entre las partes.
     </p>
   );
 }

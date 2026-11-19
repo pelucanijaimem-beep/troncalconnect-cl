@@ -176,6 +176,13 @@
       "when": 1795016615286,
       "tag": "0024_entrega_nombre_receptor",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795092613775,
+      "tag": "0025_generadores_publicaciones_ilimitadas",
+      "breakpoints": true
     }
   ]
 }

@@ -398,7 +398,7 @@ export function PostLoadDialog({
           </label>
           <VisibilitySwitch id="l-visibilidad" visible={visible} onChange={setVisible} />
           <div aria-live="polite" className="border-t border-border pt-3 text-sm text-muted-foreground">
-            {consumo ? <><p>{consumo.publicadas} publicaciones este mes · {consumo.incluidas ?? "Ilimitadas"} incluidas.</p><p className="mt-1 font-semibold text-foreground">{consumo.siguiente_adicional ? `Publicación adicional: +${formatoCLP(importePublicacionesCLP(consumo.plan, consumo.adicional_uf))}` : "Esta publicación está incluida en tu plan."}</p><p className="mt-1">Los adicionales quedan registrados para facturación manual. No se bloquea por cuota ni se cobra automáticamente. El consumo definitivo se calcula al publicar.</p></> : <p>{errorConsumo || "Consultando publicaciones…"}</p>}
+            {consumo ? <><p>{consumo.publicadas} publicaciones este mes · {consumo.incluidas ?? "Ilimitadas"} incluidas.</p><p className="mt-1 font-semibold text-foreground">{consumo.siguiente_adicional ? `Publicación adicional: +${formatoCLP(importePublicacionesCLP(consumo.plan, consumo.adicional_uf))}` : "Esta publicación está incluida en tu plan."}</p>{consumo.incluidas !== null && <p className="mt-1">Los adicionales quedan registrados para facturación manual. No se bloquea por cuota ni se cobra automáticamente. El consumo definitivo se calcula al publicar.</p>}</> : <p>{errorConsumo || "Consultando publicaciones…"}</p>}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={enviando} className="w-full sm:w-auto">

@@ -20,8 +20,8 @@ export const Route = createFileRoute("/planes")({
 });
 
 const FAQ_SUSCRIPCION = [
-  { q: "¿Qué incluyen los planes de Generadores de Carga?", a: "Starter: $53.990 al mes y 15 publicaciones incluidas. Pro: $131.990 al mes y 60 incluidas. Enterprise: desde $412.990 al mes, publicaciones ilimitadas y cotización manual. No cobramos por licencia de usuario." },
-  { q: "¿Qué pasa si supero las publicaciones incluidas?", a: "Puedes seguir publicando sin bloqueo por cuota. Starter registra +$1.290 por cada publicación adicional y Pro +$790. Enterprise no tiene adicionales. Se guarda el conteo y el importe para facturación manual; todavía no hay cobros automáticos." },
+  { q: "¿Qué incluyen los planes de Generadores de Carga?", a: "Starter: $53.990 al mes con publicaciones ilimitadas. Pro: $131.990 al mes con publicaciones ilimitadas. Enterprise: desde $412.990 al mes, publicaciones ilimitadas y cotización manual. No cobramos por licencia de usuario." },
+  { q: "¿Hay un límite de publicaciones?", a: "No. Starter, Pro y Enterprise incluyen publicaciones ilimitadas y no cobramos por publicaciones adicionales." },
   { q: "¿Cómo se cuentan las publicaciones?", a: "Se cuentan por mes calendario de Chile para toda la organización, incluidas las privadas. Eliminar una carga no borra su consumo registrado. Las publicaciones anteriores al inicio del registro se conservan sin cargos retroactivos; las ya eliminadas no pueden reconstruirse." },
   { q: "¿Cómo se cobra por camión?", a: "Un camión es gratis para siempre. De 2 a 20 camiones registrados:  $4.990 por camión al mes; desde 21: $3.500 por cada camión. Se mantienen los tramos por patentes registradas." },
   { q: "¿En qué moneda están los precios?", a: "Todos los precios están fijados en pesos chilenos (CLP). TroncalTrack se reserva el derecho de ajustar sus tarifas conforme a sus políticas internas de precios, informando oportunamente a los usuarios. La facturación se coordina manualmente." },
