@@ -1276,6 +1276,7 @@ export type Database = {
         Args: { p_accion: string; p_valor?: string }
         Returns: Json
       }
+      gps_viaje_obligatorio: { Args: never; Returns: boolean }
       guardar_chilevalora: {
         Args: { p_numero: string; p_ruta: string; p_vigencia: string }
         Returns: undefined

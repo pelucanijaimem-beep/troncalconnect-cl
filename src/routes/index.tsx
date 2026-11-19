@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PackagePlus, Search, Star, Truck, Ban, Radio, BellRing, Sparkles } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
@@ -82,7 +82,7 @@ import {
 import { useTripTracking } from "@/lib/use-trip-tracking";
 import { DocExpiryPanel } from "@/components/troncal/DocExpiryPanel";
 import { ReturnLoadsSection } from "@/components/troncal/ReturnLoadsSection";
-import { useCompartirUbicacion, useUbicacionViaje } from "@/lib/use-ubicacion-viaje";
+import { useCompartirUbicacion, useGpsObligatorio, useUbicacionViaje } from "@/lib/use-ubicacion-viaje";
 
 
 export const Route = createFileRoute("/")({
@@ -194,6 +194,7 @@ function Index() {
   const navigate = useNavigate();
   const { getViaje, iniciarViaje, finalizarViaje } = useTripTracking();
   const compartir = useCompartirUbicacion(viajeActivo?.id, sesion?.id);
+  const gpsObligatorio = useGpsObligatorio(sesion?.rol === "camionero" ? sesion?.id : undefined);
   const ubicacionRastreo = useUbicacionViaje(rastreo?.id);
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
@@ -347,7 +348,7 @@ function Index() {
     if (!sesion.planActivo) {
       toast.error("Necesitas activar tu acceso de transporte", {
         description:
-          "Camionero Independiente es gratis para siempre y las flotas son gratis durante el lanzamiento. Registra tus patentes en Mi membresía.",
+          "Camionero Independiente es gratis para siempre y las flotas tienen 1 mes gratis durante el lanzamiento. Registra tus patentes en Mi membresía.",
       });
       navigate({ to: "/membresia" });
       return;
@@ -462,6 +463,17 @@ function Index() {
   const viajeRastreo = rastreo ? getViaje(rastreo.id) : null;
   const viajeChofer = viajeActivo ? getViaje(viajeActivo.id) : null;
   const enRutaCount = cargas.filter((c) => getViaje(c.id).estado === "en_ruta").length;
+
+  // Flotas: al abrir un viaje en ruta se enciende el GPS una vez (si el permiso falla, queda el botón para reintentar).
+  const gpsIntentado = useRef<string | null>(null);
+  const viajeActivoId = viajeActivo?.id;
+  const viajeActivoEnRuta = viajeChofer?.estado === "en_ruta";
+  useEffect(() => {
+    if (!gpsObligatorio || !viajeActivoId || !viajeActivoEnRuta || compartir.activo) return;
+    if (gpsIntentado.current === viajeActivoId) return;
+    gpsIntentado.current = viajeActivoId;
+    compartir.activar();
+  }, [gpsObligatorio, viajeActivoId, viajeActivoEnRuta, compartir.activo, compartir.activar]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -937,8 +949,11 @@ function Index() {
         carga={viajeActivo}
         viaje={viajeChofer}
         compartiendo={compartir.activo}
+        gpsObligatorio={gpsObligatorio}
         errorUbicacion={compartir.error}
         onCompartirUbicacion={(activar) => {
+          // Flotas: mientras el viaje está activo no se permite apagar el GPS.
+          if (!activar && gpsObligatorio) return;
           if (activar) {
             compartir.activar();
             toast.success("Compartiendo tu ubicación", {

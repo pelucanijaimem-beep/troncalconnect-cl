@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { consultarMembresia, gestionarMembresia, type Membresia } from "@/lib/membresia.functions";
-import { calcularFlota, calcularDador, precioFundador, importePublicacionesCLP, formatoCLP, patenteValida, WHATSAPP_PLANES } from "@/lib/pricing";
+import { calcularFlota, calcularDador, importePublicacionesCLP, formatoCLP, patenteValida, WHATSAPP_PLANES } from "@/lib/pricing";
 import { refrescarSesion, useSesion } from "@/lib/use-session";
 
 
@@ -44,7 +44,7 @@ export function MembershipManager() {
   return <div className="space-y-6">
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     {!m ? <Button disabled={cargando} onClick={() => void guardar("crear")}>Crear mi organización</Button> : <>
-      <div className="border-b border-border pb-5"><h2 className="text-xl font-bold text-foreground">{m.nombre}</h2><p className="mt-1 text-sm text-muted-foreground">{m.segmento === "transportista" ? "Transportista" : "Dador de Carga"} · {m.camiones} camiones registrados · {m.licencias} usuarios registrados</p><p className="mt-3 text-3xl font-bold text-foreground">{formatoCLP(m.fundador ? precioFundador(tarifa) : tarifa)} <span className="text-sm font-normal">CLP / mes</span></p><p className="mt-1 text-sm text-muted-foreground">Tarifa base después de promociones.{m.fundador ? " Incluye descuento Fundador del 20%." : ""}</p><p className="mt-2 text-sm font-semibold text-success">{m.segmento === "transportista" ? m.camiones === 1 ? "Gratis para siempre" : "Flotas gratis durante el lanzamiento" : `Primer mes gratis hasta ${new Date(m.prueba_hasta).toLocaleDateString("es-CL")}`}</p></div>
+      <div className="border-b border-border pb-5"><h2 className="text-xl font-bold text-foreground">{m.nombre}</h2><p className="mt-1 text-sm text-muted-foreground">{m.segmento === "transportista" ? "Transportista" : "Dador de Carga"} · {m.camiones} camiones registrados · {m.licencias} usuarios registrados</p><p className="mt-3 text-3xl font-bold text-foreground">{formatoCLP(tarifa)} <span className="text-sm font-normal">CLP / mes</span></p><p className="mt-1 text-sm text-muted-foreground">Tarifa base después de promociones.</p><p className="mt-2 text-sm font-semibold text-success">{m.segmento === "transportista" ? m.camiones === 1 ? "Gratis para siempre" : "1 mes gratis durante el lanzamiento" : `Primer mes gratis hasta ${new Date(m.prueba_hasta).toLocaleDateString("es-CL")}`}</p></div>
       {m.consumo && <div className="border-b border-border pb-4"><p className="font-semibold">{m.consumo.publicadas} publicaciones este mes · {m.consumo.incluidas ?? "Ilimitadas"} incluidas</p>{m.consumo.excedentes > 0 && <p className="mt-2 text-sm">{m.consumo.excedentes} adicionales · {formatoCLP(importePublicacionesCLP(m.consumo.plan, m.consumo.importe_uf))} registrados para facturación manual. No se generan cobros automáticos.</p>}</div>}
       {m.propietario && <>
         {m.segmento === "dador" && <Tabs value={m.plan} onValueChange={v => void guardar("plan", v)}><TabsList className="h-auto w-full"><TabsTrigger disabled={cargando} className="whitespace-normal" value="generador_starter">Generador Starter</TabsTrigger><TabsTrigger disabled={cargando} className="whitespace-normal" value="generador_pro">Generador Pro</TabsTrigger></TabsList></Tabs>}

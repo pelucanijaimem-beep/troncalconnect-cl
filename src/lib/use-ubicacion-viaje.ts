@@ -173,3 +173,25 @@ export function useUbicacionViaje(cargaId?: string) {
 
   return ubicacion;
 }
+
+/**
+ * Flota Mediana y Flota Corporativa: el GPS es obligatorio mientras el viaje está activo.
+ * Camionero Independiente sigue con GPS opcional. Lo decide la base de datos según la membresía.
+ */
+export function useGpsObligatorio(userId?: string) {
+  const [obligatorio, setObligatorio] = useState(false);
+  useEffect(() => {
+    if (!userId) {
+      setObligatorio(false);
+      return;
+    }
+    let vivo = true;
+    void supabase.rpc("gps_viaje_obligatorio").then(({ data, error }) => {
+      if (vivo) setObligatorio(!error && data === true);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [userId]);
+  return obligatorio;
+}

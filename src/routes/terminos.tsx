@@ -76,6 +76,14 @@ const SECCIONES = [
       "El enrolamiento, agendamiento y cumplimiento de los requisitos de ingreso a puertos, terminales portuarios y antepuertos (incluyendo sistemas de registro, aplicaciones de agendamiento y documentación exigida por la autoridad portuaria o el terminal concesionario) es responsabilidad exclusiva del Transportista. TroncalTrack.cl no gestiona, controla, garantiza ni se hace responsable por el acceso, rechazo de ingreso, atrasos, multas, costos o pérdidas derivadas de un enrolamiento o agendamiento incompleto, vencido, mal realizado o de cualquier falla de los sistemas operados por terceros (autoridades portuarias, terminales o sus proveedores tecnológicos).",
     ],
   },
+  {
+    numero: "7",
+    titulo: "Ubicación GPS Obligatoria en Planes de Flota",
+    contenido: [
+      "Los camiones registrados en los planes Flota Mediana o Flota Corporativa deben transmitir su ubicación GPS mientras el viaje está activo, por seguridad del Transportista y del Generador de Carga. Durante ese período no se puede desactivar la transmisión desde la plataforma.",
+      "Solo se usa la ubicación GPS del dispositivo. TroncalTrack no accede a contactos, fotos, otras aplicaciones ni ningún otro dato del teléfono. La transmisión se apaga y la ubicación en vivo se elimina automáticamente al confirmar la entrega. En el plan Camionero Independiente compartir la ubicación durante el viaje sigue siendo opcional.",
+    ],
+  },
 ];
 
 function TerminosPage() {

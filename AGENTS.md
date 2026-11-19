@@ -32,9 +32,10 @@
 - Voice availability is gated by an estado_acceso_ia row for voz_ruta (UI shows Próximamente); deleting the row enables it without code changes.
 - The home route assistant computes distance, tolls and $/km from real loads; its authenticated AI call only phrases those numbers and pauses on 402/403, so visitors spend no credits.
 - Signup and password-recovery forms require a server-verified anti-bot token once its secret is configured (open until then); RUT login keeps its own attempt limit instead, so legitimate logins never depend on an outside check.
-- Load cards show only Ver Detalles/Postular; contact/report/block live in the overflow menu. Iniciar Viaje needs a prior application (no accepted state exists).
+- Load cards: Ver Detalles/Postular only, others in overflow; Iniciar Viaje needs a prior application.
 - Load-card margin/Ruta 5 tolls use the shared rentabilidad helper; counteroffers are prefixed application text (no schema change).
-- Document expiry autofill: authenticated server function, never stores the file, keeps validated dates/plates for manual review, pauses on 402/403.
+- Document expiry autofill: authenticated server fn, never stores the file, manual review, pauses on 402/403.
 - Trip ratings are RPC-only on confirmed deliveries (one per party), keyed on user id to prevent forgery.
 - App-started trips close only via the delivery-code RPC (owner-only code, receiver name+RUT, 5 tries); viajes_entrega has no direct grants and no photos are kept, protecting the code and third-party documents.
-- Push alerts: a cargas insert trigger queues a one-time token; pg_net calls the public push route, which sends Web Push only for unused tokens.
+- Push alerts: cargas insert trigger queues a one-time token; pg_net calls the public push route (unused tokens only).
+- Fleet trip GPS obligation comes from the gps_viaje_obligatorio RPC (membership plan), keeping the rule server-defined.

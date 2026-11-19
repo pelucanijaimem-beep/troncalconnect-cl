@@ -56,3 +56,6 @@
 
 - [x] Cierre de entrega con código de 6 dígitos + nombre y RUT del receptor (sin fotos), código visible solo para la empresa, calificación mutua al confirmar.
 - [ ] Probar el cierre con código en la app con dos sesiones reales (empresa y transportista); reglas verificadas en la base de datos con datos temporales revertidos.
+
+- [x] Quitar Empresa Fundadora/20% en todo el sitio, nuevos precios Flota Mediana $7.990 y Flota Corporativa $4.900, 1 mes gratis, GPS obligatorio en flotas y aviso en Términos.
+- [ ] Probar GPS obligatorio en el viaje activo con sesión real de flota; reglas verificadas en la base de datos con datos temporales revertidos.

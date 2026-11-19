@@ -1,6 +1,5 @@
 export const UF_RESPALDO = 41252.94;
-export const DESCUENTO_FUNDADOR = 0.20;
-export const MESES_LANZAMIENTO = 4;
+export const MESES_LANZAMIENTO = 1;
 export const WHATSAPP_PLANES = "56947926230";
 
 export const PLANES_GENERADORES = [
@@ -15,23 +14,20 @@ export const PLANES_GENERADORES = [
 export const PLANES_TRANSPORTE = [
   { id: "camionero_solitario", nombre: "Camionero Independiente", uf: 0, clp: 0, min: 1, max: 1, desde: false,
     features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
-  { id: "flota_mediana", nombre: "Flota Mediana", uf: 0.121, clp: 4990, min: 2, max: 20, desde: false,
-    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "4 meses gratis durante el lanzamiento"] },
-  { id: "flota_enterprise", nombre: "Flota Enterprise", uf: 0.0848, clp: 3500, min: 21, max: Infinity, desde: false,
-    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "4 meses gratis durante el lanzamiento"] },
+  { id: "flota_mediana", nombre: "Flota Mediana", uf: 0.1937, clp: 7990, min: 2, max: 20, desde: false,
+    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "1 mes gratis durante el lanzamiento", "Rastreo GPS obligatorio durante el viaje activo"] },
+  { id: "flota_corporativa", nombre: "Flota Corporativa", uf: 0.1188, clp: 4900, min: 21, max: Infinity, desde: false,
+    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "1 mes gratis durante el lanzamiento", "Rastreo GPS obligatorio durante el viaje activo"] },
 ] as const;
 
-export function precioFundador(uf: number): number {
-  return Math.round(uf * (1 - DESCUENTO_FUNDADOR) * 10000) / 10000;
-}
 export function calcularFlota(camiones: number) {
   if (!Number.isSafeInteger(camiones) || camiones < 0) return null;
   const plan = PLANES_TRANSPORTE.find(p => camiones >= p.min && camiones <= p.max);
-  if (camiones === 0) return { plan: null, totalClp: 0, fundadorClp: 0, totalUf: 0, fundadorUf: 0 };
+  if (camiones === 0) return { plan: null, totalClp: 0, totalUf: 0 };
   if (!plan) return null;
   const totalUf = Math.round(camiones * plan.uf * 10000) / 10000;
   const totalClp = camiones * plan.clp;
-  return { plan, totalClp, fundadorClp: Math.round(totalClp * (1 - DESCUENTO_FUNDADOR)), totalUf, fundadorUf: precioFundador(totalUf) };
+  return { plan, totalClp, totalUf };
 }
 export function calcularDador(planId: string, publicaciones: number) {
   if (!Number.isSafeInteger(publicaciones) || publicaciones < 0) return null;
@@ -42,7 +38,7 @@ export function calcularDador(planId: string, publicaciones: number) {
   const totalUf = Math.round((plan.uf + adicionalesUf) * 10000) / 10000;
   const adicionalesClp = excedentes * plan.adicionalClp;
   const totalClp = plan.clp + adicionalesClp;
-  return { plan, excedentes, adicionalesClp, totalClp, fundadorClp: Math.round(totalClp * (1 - DESCUENTO_FUNDADOR)), adicionalesUf, totalUf, fundadorUf: precioFundador(totalUf) };
+  return { plan, excedentes, adicionalesClp, totalClp, adicionalesUf, totalUf };
 }
 export function normalizarPatente(value: string) { return value.toUpperCase().replace(/[\s-]/g, ""); }
 export function patenteValida(value: string) { return /^(?:[A-Z]{2}\d{4}|[B-DF-HJ-LP-RT-VW-Z]{4}\d{2})$/.test(normalizarPatente(value)); }
@@ -63,7 +59,7 @@ export function leerUFDelDia(payload: unknown, ahora = new Date()): { valor: num
   return null;
 }
 export function enlacePlan(nombre: string, precioClp: number, desde = false, porCamion = false): string {
-  const mensaje = `Hola, quiero ${desde ? "cotizar" : "activar"} el plan ${nombre} de TroncalTrack (${desde ? "desde " : ""}${formatoCLP(precioClp)} CLP${porCamion ? " por camión registrado" : ""}/mes). Quisiera coordinar la activación manual por transferencia y consultar los cupos Empresa Fundadora.`;
+  const mensaje = `Hola, quiero ${desde ? "cotizar" : "activar"} el plan ${nombre} de TroncalTrack (${desde ? "desde " : ""}${formatoCLP(precioClp)} CLP${porCamion ? " por camión registrado" : ""}/mes). Quisiera coordinar la activación manual por transferencia.`;
   return `https://wa.me/${WHATSAPP_PLANES}?text=${encodeURIComponent(mensaje)}`;
 }
 

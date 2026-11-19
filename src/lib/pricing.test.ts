@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { calcularDador, patenteValida, calcularFlota, convertirUF, DESCUENTO_FUNDADOR, leerUFDelDia, MESES_LANZAMIENTO, PLANES_GENERADORES, PLANES_TRANSPORTE, precioFundador, UF_RESPALDO, importePublicacionesCLP } from "./pricing";
+import { calcularDador, patenteValida, calcularFlota, convertirUF, enlacePlan, leerUFDelDia, MESES_LANZAMIENTO, PLANES_GENERADORES, PLANES_TRANSPORTE, UF_RESPALDO, importePublicacionesCLP } from "./pricing";
 
 describe("Precios fijos en pesos", () => {
   it("mantiene los precios por camión solicitados", () => {
-    expect(PLANES_TRANSPORTE.map(p => p.clp)).toEqual([0, 4990, 3500]);
+    expect(PLANES_TRANSPORTE.map(p => p.clp)).toEqual([0, 7990, 4900]);
     expect(calcularFlota(1)?.totalClp).toBe(0);
-    expect(calcularFlota(5)?.totalClp).toBe(24950);
-    expect(calcularFlota(20)?.totalClp).toBe(99800);
-    expect(calcularFlota(21)?.totalClp).toBe(73500);
-    expect(calcularFlota(300)?.totalClp).toBe(1050000);
+    expect(calcularFlota(5)?.totalClp).toBe(39950);
+    expect(calcularFlota(20)?.totalClp).toBe(159800);
+    expect(calcularFlota(21)?.totalClp).toBe(102900);
+    expect(calcularFlota(300)?.totalClp).toBe(1470000);
+  });
+  it("el tramo de más de 20 camiones se llama Flota Corporativa", () => {
+    expect(calcularFlota(21)?.plan?.id).toBe("flota_corporativa");
+    expect(calcularFlota(21)?.plan?.nombre).toBe("Flota Corporativa");
+    expect(PLANES_TRANSPORTE.map(p => p.nombre)).not.toContain("Flota Enterprise");
   });
   it("fija los generadores en importes comerciales sin conversión diaria", () => {
     expect(PLANES_GENERADORES.map(p => p.clp)).toEqual([53990, 131990, 412990]);
@@ -22,10 +27,14 @@ describe("Precios fijos en pesos", () => {
     expect(calcularDador("generador_pro", 1000)?.totalClp).toBe(131990);
     expect(calcularDador("generador_enterprise", 100000)?.adicionalesClp).toBe(0);
   });
-  it("aplica Fundador 20% a los nuevos precios", () => {
-    expect(calcularFlota(5)?.fundadorClp).toBe(19960);
-    expect(calcularDador("generador_starter", 16)?.fundadorClp).toBe(43192);
-    expect(MESES_LANZAMIENTO).toBe(4);
+  it("no aplica descuento Fundador: un solo precio por plan", () => {
+    expect(calcularFlota(5)).not.toHaveProperty("fundadorClp");
+    expect(calcularDador("generador_starter", 16)).not.toHaveProperty("fundadorClp");
+    expect(decodeURIComponent(enlacePlan("Flota Mediana", 7990, false, true))).not.toContain("Fundadora");
+  });
+  it("flotas tienen 1 mes gratis de lanzamiento", () => {
+    expect(MESES_LANZAMIENTO).toBe(1);
+    for (const p of PLANES_TRANSPORTE.slice(1)) expect(p.features).toContain("1 mes gratis durante el lanzamiento");
   });
   it("no muestra importes por publicaciones adicionales en ningún plan generador", () => {
     expect(importePublicacionesCLP("generador_starter", 0.03)).toBe(0);
@@ -50,15 +59,8 @@ describe("Membresías y excedentes en UF", () => {
     expect(calcularDador("generador_pro",0)?.totalUf).toBe(3.2);
   });
   it("conserva los tramos de flotas con bases UF", () => {
-    expect(calcularFlota(5)?.totalUf).toBe(0.605);
-    expect(calcularFlota(20)?.totalUf).toBe(2.42);
-    expect(calcularFlota(21)?.totalUf).toBe(1.7808);
-    expect(calcularFlota(300)?.totalUf).toBe(25.44);
-  });
-  it("conserva Fundador 20% y lanzamiento cuatro meses", () => {
-    expect(DESCUENTO_FUNDADOR).toBe(0.2);
-    expect(precioFundador(1.33)).toBe(1.064);
-    expect(MESES_LANZAMIENTO).toBe(4);
+    expect(calcularFlota(5)?.totalUf).toBe(0.9685);
+    expect(calcularFlota(21)?.totalUf).toBe(2.4948);
   });
   it("rechaza conteos inválidos", () => {
     for (const n of [-1,1.5,NaN,Infinity]) {

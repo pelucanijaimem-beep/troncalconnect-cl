@@ -9,6 +9,7 @@ export function DriverTripDialog({
   carga,
   viaje,
   compartiendo = false,
+  gpsObligatorio = false,
   errorUbicacion = null,
   onCompartirUbicacion,
   onFinalizar,
@@ -17,6 +18,7 @@ export function DriverTripDialog({
   carga: Carga | null;
   viaje: Viaje | null;
   compartiendo?: boolean;
+  gpsObligatorio?: boolean;
   errorUbicacion?: string | null;
   onCompartirUbicacion?: (activar: boolean) => void;
   onFinalizar: (c: Carga) => void;
@@ -98,23 +100,31 @@ export function DriverTripDialog({
             }`}
           >
             <p className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <MapPin className="h-4 w-4 text-primary" /> Compartir mi ubicación en este viaje
+              <MapPin className="h-4 w-4 text-primary" />{" "}
+              {gpsObligatorio ? "GPS obligatorio en este viaje" : "Compartir mi ubicación en este viaje"}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Es opcional. Si lo activas, solo la empresa dueña de esta carga verá tu ubicación
-              aproximada, y se apaga sola al confirmar la entrega.
+              {gpsObligatorio
+                ? "Tu plan de flota exige transmitir la ubicación GPS mientras el viaje está activo, por seguridad de ambas partes. Solo se usa el GPS del teléfono, ningún otro dato, y se apaga y elimina sola al confirmar la entrega."
+                : "Es opcional. Si lo activas, solo la empresa dueña de esta carga verá tu ubicación aproximada, y se apaga sola al confirmar la entrega."}
             </p>
             {errorUbicacion && (
               <p className="mt-2 text-xs font-semibold text-destructive">{errorUbicacion}</p>
             )}
-            <Button
-              variant={compartiendo ? "outline" : "default"}
-              className="mt-3 w-full"
-              disabled={!enRuta}
-              onClick={() => onCompartirUbicacion(!compartiendo)}
-            >
-              {compartiendo ? "Dejar de compartir mi ubicación" : "Compartir mi ubicación"}
-            </Button>
+            {!(gpsObligatorio && compartiendo) && (
+              <Button
+                variant={compartiendo ? "outline" : "default"}
+                className="mt-3 w-full"
+                disabled={!enRuta}
+                onClick={() => onCompartirUbicacion(gpsObligatorio ? true : !compartiendo)}
+              >
+                {gpsObligatorio
+                  ? "Activar GPS del viaje"
+                  : compartiendo
+                    ? "Dejar de compartir mi ubicación"
+                    : "Compartir mi ubicación"}
+              </Button>
+            )}
             {compartiendo && (
               <p className="mt-2 text-center text-xs font-semibold text-foreground">
                 Compartiendo tu ubicación con la empresa de esta carga.

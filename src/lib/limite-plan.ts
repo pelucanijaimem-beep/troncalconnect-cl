@@ -7,7 +7,8 @@ export const NOMBRES_PLAN: Record<string, string> = {
   corporativo_premium: "Corporativo Premium",
   camionero_solitario: "Camionero Independiente",
   flota_mediana: "Flota Mediana",
-  flota_enterprise: "Flota Enterprise",
+  flota_corporativa: "Flota Corporativa",
+  flota_enterprise: "Flota Corporativa",
 };
 
 /**
