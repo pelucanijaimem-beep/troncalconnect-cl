@@ -1,6 +1,6 @@
 /** Rastreador GPS vehicular de cada camión (ID o IMEI). Módulo seguro para el navegador. */
 export const AYUDA_GPS_CAMION =
-  "Obligatorio para operar en TroncalTrack. Instala un rastreador GPS vehicular compatible con protocolo GT06 (se consiguen desde $65.000 CLP en tiendas de electrónica y en línea) y escribe aquí su ID. El GPS debe transmitir solo mientras el viaje está activo, nunca usamos el GPS de tu teléfono para esto.";
+  "Obligatorio para operar en TroncalTrack: es responsabilidad del transportista instalar un rastreador GPS independiente en cada uno de sus camiones, para no usar el GPS de su celular. Escribe aquí el ID o IMEI del rastreador de cada camión.";
 
 export function normalizarGps(value: string) {
   return value.toUpperCase().replace(/[\s-]/g, "");
