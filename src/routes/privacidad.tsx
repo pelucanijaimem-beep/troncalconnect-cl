@@ -81,6 +81,14 @@ function PrivacidadPage() {
               cédula de identidad, licencia de conducir clase A3/A4/A5, SOAP vigente, revisión
               técnica, permiso de circulación, padrón y pólizas de
               carga cuando corresponda.
+              <p className="mt-2">
+                Antes de la revisión manual, los documentos de licencia de conducir, SOAP, revisión
+                técnica y permiso de circulación pasan por una lectura automática asistida por
+                inteligencia artificial, que verifica legibilidad y vigencia para ordenar la revisión.
+                Esta lectura es solo un apoyo: el documento no se almacena para este fin más allá de
+                esa lectura puntual, y la aprobación o rechazo final de cada documento siempre la
+                realiza una persona del equipo de TroncalTrack, nunca la IA de forma autónoma.
+              </p>
             </li>
             <li>
               <strong className="text-foreground">Ubicación GPS en tiempo real:</strong> solo se
