@@ -20,6 +20,7 @@ import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
 import { AdminContactMessages } from "@/components/troncal/AdminContactMessages";
+import { PrerevisionIA, type FilaPrerevision } from "@/components/troncal/PrerevisionIA";
 import {
   DOC_CHILEVALORA,
   documentosRequeridos,
@@ -170,9 +171,10 @@ function AdminPage() {
   const [eliminaciones, setEliminaciones] = useState<SolicitudEliminacion[]>([]);
   const [metricas, setMetricas] = useState<Metricas | null>(null);
   const [alertas, setAlertas] = useState<AlertaInterna[]>([]);
+  const [prerevisiones, setPrerevisiones] = useState<FilaPrerevision[]>([]);
 
   const recargar = useCallback(async () => {
-    const [s, p, c, r, e, m, a] = await Promise.all([
+    const [s, p, c, r, e, m, a, pr] = await Promise.all([
       supabase
         .from("verificaciones")
         .select(
@@ -200,6 +202,7 @@ function AdminPage() {
         .from("alertas_internas")
         .select("id, tipo, user_id, detalle, estado, created_at")
         .order("created_at", { ascending: false }),
+      supabase.from("prerevision_documentos").select("user_id, clave, ruta, veredicto, motivo"),
     ]);
     setSolicitudes((s.data ?? []) as Solicitud[]);
     setPerfiles((p.data ?? []) as Perfil[]);
@@ -208,6 +211,7 @@ function AdminPage() {
     setEliminaciones((e.data ?? []) as SolicitudEliminacion[]);
     setMetricas((m.data ?? null) as Metricas | null);
     setAlertas((a.data ?? []) as AlertaInterna[]);
+    setPrerevisiones(pr.data ?? []);
   }, []);
 
   const resolverAlerta = async (a: AlertaInterna) => {
@@ -535,6 +539,11 @@ function AdminPage() {
                           ) : (
                             <span className="ml-2 text-xs text-muted-foreground">Sin archivo</span>
                           )}
+                          <PrerevisionIA
+                            clave={d.clave}
+                            ruta={ruta}
+                            fila={prerevisiones.find((x) => x.user_id === s.user_id && x.clave === d.clave)}
+                          />
                         </span>
                         <span className="flex gap-1">
                           <Button

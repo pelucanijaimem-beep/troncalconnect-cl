@@ -755,6 +755,33 @@ export type Database = {
         }
         Relationships: []
       }
+      prerevision_documentos: {
+        Row: {
+          clave: string
+          motivo: string
+          revisado_at: string
+          ruta: string
+          user_id: string
+          veredicto: string
+        }
+        Insert: {
+          clave: string
+          motivo?: string
+          revisado_at?: string
+          ruta: string
+          user_id: string
+          veredicto: string
+        }
+        Update: {
+          clave?: string
+          motivo?: string
+          revisado_at?: string
+          ruta?: string
+          user_id?: string
+          veredicto?: string
+        }
+        Relationships: []
+      }
       publicaciones_contadores: {
         Row: {
           cantidad: number

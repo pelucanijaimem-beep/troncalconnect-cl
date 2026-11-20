@@ -197,6 +197,13 @@
       "when": 1795139552634,
       "tag": "0027_mes_gratis_registro_gps_camion",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1795174536312,
+      "tag": "0028_prerevision_documentos_ia",
+      "breakpoints": true
     }
   ]
 }

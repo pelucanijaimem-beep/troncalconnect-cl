@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cerrarSesion, useSesion } from "@/lib/use-session";
 import { useEsAdmin } from "@/lib/use-admin";
 import { Header } from "@/components/troncal/Header";
+import { PrerevisionIA, type FilaPrerevision } from "@/components/troncal/PrerevisionIA";
 import {
   DOC_CHILEVALORA,
   documentosRequeridos,
@@ -99,6 +100,7 @@ function HojaDeVidaUsuario() {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [alertas, setAlertas] = useState<AlertaInterna[]>([]);
   const [reportes, setReportes] = useState<Reporte[]>([]);
+  const [prerevisiones, setPrerevisiones] = useState<FilaPrerevision[]>([]);
   const [cargandoDatos, setCargandoDatos] = useState(true);
   const [notas, setNotas] = useState<Record<string, string>>({});
   const [trabajando, setTrabajando] = useState(false);
@@ -106,7 +108,7 @@ function HojaDeVidaUsuario() {
   const recargar = useCallback(async () => {
     if (!esAdmin || !sesion) return;
     setCargandoDatos(true);
-    const [p, s, a, r] = await Promise.all([
+    const [p, s, a, r, pr] = await Promise.all([
       supabase.rpc("perfiles_admin"),
       supabase
         .from("verificaciones")
@@ -125,6 +127,7 @@ function HojaDeVidaUsuario() {
         .select("id, tipo, motivo, detalle, estado, created_at")
         .eq("reportado_id", id)
         .order("created_at", { ascending: false }),
+      supabase.from("prerevision_documentos").select("user_id, clave, ruta, veredicto, motivo").eq("user_id", id),
     ]);
     if (p.error || s.error || a.error || r.error) {
       toast.error("No se pudo cargar la hoja de vida. Inténtalo nuevamente.");
@@ -136,6 +139,7 @@ function HojaDeVidaUsuario() {
     setSolicitudes((s.data ?? []) as Solicitud[]);
     setAlertas((a.data ?? []) as AlertaInterna[]);
     setReportes((r.data ?? []) as Reporte[]);
+    setPrerevisiones(pr.data ?? []);
     setCargandoDatos(false);
   }, [id, esAdmin, sesion]);
 
@@ -484,6 +488,11 @@ function HojaDeVidaUsuario() {
                               ) : (
                                 <span className="ml-2 text-xs text-muted-foreground">Sin archivo</span>
                               )}
+                              <PrerevisionIA
+                                clave={d.clave}
+                                ruta={ruta}
+                                fila={prerevisiones.find((x) => x.clave === d.clave)}
+                              />
                             </span>
                             <span className="flex gap-1">
                               <Button

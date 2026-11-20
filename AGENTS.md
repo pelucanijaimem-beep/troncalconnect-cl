@@ -34,8 +34,9 @@
 - Signup and password-recovery forms require a server-verified anti-bot token once its secret is configured (open until then); RUT login keeps its own attempt limit instead, so legitimate logins never depend on an outside check.
 - Load cards: Ver Detalles/Postular only, others in overflow; Iniciar Viaje needs a prior application.
 - Load-card margin/Ruta 5 tolls use the shared rentabilidad helper; counteroffers are prefixed application text (no schema change).
-- Document expiry autofill: authenticated server fn, never stores the file, manual review, pauses on 402/403.
+- Expiry autofill: auth server fn, file never stored, manual review, pauses on 402/403.
 - Trip ratings are RPC-only on confirmed deliveries (one per party), keyed on user id to prevent forgery.
-- App-started trips close only via the delivery-code RPC (owner-only code, receiver name+RUT, 5 tries); viajes_entrega has no direct grants and no photos are kept, protecting the code and third-party documents.
+- App-started trips close only via the delivery-code RPC (owner-only code, receiver name+RUT, 5 tries); viajes_entrega has no direct grants, no photos kept.
 - Push alerts: cargas insert trigger queues a one-time token; pg_net calls the public push route (unused tokens only).
-- Trip GPS rules stay server-defined: gps_viaje_obligatorio RPC for fleets; tracker IDs only via owner-only registrar_gps_camion; missing trackers warn, never block.
+- Trip GPS rules are server-defined (gps_viaje_obligatorio, owner-only registrar_gps_camion); missing trackers warn, never block.
+- AI doc pre-review re-reads the caller's stored file, checks expiry server-side, keeps an admin-only advisory verdict per path, pauses on 402/403.

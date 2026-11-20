@@ -51,7 +51,7 @@ const SECCIONES = [
     numero: "3",
     titulo: "Sello de Verificación 'TroncalCheck'",
     contenido: [
-      "La verificación de antecedentes (TroncalCheck) realizada por TroncalTrack.cl consiste en una revisión informativa de documentos públicos (tales como RUT, revisión técnica, inscripción MTT u hoja de vida de conductor).",
+      "La verificación de antecedentes (TroncalCheck) realizada por TroncalTrack.cl consiste en una revisión informativa de documentos públicos (tales como RUT, revisión técnica, inscripción MTT).",
       "Dicha verificación constituye una herramienta de apoyo preventivo y no representa una garantía absoluta o fianza sobre la conducta moral, idoneidad profesional o solvencia financiera de los usuarios. Cada parte debe aplicar la debida diligencia antes de entregar mercancías o firmar órdenes de flete.",
     ],
   },

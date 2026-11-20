@@ -242,7 +242,6 @@ const ETIQUETAS_DOCUMENTO: Record<string, string> = {
   revision_tecnica: "Revisión Técnica",
   permiso_circulacion: "Permiso de Circulación",
   licencia: "Licencia de conducir A3/A4/A5",
-  antecedentes: "Certificado de Antecedentes",
   rut_empresa: "RUT de la empresa (e-RUT)",
   representante_legal: "Cédula del representante legal",
   carpeta_tributaria: "Carpeta Tributaria Electrónica",

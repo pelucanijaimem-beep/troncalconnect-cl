@@ -79,7 +79,7 @@ function PrivacidadPage() {
             <li>
               <strong className="text-foreground">Documentos de verificación TroncalCheck:</strong>{" "}
               cédula de identidad, licencia de conducir clase A3/A4/A5, SOAP vigente, revisión
-              técnica, permiso de circulación, certificado de antecedentes, padrón y pólizas de
+              técnica, permiso de circulación, padrón y pólizas de
               carga cuando corresponda.
             </li>
             <li>

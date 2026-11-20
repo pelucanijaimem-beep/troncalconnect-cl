@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { avisarDocumentosSubidos } from "@/lib/notificaciones.functions";
+import { preRevisarDocumentos } from "@/lib/prerevision-documentos.functions";
 
 export type EstadoVerificacion =
   | "sin_verificar"
@@ -16,7 +17,6 @@ export type Documentos = {
   soat?: string;
   revision_tecnica?: string;
   permiso_circulacion?: string;
-  antecedentes?: string;
   poliza?: string;
   rut_empresa?: string;
   representante_legal?: string;
@@ -38,7 +38,6 @@ export type ClaveDocumento =
   | "revision_tecnica"
   | "permiso_circulacion"
   | "licencia"
-  | "antecedentes"
   | "rut_empresa"
   | "representante_legal"
   | "carpeta_tributaria"
@@ -74,11 +73,6 @@ export const DOCUMENTOS_CAMIONERO: DefinicionDocumento[] = [
     clave: "licencia",
     label: "Licencia de conducir clase A3 / A4 / A5",
     ayuda: "Ambos lados, vigente y legible.",
-  },
-  {
-    clave: "antecedentes",
-    label: "Certificado de Antecedentes",
-    ayuda: "Emitido dentro de los últimos 90 días.",
   },
 ];
 
@@ -290,6 +284,10 @@ export async function enviarDocumentos(params: {
   // Aviso interno al equipo: un solo correo con todos los documentos subidos.
   void avisarDocumentosSubidos({ data: { documentos: Object.keys(documentos) } }).catch(() => {
     /* el aviso no bloquea el envío */
+  });
+  // Pre-revisión orientativa con IA para el administrador; si falla, queda la revisión manual normal.
+  void preRevisarDocumentos({ data: { claves: Object.keys(documentos) } }).catch(() => {
+    /* no bloquea el envío */
   });
   await recargarVerificaciones();
   return null;
