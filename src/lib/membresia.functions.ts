@@ -8,7 +8,7 @@ export type Membresia = {
   fundador: boolean; total_fundador_uf: number; prueba_hasta: string; pago_hasta: string | null;
   suscripcion_id: string | null;
   consumo: ConsumoPublicaciones | null;
-  camiones_detalle: { id: string; patente: string }[];
+  camiones_detalle: { id: string; patente: string; gps_dispositivo_id: string | null }[];
   miembros_detalle: { id: string; user_id: string; activo: boolean }[];
 };
 export const consultarMembresia = createServerFn({ method: "POST" })
@@ -24,6 +24,15 @@ export const gestionarMembresia = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const result = await context.supabase.rpc("gestionar_membresia_uf", { p_accion: data.accion, p_valor: data.valor });
     if (result.error) return { membresia: null, error: result.error.code === "23505" ? "Esta patente o cuenta ya está registrada." : result.error.code === "P0001" ? result.error.message : "No pudimos guardar el cambio." };
+    return { membresia: result.data as Membresia | null, error: null };
+  });
+
+export const registrarGpsCamion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((value) => z.object({ camion: z.string().uuid(), gps: z.string().max(60).default("") }).parse(value))
+  .handler(async ({ context, data }) => {
+    const result = await context.supabase.rpc("registrar_gps_camion", { p_camion: data.camion, p_gps: data.gps });
+    if (result.error) return { membresia: null, error: result.error.code === "P0001" ? result.error.message : "No pudimos guardar el GPS del camión." };
     return { membresia: result.data as Membresia | null, error: null };
   });
 

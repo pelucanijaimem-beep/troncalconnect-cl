@@ -78,10 +78,11 @@ const SECCIONES = [
   },
   {
     numero: "7",
-    titulo: "Ubicación GPS Obligatoria en Planes de Flota",
+    titulo: "Rastreador GPS Vehicular Obligatorio",
     contenido: [
-      "Los camiones registrados en los planes Flota Mediana o Flota Corporativa deben transmitir su ubicación GPS mientras el viaje está activo, por seguridad del Transportista y del Generador de Carga. Durante ese período no se puede desactivar la transmisión desde la plataforma.",
-      "Solo se usa la ubicación GPS del dispositivo. TroncalTrack no accede a contactos, fotos, otras aplicaciones ni ningún otro dato del teléfono. La transmisión se apaga y la ubicación en vivo se elimina automáticamente al confirmar la entrega. En el plan Camionero Independiente compartir la ubicación durante el viaje sigue siendo opcional.",
+      "TroncalTrack exige que cada camión registrado tenga instalado un rastreador GPS vehicular, en todos los planes (Transportista con un camión, Flota Mediana y Flota Corporativa). La ubicación del viaje debe provenir del rastreador instalado en el camión, no del teléfono del conductor.",
+      "El rastreador solo transmite mientras el viaje está activo: desde que se inicia el viaje hasta que se confirma la entrega. Al confirmar la entrega la transmisión se detiene y la ubicación en vivo se elimina automáticamente.",
+      "Mientras se completa esta transición, la plataforma usa de forma temporal la ubicación GPS del teléfono durante el viaje activo. En ese caso solo se usa la ubicación: TroncalTrack no accede a contactos, fotos, otras aplicaciones ni ningún otro dato del teléfono. En los planes Flota Mediana y Flota Corporativa esta transmisión no se puede desactivar mientras el viaje está activo; en el plan Transportista con un camión sigue siendo opcional durante la transición.",
     ],
   },
 ];

@@ -512,18 +512,21 @@ export type Database = {
       organizacion_camiones: {
         Row: {
           created_at: string
+          gps_dispositivo_id: string | null
           id: string
           organizacion_id: string
           patente: string
         }
         Insert: {
           created_at?: string
+          gps_dispositivo_id?: string | null
           id?: string
           organizacion_id: string
           patente: string
         }
         Update: {
           created_at?: string
+          gps_dispositivo_id?: string | null
           id?: string
           organizacion_id?: string
           patente?: string
@@ -1333,6 +1336,10 @@ export type Database = {
         Returns: string
       }
       regenerar_codigo_entrega: { Args: { p_carga: string }; Returns: string }
+      registrar_gps_camion: {
+        Args: { p_camion: string; p_gps: string }
+        Returns: Json
+      }
       registrar_sesion_identidad_v2: {
         Args: { p_session: string; p_user: string }
         Returns: undefined

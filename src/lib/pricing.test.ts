@@ -32,9 +32,9 @@ describe("Precios fijos en pesos", () => {
     expect(calcularDador("generador_starter", 16)).not.toHaveProperty("fundadorClp");
     expect(decodeURIComponent(enlacePlan("Flota Mediana", 7990, false, true))).not.toContain("Fundadora");
   });
-  it("flotas tienen 1 mes gratis de lanzamiento", () => {
+  it("flotas tienen el primer mes gratis desde el registro", () => {
     expect(MESES_LANZAMIENTO).toBe(1);
-    for (const p of PLANES_TRANSPORTE.slice(1)) expect(p.features).toContain("1 mes gratis durante el lanzamiento");
+    for (const p of PLANES_TRANSPORTE.slice(1)) expect(p.features).toContain("Primer mes gratis desde tu registro");
   });
   it("no muestra importes por publicaciones adicionales en ningún plan generador", () => {
     expect(importePublicacionesCLP("generador_starter", 0.03)).toBe(0);

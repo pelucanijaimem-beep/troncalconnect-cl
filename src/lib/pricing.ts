@@ -12,12 +12,12 @@ export const PLANES_GENERADORES = [
 ] as const;
 
 export const PLANES_TRANSPORTE = [
-  { id: "camionero_solitario", nombre: "Camionero Independiente", uf: 0, clp: 0, min: 1, max: 1, desde: false,
+  { id: "camionero_solitario", nombre: "Transportista con un camión", uf: 0, clp: 0, min: 1, max: 1, desde: false,
     features: ["1 camión registrado", "Acceso completo al tablero de cargas", "Verificación de identidad con Didit", "Sello TroncalCheck tras aprobación documental"] },
   { id: "flota_mediana", nombre: "Flota Mediana", uf: 0.1937, clp: 7990, min: 2, max: 20, desde: false,
-    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "1 mes gratis durante el lanzamiento", "Rastreo GPS obligatorio durante el viaje activo"] },
+    features: ["De 2 a 20 camiones registrados", "Tarifa mensual por patente registrada", "Primer mes gratis desde tu registro", "Rastreo GPS obligatorio durante el viaje activo"] },
   { id: "flota_corporativa", nombre: "Flota Corporativa", uf: 0.1188, clp: 4900, min: 21, max: Infinity, desde: false,
-    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "1 mes gratis durante el lanzamiento", "Rastreo GPS obligatorio durante el viaje activo"] },
+    features: ["Más de 20 camiones registrados", "Tarifa corporativa para todos tus camiones", "Primer mes gratis desde tu registro", "Rastreo GPS obligatorio durante el viaje activo"] },
 ] as const;
 
 export function calcularFlota(camiones: number) {

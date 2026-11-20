@@ -43,6 +43,7 @@ import { LockedBoard } from "@/components/troncal/LockedBoard";
 import { TrustProfileCard } from "@/components/troncal/TrustProfileCard";
 import { PendingRatingsCard } from "@/components/troncal/PendingRatingsCard";
 import { PushAlertBanner } from "@/components/troncal/PushAlertBanner";
+import { GpsPendienteBanner } from "@/components/troncal/GpsPendienteBanner";
 import { refrescarCalificaciones, useCalificacionesPendientes } from "@/lib/use-calificaciones";
 import { CompareLoadsDialog } from "@/components/troncal/CompareLoadsDialog";
 import { EntregaCodigoDialog } from "@/components/troncal/EntregaCodigoDialog";
@@ -348,7 +349,7 @@ function Index() {
     if (!sesion.planActivo) {
       toast.error("Necesitas activar tu acceso de transporte", {
         description:
-          "Camionero Independiente es gratis para siempre y las flotas tienen 1 mes gratis durante el lanzamiento. Registra tus patentes en Mi membresía.",
+          "El plan Transportista con un camión es gratis para siempre y las flotas tienen el primer mes gratis desde su registro. Registra tus patentes en Mi membresía.",
       });
       navigate({ to: "/membresia" });
       return;
@@ -579,6 +580,8 @@ function Index() {
         </div>
 
         {sesion.rol === "empresa" && <PublicationQuotaNotice userId={sesion.id} revision={CARGAS.filter(c => c.userId === sesion.id).map(c => c.id).join(",")} />}
+
+        {esCamionero && <GpsPendienteBanner userId={sesion.id} />}
 
         {esCamionero && (
           <PushAlertBanner

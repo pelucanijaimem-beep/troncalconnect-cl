@@ -59,3 +59,6 @@
 
 - [x] Quitar Empresa Fundadora/20% en todo el sitio, nuevos precios Flota Mediana $7.990 y Flota Corporativa $4.900, 1 mes gratis, GPS obligatorio en flotas y aviso en Términos.
 - [ ] Probar GPS obligatorio en el viaje activo con sesión real de flota; reglas verificadas en la base de datos con datos temporales revertidos.
+
+- [x] Mes gratis de flotas por registro (no por lanzamiento), renombrar plan gratuito a «Transportista con un camión», campo ID/IMEI del rastreador GPS por camión con aviso no bloqueante y Términos actualizados.
+- [ ] Reemplazar el GPS del teléfono por el rastreador del camión; bloqueado: falta el servidor que recibe el rastreador.

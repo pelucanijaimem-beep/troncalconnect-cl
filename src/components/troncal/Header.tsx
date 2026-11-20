@@ -129,7 +129,7 @@ export function Header({
                   </span>
                   <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary">
                     <BadgeCheck className="h-3.5 w-3.5" />
-                    {sesion.planActivo ? "Plan Pro activo" : "Camionero Independiente"}
+                    {sesion.planActivo ? "Plan Pro activo" : "Transportista con un camión"}
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -213,7 +213,7 @@ export function Header({
                   </div>
                   <p className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
                     <BadgeCheck className="h-3.5 w-3.5" />
-                    {sesion.planActivo ? "Plan Pro activo" : "Camionero Independiente"}
+                    {sesion.planActivo ? "Plan Pro activo" : "Transportista con un camión"}
                   </p>
                   <Button
                     variant="outline"

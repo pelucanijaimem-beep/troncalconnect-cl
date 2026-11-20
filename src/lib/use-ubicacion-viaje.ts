@@ -176,7 +176,7 @@ export function useUbicacionViaje(cargaId?: string) {
 
 /**
  * Flota Mediana y Flota Corporativa: el GPS es obligatorio mientras el viaje está activo.
- * Camionero Independiente sigue con GPS opcional. Lo decide la base de datos según la membresía.
+ * Transportista con un camión sigue con GPS opcional. Lo decide la base de datos según la membresía.
  */
 export function useGpsObligatorio(userId?: string) {
   const [obligatorio, setObligatorio] = useState(false);
