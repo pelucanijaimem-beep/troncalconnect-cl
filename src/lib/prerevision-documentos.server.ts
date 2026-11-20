@@ -25,7 +25,7 @@ const INSTRUCCIONES =
 export async function preRevisarDocumento(
   request: Request,
   apiKey: string,
-  archivo: { clave: ClavePrerevision; nombre: string; tipo: TipoLectura; datos: Uint8Array },
+  archivo: { clave: ClavePrerevision; nombre: string; tipo: TipoLectura; datos: Uint8Array; hoy: string },
 ): Promise<{ lectura: LecturaPrerevision } | { error: string; status: number }> {
   const parte = { type: "file", filename: archivo.nombre, data: archivo.datos, mediaType: archivo.tipo } as const;
   try {
@@ -36,7 +36,14 @@ export async function preRevisarDocumento(
         {
           role: "user",
           content: [
-            { type: "text", text: `Documento declarado: ${NOMBRE_DOCUMENTO[archivo.clave]}. Revísalo.` },
+            {
+              type: "text",
+              text:
+                `Fecha actual del servidor: ${archivo.hoy} (AAAA-MM-DD); úsala como el día de hoy, no supongas otra. ` +
+                `Documento declarado: ${NOMBRE_DOCUMENTO[archivo.clave]}. ` +
+                "¿El tipo de documento coincide con lo declarado? ¿Se ve legible? " +
+                `¿La fecha de vigencia ya pasó respecto de ${archivo.hoy}?`,
+            },
             parte,
           ],
         },

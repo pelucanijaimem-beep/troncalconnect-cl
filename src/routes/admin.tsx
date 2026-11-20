@@ -482,7 +482,10 @@ function AdminPage() {
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {Object.entries(s.documentos ?? {}).map(([campo, ruta]) => (
+                  {Object.entries(s.documentos ?? {})
+                    // Archivos antiguos del certificado de antecedentes (ya no se pide) se ignoran.
+                    .filter(([campo]) => campo !== "antecedentes")
+                    .map(([campo, ruta]) => (
                     <Button
                       key={campo}
                       size="sm"

@@ -204,6 +204,13 @@
       "when": 1795174536312,
       "tag": "0028_prerevision_documentos_ia",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1795174937637,
+      "tag": "0029_checklist_sin_antecedentes",
+      "breakpoints": true
     }
   ]
 }

@@ -81,6 +81,7 @@ export const preRevisarDocumentos = createServerFn({ method: "POST" })
           nombre: ruta.split("/").pop() ?? `${clave}.dat`,
           tipo,
           datos,
+          hoy,
         });
         if ("error" in resultado) {
           console.error("[prerevision-documentos] ia", { etapa: resultado.error, status: resultado.status });
