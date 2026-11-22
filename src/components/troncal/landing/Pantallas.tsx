@@ -298,7 +298,7 @@ export function PantallaVerificacion() {
     "Licencia profesional A5",
     "SOAP vigente",
     "Revisión técnica aprobada",
-    "Carpeta tributaria SII (empresa)",
+    "Permiso de circulación vigente",
   ];
   return (
     <div className="space-y-3">
