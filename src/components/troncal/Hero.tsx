@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Rocket, Truck } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { BookOpen, Rocket, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Hero({ onRegistro, children }: { onRegistro: () => void; children?: ReactNode }) {
@@ -27,6 +28,15 @@ export function Hero({ onRegistro, children }: { onRegistro: () => void; childre
             </a>
           </Button>
         </div>
+        <div className="mt-5 flex justify-center">
+          <Link
+            to="/guia"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <BookOpen className="h-4 w-4 text-primary" /> Ver cómo funciona: guía rápida de uso
+          </Link>
+        </div>
+
         {children}
       </div>
     </section>
