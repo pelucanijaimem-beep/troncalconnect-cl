@@ -6,7 +6,7 @@ export const PLANES_GENERADORES = [
   { id: "generador_starter", nombre: "Generador Starter", uf: 1.3, clp: 53990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: false,
     features: ["Publicaciones ilimitadas", "1 usuario coordinador (1 planta o bodega)", "Acceso a transportistas con sello TroncalCheck y GPS en vivo", "Primer mes gratis"] },
   { id: "generador_pro", nombre: "Generador Pro", uf: 3.2, clp: 131990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: false,
-    features: ["Publicaciones ilimitadas", "Hasta 5 usuarios coordinadores (múltiples sucursales)", "Seguimiento simultáneo y historial de entregas con PIN", "Primer mes gratis"] },
+    features: ["Publicaciones ilimitadas", "Hasta 5 usuarios coordinadores (múltiples sucursales)", "Seguimiento simultáneo e historial de entregas con PIN", "Primer mes gratis"] },
   { id: "generador_enterprise", nombre: "Generador Enterprise", uf: 10, clp: 412990, adicionalClp: 0, publicaciones: Infinity, adicionalUf: 0, desde: true,
     features: ["Publicaciones y usuarios ilimitados", "Operación multi-planta de alto volumen", "Activación personalizada y soporte prioritario"] },
 ] as const;
