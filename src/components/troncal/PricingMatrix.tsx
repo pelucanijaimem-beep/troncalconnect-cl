@@ -25,7 +25,7 @@ export function PricingMatrix() {
         <TabsTrigger value="dador" className="min-h-12 whitespace-normal"><Building2 className="mr-2 h-4 w-4 shrink-0" />Dadores de Carga</TabsTrigger>
       </TabsList>
       {grupos.map(grupo => <TabsContent key={grupo.id} value={grupo.id} className="mt-6">
-        <div className="mb-6 flex gap-3 border-y border-success/30 bg-success-soft p-4 text-foreground"><Gift className="h-5 w-5 shrink-0 text-success" /><p className="text-sm font-semibold">{grupo.id === "transportista" ? "Flotas: primer mes gratis desde tu registro. Un camión es gratis para siempre." : "Generadores: primer mes gratis en la membresía base. Publicaciones ilimitadas, sin cargos adicionales."}</p></div>
+        <div className="mb-6 flex gap-3 border-y border-success/30 bg-success-soft p-4 text-foreground"><Gift className="h-5 w-5 shrink-0 text-success" /><p className="text-sm font-semibold">{grupo.id === "transportista" ? "Flotas: primer mes gratis desde tu registro. Un camión es gratis para siempre." : "Primer mes gratis en planes Starter y Pro. Publicaciones ilimitadas, sin comisiones por viaje."}</p></div>
         <div className={`grid items-stretch gap-4 ${grupo.id === "transportista" ? "lg:grid-cols-3" : "lg:grid-cols-3"}`}>
           {grupo.planes.map(plan => <article key={plan.id} className={`flex min-w-0 flex-col rounded-lg border bg-card p-5 shadow-card ${plan.clp === 0 ? "border-success" : "border-border"}`}>
             <h3 className="text-lg font-extrabold text-foreground">{plan.nombre}</h3>
