@@ -1380,6 +1380,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      reportes_ruta_recientes: {
+        Args: {
+          p_ciudades: string[]
+          p_dias?: number
+          p_exacta?: boolean
+          p_limite?: number
+        }
+        Returns: {
+          created_at: string
+          destino: string
+          detalle: string
+          id: string
+          origen: string
+          tipo: string
+        }[]
+      }
       reputacion_usuarios: {
         Args: never
         Returns: {

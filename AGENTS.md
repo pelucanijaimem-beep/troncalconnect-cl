@@ -28,7 +28,8 @@
 - Load chat lives in mensajes_carga, scoped by postulación + load owner via security-definer helper; read flags change only through an RPC so participants cannot edit message content.
 - The route safety center is an isolated browser-only demonstration; its PINs, sharing links, identity samples and SOS never authorize deliveries, expose real trips or dispatch emergency alerts.
 - Administrative user detail uses an escaped admin_ leaf route and the existing perfiles_admin RPC plus administrator-scoped RLS/Storage access; this avoids nesting the full admin panel or exposing private profile reads.
-- Route-report AI summaries run in an authenticated server function over RLS-scoped recent reports, skip the model when none exist, and only phrase existing data; this prevents invented danger alerts.
+- Route-report AI summaries run in an authenticated server function over the author-free reportes_ruta_recientes RPC, skip the model when none exist, and only phrase existing data; this prevents invented danger alerts.
+- Shared route-report reads go only through the reportes_ruta_recientes RPC (no author ids, blocked accounts excluded); direct table reads are owner/admin-only so reporters stay anonymous.
 - Voice availability is gated by an estado_acceso_ia row for voz_ruta (UI shows Próximamente); deleting the row enables it without code changes.
 - The home route assistant computes distance, tolls and $/km from real loads; its authenticated AI call only phrases those numbers and pauses on 402/403, so visitors spend no credits.
 - Signup and password-recovery forms require a server-verified anti-bot token once its secret is configured (open until then); RUT login keeps its own attempt limit instead, so legitimate logins never depend on an outside check.

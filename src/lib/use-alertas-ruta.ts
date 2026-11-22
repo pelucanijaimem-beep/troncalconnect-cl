@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { DIAS_VIGENCIA_REPORTE, filtroCiudades } from "./alertas-ruta-resumen";
+import { DIAS_VIGENCIA_REPORTE, ciudadesConsulta } from "./alertas-ruta-resumen";
 
 export const TIPOS_ALERTA_RUTA = [
   "Robo o intento de robo",
@@ -44,16 +44,13 @@ export async function alertasRecientesPara(
   origen: string,
   destino: string,
 ): Promise<AlertaRuta[]> {
-  const filtro = filtroCiudades(origen, destino);
-  if (!filtro) return [];
-  const desde = new Date(Date.now() - DIAS_VIGENCIA_REPORTE * 24 * 60 * 60 * 1000).toISOString();
-  const { data, error } = await supabase
-    .from("alertas_ruta")
-    .select("id, tipo, origen, destino, detalle, created_at")
-    .gte("created_at", desde)
-    .or(filtro)
-    .order("created_at", { ascending: false })
-    .limit(10);
+  const ciudades = ciudadesConsulta(origen, destino);
+  if (!ciudades.length) return [];
+  const { data, error } = await supabase.rpc("reportes_ruta_recientes", {
+    p_ciudades: ciudades,
+    p_dias: DIAS_VIGENCIA_REPORTE,
+    p_limite: 10,
+  });
   if (error) return [];
   return data ?? [];
 }

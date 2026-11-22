@@ -22,6 +22,11 @@ export function filtroCiudades(origen: string, destino: string): string | null {
   return ciudades.flatMap((c) => [`origen.ilike.%${c}%`, `destino.ilike.%${c}%`]).join(",");
 }
 
+/** Ciudades limpias (origen y destino) para la consulta segura de reportes. */
+export function ciudadesConsulta(origen: string, destino: string): string[] {
+  return [limpiarCiudad(origen), limpiarCiudad(destino)].filter(Boolean);
+}
+
 /** Datos mínimos y verificables que recibe el modelo; nunca incluye usuarios. */
 export function datosParaResumen(reportes: ReporteParaResumen[], ahora: Date) {
   return reportes.slice(0, MAX_REPORTES_RESUMEN).map((r) => ({

@@ -115,17 +115,12 @@ export async function reportesParaVoz(contexto: ContextoVoz, origen: string, des
   const lugares = [origen, destino].filter(Boolean);
   if (!lugares.length)
     return { reportes: [], pregunta: "¿Qué origen y destino quieres consultar?" };
-  const { data, error } = await contexto.supabase
-    .from("alertas_ruta")
-    .select("id,tipo,origen,destino,detalle,created_at")
-    .gte("created_at", new Date(ahora - 45 * 86400000).toISOString())
-    .or(
-      lugares
-        .flatMap((c) => [`origen.eq.${JSON.stringify(c)}`, `destino.eq.${JSON.stringify(c)}`])
-        .join(","),
-    )
-    .order("created_at", { ascending: false })
-    .limit(100);
+  const { data, error } = await contexto.supabase.rpc("reportes_ruta_recientes", {
+    p_ciudades: lugares,
+    p_exacta: true,
+    p_dias: 45,
+    p_limite: 100,
+  });
   if (error) throw new Error("No pudimos consultar los reportes de ruta.");
   return {
     fuente: "Reportes de camioneros en TroncalTrack",

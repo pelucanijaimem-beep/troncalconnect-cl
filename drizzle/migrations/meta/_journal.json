@@ -211,6 +211,13 @@
       "when": 1795174937637,
       "tag": "0029_checklist_sin_antecedentes",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1795313618601,
+      "tag": "0030_alertas_ruta_lectura_sin_autor",
+      "breakpoints": true
     }
   ]
 }
