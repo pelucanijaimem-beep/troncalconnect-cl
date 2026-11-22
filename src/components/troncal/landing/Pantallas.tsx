@@ -1,10 +1,12 @@
 import type { ComponentType, ReactNode } from "react";
 import {
+  Ban,
   BatteryFull,
   BellRing,
   Check,
   CircleDollarSign,
   Fingerprint,
+  Flag,
   MapPin,
   Navigation,
   Send,
@@ -261,7 +263,7 @@ export function PantallaAvisos() {
 
 export function PantallaCalificar() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Califica el viaje</p>
       <div className="rounded-xl border border-border bg-card p-3">
         <p className="text-xs font-bold text-foreground">Transportes Fuentes SpA</p>
@@ -287,6 +289,17 @@ export function PantallaCalificar() {
           </div>
           <span className="text-[10px] font-bold text-muted-foreground">14 viajes calificados</span>
         </div>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-2">
+        <p className="px-1 pb-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+          ¿Tuviste un problema?
+        </p>
+        <span className="flex items-center gap-2 whitespace-nowrap rounded-lg px-1 py-1 text-[10px] font-bold text-foreground">
+          <Flag className="h-3.5 w-3.5 shrink-0 text-primary" /> Reportar empresa o camionero
+        </span>
+        <span className="flex items-center gap-2 rounded-none border-t border-border px-1 py-1 text-[10px] font-bold text-primary">
+          <Ban className="h-3.5 w-3.5 shrink-0" /> Bloquear empresa
+        </span>
       </div>
     </div>
   );

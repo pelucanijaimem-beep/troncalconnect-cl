@@ -62,7 +62,7 @@ const PASOS = [
   {
     titulo: "Al terminar el viaje, califica y te califican.",
     texto:
-      "Tú calificas a la empresa y ella te califica a ti. Así todos en TroncalTrack construyen su reputación real.",
+      "Tú calificas a la empresa y ella te califica a ti. Así todos en TroncalTrack construyen su reputación real. Si algo salió mal, puedes reportar a la empresa o al camionero, o bloquear la empresa para dejar de ver sus cargas.",
     Pantalla: PantallaCalificar,
   },
 ];
