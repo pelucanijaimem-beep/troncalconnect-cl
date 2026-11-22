@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, BellOff, MessagesSquare, Send } from "lucide-react";
+import { ArrowLeft, BellOff, Flag, MessagesSquare, Send } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { enviarMensaje, useChat, useConversaciones } from "@/lib/use-mensajes";
 import { MAX_MENSAJE, totalSinLeer, type Conversacion } from "@/lib/mensajes";
+import { ReportDialog, type ObjetoReporte } from "./ReportDialog";
 
 const hora = (f: string) =>
   new Date(f).toLocaleString("es-CL", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -23,6 +25,7 @@ export function MessagesInbox({
   const { conversaciones } = useConversaciones(userId);
   const [open, setOpen] = useState(false);
   const [activa, setActiva] = useState<Conversacion | null>(null);
+  const [reporte, setReporte] = useState<ObjetoReporte | null>(null);
   const sinLeer = totalSinLeer(conversaciones);
   const filtradas = abrirCarga ? conversaciones.filter((c) => c.carga_id === abrirCarga) : conversaciones;
 
@@ -41,8 +44,26 @@ export function MessagesInbox({
     }
   };
 
+  /** El transportista reporta a la empresa dueña de la carga de esta conversación. */
+  const reportarEmpresa = async (conv: Conversacion) => {
+    const { data } = await supabase
+      .from("cargas")
+      .select("user_id")
+      .eq("id", conv.carga_id)
+      .maybeSingle();
+    cerrar(false);
+    setReporte({
+      tipo: "empresa",
+      cargaId: conv.carga_id,
+      reportadoId: data?.user_id ?? null,
+      nombre: conv.contraparte,
+      resumen: conv.ruta,
+    });
+  };
+
   return (
     <>
+      <ReportDialog objeto={reporte} onOpenChange={(o) => !o && setReporte(null)} />
       <Button variant="outline" size="sm" className="relative" aria-label="Ver mensajes" onClick={() => setOpen(true)}>
         <MessagesSquare className="h-4 w-4" />
         <span className="hidden sm:inline">Mensajes</span>
@@ -69,6 +90,15 @@ export function MessagesInbox({
                 : "Conversaciones por carga, sin compartir números de teléfono."}
             </DialogDescription>
           </DialogHeader>
+          {activa && !activa.soy_empresa && (
+            <button
+              type="button"
+              onClick={() => void reportarEmpresa(activa)}
+              className="inline-flex w-fit cursor-pointer items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary"
+            >
+              <Flag className="h-3.5 w-3.5" /> Reportar esta empresa
+            </button>
+          )}
           {activa ? (
             <Chat conv={activa} userId={userId} />
           ) : (

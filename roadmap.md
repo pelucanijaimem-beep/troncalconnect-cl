@@ -62,3 +62,6 @@
 
 - [x] Mes gratis de flotas por registro (no por lanzamiento), renombrar plan gratuito a «Transportista con un camión», campo ID/IMEI del rastreador GPS por camión con aviso no bloqueante y Términos actualizados.
 - [ ] Reemplazar el GPS del teléfono por el rastreador del camión; bloqueado: falta el servidor que recibe el rastreador.
+
+- [x] Guardar y comparar 2-3 cargas lado a lado, bloquear empresas en la cuenta con sección para desbloquear, y reportar empresas desde la carga o el chat con sección de pendientes en administración.
+- [ ] Probar guardar, bloquear y reportar con sesión real de transportista; no se pudo iniciar sesión de prueba.

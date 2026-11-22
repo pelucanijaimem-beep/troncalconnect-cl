@@ -37,6 +37,7 @@ export const eliminarMiCuenta = createServerFn({ method: "POST" })
     });
 
     await supabaseAdmin.from("favoritos").delete().eq("user_id", userId);
+    await supabaseAdmin.from("empresas_bloqueadas").delete().eq("transportista_id", userId);
     await supabaseAdmin.from("postulaciones").delete().eq("user_id", userId);
     await supabaseAdmin.from("notificaciones").delete().eq("user_id", userId);
     await supabaseAdmin.from("preferencias_alertas").delete().eq("user_id", userId);

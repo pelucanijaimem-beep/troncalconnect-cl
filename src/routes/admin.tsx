@@ -714,13 +714,15 @@ function AdminPage() {
 
         <Seccion
           titulo={`Reportes (${reportes.filter((r) => r.estado === "pendiente").length} pendientes)`}
-          descripcion="Denuncias de publicaciones o usuarios enviadas desde el tablero."
+          descripcion="Denuncias de publicaciones, empresas o usuarios enviadas desde el tablero y el chat de postulación."
         >
           {reportes.length === 0 && (
             <p className="text-sm text-muted-foreground">No hay reportes por ahora.</p>
           )}
           <div className="divide-y divide-border">
-            {reportes.map((r) => (
+            {[...reportes]
+              .sort((a, b) => Number(b.estado === "pendiente") - Number(a.estado === "pendiente"))
+              .map((r) => (
               <div key={r.id} className="flex flex-wrap items-start justify-between gap-3 py-3">
                 <div className="min-w-56 flex-1">
                   <p className="font-semibold text-foreground">
@@ -728,7 +730,7 @@ function AdminPage() {
                   </p>
                   <p className="text-xs text-muted-foreground">{r.detalle}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    {r.tipo === "usuario" ? "Usuario" : "Publicación"} ·{" "}
+                    {r.tipo === "usuario" ? "Usuario" : r.tipo === "empresa" ? "Empresa" : "Publicación"} ·{" "}
                     {new Date(r.created_at).toLocaleString("es-CL")} · Estado: {r.estado}
                   </p>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MOTIVOS_REPORTE, crearReporte } from "@/lib/reportes";
+import { crearReporte, detalleObligatorio, motivosPara, type TipoReporte } from "@/lib/reportes";
 import { useSesion } from "@/lib/use-session";
 
 export type ObjetoReporte = {
-  tipo: "publicacion" | "usuario";
+  tipo: TipoReporte;
   cargaId?: string | null;
   reportadoId?: string | null;
   nombre: string;
@@ -37,8 +37,14 @@ export function ReportDialog({
   onOpenChange: (abierto: boolean) => void;
 }) {
   const sesion = useSesion();
-  const [motivo, setMotivo] = useState<string>(MOTIVOS_REPORTE[0]);
+  const tipo: TipoReporte = objeto?.tipo ?? "publicacion";
+  const motivos = motivosPara(tipo);
+  const [motivo, setMotivo] = useState<string>(motivos[0] ?? "");
   const [enviando, setEnviando] = useState(false);
+
+  useEffect(() => {
+    setMotivo(motivosPara(objeto?.tipo ?? "publicacion")[0] ?? "");
+  }, [objeto]);
 
   const enviar = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,7 +70,6 @@ export function ReportDialog({
       return;
     }
     onOpenChange(false);
-    setMotivo(MOTIVOS_REPORTE[0]);
     toast.success("Reporte enviado", {
       description: "El equipo de TroncalTrack lo revisará y tomará medidas si corresponde.",
     });
@@ -74,7 +79,11 @@ export function ReportDialog({
     <Dialog open={Boolean(objeto)} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Reportar {objeto?.tipo === "usuario" ? "usuario" : "publicación"}</DialogTitle>
+          <DialogTitle>
+            {tipo === "empresa"
+              ? "Reportar esta empresa"
+              : `Reportar ${tipo === "usuario" ? "usuario" : "publicación"}`}
+          </DialogTitle>
           <DialogDescription>
             {objeto?.nombre}
             {objeto?.resumen ? ` · ${objeto.resumen}` : ""}
@@ -89,7 +98,7 @@ export function ReportDialog({
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                {MOTIVOS_REPORTE.map((m) => (
+                {motivos.map((m) => (
                   <SelectItem key={m} value={m}>
                     {m}
                   </SelectItem>
@@ -98,12 +107,15 @@ export function ReportDialog({
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="r-detalle">Cuéntanos qué ocurrió</Label>
+            <Label htmlFor="r-detalle">
+              {detalleObligatorio(tipo) ? "Cuéntanos qué ocurrió" : "Comentario (opcional)"}
+            </Label>
             <Textarea
               id="r-detalle"
               name="detalle"
+              maxLength={500}
               placeholder="Describe la situación con el mayor detalle posible."
-              required
+              required={detalleObligatorio(tipo)}
             />
           </div>
           <DialogFooter>

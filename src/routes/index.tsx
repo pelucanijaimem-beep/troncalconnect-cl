@@ -50,7 +50,9 @@ import { EntregaCodigoDialog } from "@/components/troncal/EntregaCodigoDialog";
 import { iniciarViajeEntrega } from "@/lib/use-entrega-codigo";
 import {
   desbloquearEmpresa,
-  estaBloqueada,
+  desbloquearEmpresaCuenta,
+  esCargaBloqueada,
+  useSincronizarBloqueos,
   useSincronizarFavoritos,
   useTableroPrefs,
 } from "@/lib/use-tablero-prefs";
@@ -82,6 +84,7 @@ import {
 } from "@/lib/troncal-data";
 import { useTripTracking } from "@/lib/use-trip-tracking";
 import { DocExpiryPanel } from "@/components/troncal/DocExpiryPanel";
+import { BlockedCompaniesPanel } from "@/components/troncal/BlockedCompaniesPanel";
 import { ReturnLoadsSection } from "@/components/troncal/ReturnLoadsSection";
 import { useCompartirUbicacion, useGpsObligatorio, useUbicacionViaje } from "@/lib/use-ubicacion-viaje";
 
@@ -200,6 +203,7 @@ function Index() {
   const verificaciones = useVerificaciones();
   const prefs = useTableroPrefs();
   useSincronizarFavoritos(sesion?.id);
+  useSincronizarBloqueos(sesion?.id);
   const { prefs: alertas, recargar: recargarAlertas } = usePreferenciasAlerta(sesion?.id);
   const paisActual = getPais(pais);
 
@@ -237,7 +241,7 @@ function Index() {
           (!c.soloVerificados || rol !== "camionero" || soyVerificado) &&
           (!filtros.precioMin || c.valorKm >= Number(filtros.precioMin)) &&
           (!filtros.precioMax || c.valorKm <= Number(filtros.precioMax)) &&
-          (rol !== "camionero" || !estaBloqueada(prefs.bloqueadas, c.empresa)) &&
+          (rol !== "camionero" || !esCargaBloqueada(prefs, c)) &&
           (!filtros.soloVerificados ||
             getVerificacionDe(verificaciones, c.empresa).estado === "verificado"),
       ),
@@ -249,6 +253,7 @@ function Index() {
       rol,
       soyVerificado,
       prefs.bloqueadas,
+      prefs.bloqueos,
       alertas.ciudadBase,
       misInsignias.peligrosas,
       sesion?.id,
@@ -611,6 +616,12 @@ function Index() {
           </div>
         )}
 
+        {esCamionero && (
+          <div className="mb-6">
+            <BlockedCompaniesPanel />
+          </div>
+        )}
+
 
         {esCamionero && !soyVerificado && (
           <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface p-4">
@@ -690,7 +701,7 @@ function Index() {
           onLimpiar={() => setFiltros(FILTROS_VACIOS)}
           onConfigurarRetorno={() => setAlertasOpen(true)}
         />
-        {sesion.rol === "camionero" && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} ciudadBase={alertas.ciudadBase} cargas={CARGAS.filter(c => c.pais === "CL" && c.estado === "activa" && !estaBloqueada(prefs.bloqueadas, c.empresa))} renderCarga={c => <LoadCard carga={c} rol="camionero" viaje={getViaje(c.id)} onDetalles={c => { setMatchingOpen(false); setDetalle(c); }} onContactar={c => { setMatchingOpen(false); contactarCarga(c); }} onIniciar={c => { setMatchingOpen(false); void iniciar(c); }} onFinalizar={c => { setMatchingOpen(false); setPodCarga(c); }} onRastrear={c => { setMatchingOpen(false); rastrear(c); }} onVerViaje={c => { setMatchingOpen(false); setViajeActivo(c); }} onPostular={c => { setMatchingOpen(false); postular(c); }} yaPostulada={postuladas.includes(c.id)} accesoContacto={accesoContacto} />} />}
+        {sesion.rol === "camionero" && <LoadMatchingDialog open={matchingOpen} onOpenChange={setMatchingOpen} ciudadBase={alertas.ciudadBase} cargas={CARGAS.filter(c => c.pais === "CL" && c.estado === "activa" && !esCargaBloqueada(prefs, c))} renderCarga={c => <LoadCard carga={c} rol="camionero" viaje={getViaje(c.id)} onDetalles={c => { setMatchingOpen(false); setDetalle(c); }} onContactar={c => { setMatchingOpen(false); contactarCarga(c); }} onIniciar={c => { setMatchingOpen(false); void iniciar(c); }} onFinalizar={c => { setMatchingOpen(false); setPodCarga(c); }} onRastrear={c => { setMatchingOpen(false); rastrear(c); }} onVerViaje={c => { setMatchingOpen(false); setViajeActivo(c); }} onPostular={c => { setMatchingOpen(false); postular(c); }} yaPostulada={postuladas.includes(c.id)} accesoContacto={accesoContacto} />} />}
 
 
         <div className="mt-4">
@@ -700,11 +711,21 @@ function Index() {
           />
         </div>
 
-        {esCamionero && prefs.bloqueadas.length > 0 && (
+        {esCamionero && (prefs.bloqueadas.length > 0 || prefs.bloqueos.length > 0) && (
           <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface p-3 text-sm">
             <span className="inline-flex items-center gap-1 font-semibold text-foreground">
               <Ban className="h-4 w-4 text-primary" /> Empresas bloqueadas:
             </span>
+            {prefs.bloqueos.map((b) => (
+              <button
+                key={b.id}
+                onClick={() => void desbloquearEmpresaCuenta(b.id)}
+                className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground hover:border-primary hover:text-primary"
+                title="Desbloquear empresa"
+              >
+                {b.nombre || "Empresa"} ✕
+              </button>
+            ))}
             {prefs.bloqueadas.map((b) => (
               <button
                 key={b}
@@ -761,6 +782,17 @@ function Index() {
                       requiereSesion(() =>
                         setReporte({
                           tipo: "publicacion",
+                          cargaId: carga.id,
+                          reportadoId: carga.userId ?? null,
+                          nombre: carga.empresa,
+                          resumen: `${carga.origen} → ${carga.destino}`,
+                        }),
+                      )
+                    }
+                    onReportarEmpresa={(carga) =>
+                      requiereSesion(() =>
+                        setReporte({
+                          tipo: "empresa",
                           cargaId: carga.id,
                           reportadoId: carga.userId ?? null,
                           nombre: carga.empresa,

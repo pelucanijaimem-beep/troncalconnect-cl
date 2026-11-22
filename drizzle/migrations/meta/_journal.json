@@ -218,6 +218,20 @@
       "when": 1795313618601,
       "tag": "0030_alertas_ruta_lectura_sin_autor",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1795313957727,
+      "tag": "0031_empresas_bloqueadas",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1795314048198,
+      "tag": "0032_reportes_empresa_validaciones",
+      "breakpoints": true
     }
   ]
 }

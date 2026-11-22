@@ -270,6 +270,30 @@ export type Database = {
         }
         Relationships: []
       }
+      empresas_bloqueadas: {
+        Row: {
+          created_at: string
+          empresa_id: string
+          empresa_nombre: string
+          id: string
+          transportista_id: string
+        }
+        Insert: {
+          created_at?: string
+          empresa_id: string
+          empresa_nombre?: string
+          id?: string
+          transportista_id: string
+        }
+        Update: {
+          created_at?: string
+          empresa_id?: string
+          empresa_nombre?: string
+          id?: string
+          transportista_id?: string
+        }
+        Relationships: []
+      }
       entregas_conformes: {
         Row: {
           carga_id: string

@@ -41,3 +41,4 @@
 - Push alerts: cargas insert trigger queues a one-time token; pg_net calls the public push route (unused tokens only).
 - Trip GPS rules are server-defined (gps_viaje_obligatorio, owner-only registrar_gps_camion); missing trackers warn, never block.
 - AI doc pre-review re-reads the caller's stored file, checks expiry server-side, keeps an admin-only advisory verdict per path, pauses on 402/403.
+- Saved loads reuse favoritos and reports reuse reportes (tipo empresa for company reports); company blocks live in empresas_bloqueadas keyed by load owner and are applied as a client-side filter on the board, so the live load query and subscription stay untouched.

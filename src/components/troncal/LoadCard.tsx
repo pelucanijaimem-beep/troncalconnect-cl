@@ -55,6 +55,7 @@ export function LoadCard({
   onVerViaje,
   onPostular,
   onReportar,
+  onReportarEmpresa,
   yaPostulada = false,
   accesoContacto = false,
 }: {
@@ -69,6 +70,7 @@ export function LoadCard({
   onVerViaje: (c: Carga) => void;
   onPostular?: (c: Carga) => void;
   onReportar?: (c: Carga) => void;
+  onReportarEmpresa?: (c: Carga) => void;
   yaPostulada?: boolean;
   /** true solo para usuarios con plan Pro activo: habilita datos de contacto. */
   accesoContacto?: boolean;
@@ -163,12 +165,17 @@ export function LoadCard({
                   ))}
                 {onReportar && (
                   <DropdownMenuItem onSelect={() => onReportar(carga)}>
-                    <Flag className="h-4 w-4" /> Reportar
+                    <Flag className="h-4 w-4" /> Reportar publicación
+                  </DropdownMenuItem>
+                )}
+                {onReportarEmpresa && (
+                  <DropdownMenuItem onSelect={() => onReportarEmpresa(carga)}>
+                    <Flag className="h-4 w-4" /> Reportar esta empresa
                   </DropdownMenuItem>
                 )}
                 {rol === "camionero" && (
-                  <DropdownMenuItem onSelect={() => bloquearEmpresa(carga.empresa)}>
-                    <Ban className="h-4 w-4" /> Bloquear empresa
+                  <DropdownMenuItem onSelect={() => void bloquearEmpresa(carga)}>
+                    <Ban className="h-4 w-4" /> Bloquear esta empresa
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
